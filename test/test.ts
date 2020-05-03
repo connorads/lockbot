@@ -18,6 +18,9 @@ const execute = (input: string, user = "Connor") => {
   }
 
   if (command === "/unlock") {
+    if (!resource) {
+      return "please provide the name of resource to unlock e.g. '/unlock dev'";
+    }
     if (!locks.has(resource)) {
       return `${resource} is already unlocked`;
     }
@@ -28,6 +31,10 @@ const execute = (input: string, user = "Connor") => {
       return `you have unlocked ${resource}`;
     }
     return `Cannot unlock ${resource}, locked by ${lockOwner}`;
+  }
+
+  if (!resource) {
+    return "please provide the name of resource to lock e.g. '/lock dev'";
   }
 
   if (locks.has(resource)) {
@@ -58,6 +65,12 @@ test("cannot lock different resource twice", () => {
   expect(execute("/lock test")).toEqual("you have already locked test");
 });
 
+test("cannot lock without providing resource name", () => {
+  expect(execute("/lock   ")).toEqual(
+    "please provide the name of resource to lock e.g. '/lock dev'"
+  );
+});
+
 test("unlock unlocked resource", () => {
   expect(execute("/unlock dev")).toEqual("dev is already unlocked");
 });
@@ -80,6 +93,12 @@ test("cannot unlock someone else's resource", () => {
 test("cannot unlock someone else's resource (different user and resource)", () => {
   execute("/lock dev", "Dave");
   expect(execute("/unlock dev")).toEqual("Cannot unlock dev, locked by Dave");
+});
+
+test("cannot unlock without providing resource name", () => {
+  expect(execute("/unlock   ")).toEqual(
+    "please provide the name of resource to unlock e.g. '/unlock dev'"
+  );
 });
 
 test("can lock, unlock and lock resource", () => {
