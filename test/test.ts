@@ -1,9 +1,11 @@
 const locks: Set<string> = new Set();
 
-const execute = (command: string) => {
-  const resource = command.split(" ")[1];
+const execute = (input: string) => {
+  const tokens = input.split(" ");
+  const command = tokens[0];
+  const resource = tokens[1];
 
-  if (command[5] === "s") {
+  if (command === "/locks") {
     if (locks.size === 0) {
       return "no active locks";
     }
@@ -15,7 +17,7 @@ const execute = (command: string) => {
     return locksMessage.trimEnd();
   }
 
-  if (command[1] === "u" && resource) {
+  if (command === "/unlock" && resource) {
     locks.delete(resource);
     return `you have unlocked ${resource}`;
   }
