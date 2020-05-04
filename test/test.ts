@@ -38,7 +38,11 @@ const execute = (input: string, user = "Connor") => {
   }
 
   if (locks.has(resource)) {
-    return `you have already locked ${resource}`;
+    const lockOwner = locks.get(resource);
+    if (user === lockOwner) {
+      return `you have already locked ${resource}`;
+    }
+    return `${resource} is already locked by ${lockOwner}`;
   }
 
   locks.set(resource, user);
@@ -63,6 +67,13 @@ test("cannot lock resource twice", () => {
 test("cannot lock different resource twice", () => {
   execute("/lock test");
   expect(execute("/lock test")).toEqual("you have already locked test");
+});
+
+test("cannot lock someone else's resource", () => {
+  execute("/lock dev");
+  expect(execute("/lock dev", "Dave")).toEqual(
+    "dev is already locked by Connor"
+  );
 });
 
 test("cannot lock without providing resource name", () => {
