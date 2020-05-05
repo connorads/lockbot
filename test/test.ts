@@ -1,56 +1,27 @@
-const locks: Map<string, string> = new Map();
+import LockBot from "../src/lock-bot";
 
-const execute = (input: string, user = "Connor") => {
+let lockBot: LockBot;
+
+const execute = (input: string, user = "Connor"): string => {
   const tokens = input.split(" ");
   const command = tokens[0];
   const resource = tokens[1];
 
   if (command === "/locks") {
-    if (locks.size === 0) {
-      return "no active locks";
-    }
-
-    let locksMessage = "";
-    locks.forEach((lockOwner, lockedResource) => {
-      locksMessage += `${lockedResource} is locked by ${lockOwner}\n`;
-    });
-    return locksMessage.trimEnd();
+    return lockBot.locks();
   }
-
   if (command === "/unlock") {
-    if (!resource) {
-      return "please provide the name of resource to unlock e.g. '/unlock dev'";
-    }
-    if (!locks.has(resource)) {
-      return `${resource} is already unlocked`;
-    }
-
-    const lockOwner = locks.get(resource);
-    if (user === lockOwner) {
-      locks.delete(resource);
-      return `you have unlocked ${resource}`;
-    }
-    return `Cannot unlock ${resource}, locked by ${lockOwner}`;
+    return lockBot.unlock(resource, user);
+  }
+  if (command === "/lock") {
+    return lockBot.lock(resource, user);
   }
 
-  if (!resource) {
-    return "please provide the name of resource to lock e.g. '/lock dev'";
-  }
-
-  if (locks.has(resource)) {
-    const lockOwner = locks.get(resource);
-    if (user === lockOwner) {
-      return `you have already locked ${resource}`;
-    }
-    return `${resource} is already locked by ${lockOwner}`;
-  }
-
-  locks.set(resource, user);
-  return `you have locked ${resource}`;
+  throw new Error("Unhandled command");
 };
 
 beforeEach(() => {
-  locks.clear();
+  lockBot = new LockBot(new Map());
 });
 
 test("can lock resource", () => {
