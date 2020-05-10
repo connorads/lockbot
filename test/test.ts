@@ -1,4 +1,5 @@
 import LockBot from "../src/lock-bot";
+import InMemoryLockRepo from "../src/in-memory-lock-repo";
 
 let lockBot: LockBot;
 
@@ -21,7 +22,7 @@ const execute = (input: string, user = "Connor"): string => {
 };
 
 beforeEach(() => {
-  lockBot = new LockBot(new Map());
+  lockBot = new LockBot(new InMemoryLockRepo());
 });
 
 test("can lock resource", () => {
