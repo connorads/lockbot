@@ -1,54 +1,53 @@
 export interface LockRepo {
-  clear(): void;
-  delete(resource: string): void;
-  getAll(): Map<string, string>;
-  getOwner(resource: string): string | undefined;
-  setOwner(resource: string, owner: string): void;
-  size: number;
+  delete(resource: string): Promise<void>;
+  getAll(): Promise<Map<string, string>>;
+  getOwner(resource: string): Promise<string | undefined>;
+  setOwner(resource: string, owner: string): Promise<void>;
 }
 
 export default class LockBot {
   constructor(private readonly lockRepo: LockRepo) {}
 
-  lock = (resource: string, user: string): string => {
+  lock = async (resource: string, user: string): Promise<string> => {
     if (!resource) {
       return "please provide the name of resource to lock e.g. '/lock dev'";
     }
-    const lockOwner = this.lockRepo.getOwner(resource);
+    const lockOwner = await this.lockRepo.getOwner(resource);
     if (lockOwner) {
       if (user === lockOwner) {
         return `you have already locked ${resource}`;
       }
       return `${resource} is already locked by ${lockOwner}`;
     }
-    this.lockRepo.setOwner(resource, user);
+    await this.lockRepo.setOwner(resource, user);
     return `you have locked ${resource}`;
   };
 
-  unlock = (resource: string, user: string): string => {
+  unlock = async (resource: string, user: string): Promise<string> => {
     if (!resource) {
       return "please provide the name of resource to unlock e.g. '/unlock dev'";
     }
-    const lockOwner = this.lockRepo.getOwner(resource);
+    const lockOwner = await this.lockRepo.getOwner(resource);
     if (!lockOwner) {
       return `${resource} is already unlocked`;
     }
 
     if (user === lockOwner) {
-      this.lockRepo.delete(resource);
+      await this.lockRepo.delete(resource);
       return `you have unlocked ${resource}`;
     }
     return `Cannot unlock ${resource}, locked by ${lockOwner}`;
   };
 
-  locks = (): string => {
-    if (this.lockRepo.size === 0) {
+  locks = async (): Promise<string> => {
+    const locks = await this.lockRepo.getAll();
+    if (locks.size === 0) {
       return "no active locks";
     }
     let locksMessage = "";
-    this.lockRepo.getAll().forEach((lockOwner, lockedResource) => {
+    locks.forEach((lockOwner, lockedResource) => {
       locksMessage += `${lockedResource} is locked by ${lockOwner}\n`;
     });
-    return locksMessage.trimEnd();
+    return locksMessage.trimRight();
   };
 }

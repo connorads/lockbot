@@ -3,27 +3,19 @@ import { LockRepo } from "./lock-bot";
 export default class InMemoryLockRepo implements LockRepo {
   private readonly lockMap: Map<string, string> = new Map();
 
-  clear(): void {
-    this.lockMap.clear();
-  }
-
-  delete(resource: string): void {
+  async delete(resource: string): Promise<void> {
     this.lockMap.delete(resource);
   }
 
-  getAll(): Map<string, string> {
+  async getAll(): Promise<Map<string, string>> {
     return this.lockMap;
   }
 
-  getOwner(resource: string): string | undefined {
+  async getOwner(resource: string): Promise<string | undefined> {
     return this.lockMap.get(resource);
   }
 
-  setOwner(resource: string, owner: string): void {
+  async setOwner(resource: string, owner: string): Promise<void> {
     this.lockMap.set(resource, owner);
-  }
-
-  get size() {
-    return this.lockMap.size;
   }
 }

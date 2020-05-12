@@ -3,7 +3,7 @@ import InMemoryLockRepo from "../src/in-memory-lock-repo";
 
 let lockBot: LockBot;
 
-const execute = (input: string, user = "Connor"): string => {
+const execute = async (input: string, user = "Connor"): Promise<string> => {
   const tokens = input.split(" ");
   const command = tokens[0];
   const resource = tokens[1];
@@ -18,96 +18,98 @@ const execute = (input: string, user = "Connor"): string => {
     return lockBot.lock(resource, user);
   }
 
-  throw new Error("Unhandled command");
+  return "Unhandled command";
 };
 
 beforeEach(() => {
   lockBot = new LockBot(new InMemoryLockRepo());
 });
 
-test("can lock resource", () => {
-  expect(execute("/lock dev")).toEqual("you have locked dev");
+test("can lock resource", async () => {
+  expect(await execute("/lock dev")).toEqual("you have locked dev");
 });
-test("can lock different resource", () => {
-  expect(execute("/lock test")).toEqual("you have locked test");
-});
-
-test("cannot lock resource twice", () => {
-  execute("/lock dev");
-  expect(execute("/lock dev")).toEqual("you have already locked dev");
-});
-test("cannot lock different resource twice", () => {
-  execute("/lock test");
-  expect(execute("/lock test")).toEqual("you have already locked test");
+test("can lock different resource", async () => {
+  expect(await execute("/lock test")).toEqual("you have locked test");
 });
 
-test("cannot lock someone else's resource", () => {
-  execute("/lock dev");
-  expect(execute("/lock dev", "Dave")).toEqual(
+test("cannot lock resource twice", async () => {
+  await execute("/lock dev");
+  expect(await execute("/lock dev")).toEqual("you have already locked dev");
+});
+test("cannot lock different resource twice", async () => {
+  await execute("/lock test");
+  expect(await execute("/lock test")).toEqual("you have already locked test");
+});
+
+test("cannot lock someone else's resource", async () => {
+  await execute("/lock dev");
+  expect(await execute("/lock dev", "Dave")).toEqual(
     "dev is already locked by Connor"
   );
 });
 
-test("cannot lock without providing resource name", () => {
-  expect(execute("/lock   ")).toEqual(
+test("cannot lock without providing resource name", async () => {
+  expect(await execute("/lock   ")).toEqual(
     "please provide the name of resource to lock e.g. '/lock dev'"
   );
 });
 
-test("unlock unlocked resource", () => {
-  expect(execute("/unlock dev")).toEqual("dev is already unlocked");
+test("unlock unlocked resource", async () => {
+  expect(await execute("/unlock dev")).toEqual("dev is already unlocked");
 });
 
-test("can unlock resource", () => {
-  execute("/lock dev");
-  expect(execute("/unlock dev")).toEqual("you have unlocked dev");
+test("can unlock resource", async () => {
+  await execute("/lock dev");
+  expect(await execute("/unlock dev")).toEqual("you have unlocked dev");
 });
-test("can unlock different resource", () => {
-  execute("/lock test");
-  expect(execute("/unlock test")).toEqual("you have unlocked test");
+test("can unlock different resource", async () => {
+  await execute("/lock test");
+  expect(await execute("/unlock test")).toEqual("you have unlocked test");
 });
 
-test("cannot unlock someone else's resource", () => {
-  execute("/lock test");
-  expect(execute("/unlock test", "Dave")).toEqual(
+test("cannot unlock someone else's resource", async () => {
+  await execute("/lock test");
+  expect(await execute("/unlock test", "Dave")).toEqual(
     "Cannot unlock test, locked by Connor"
   );
 });
-test("cannot unlock someone else's resource (different user and resource)", () => {
-  execute("/lock dev", "Dave");
-  expect(execute("/unlock dev")).toEqual("Cannot unlock dev, locked by Dave");
+test("cannot unlock someone else's resource (different user and resource)", async () => {
+  await execute("/lock dev", "Dave");
+  expect(await execute("/unlock dev")).toEqual(
+    "Cannot unlock dev, locked by Dave"
+  );
 });
 
-test("cannot unlock without providing resource name", () => {
-  expect(execute("/unlock   ")).toEqual(
+test("cannot unlock without providing resource name", async () => {
+  expect(await execute("/unlock   ")).toEqual(
     "please provide the name of resource to unlock e.g. '/unlock dev'"
   );
 });
 
-test("can lock, unlock and lock resource", () => {
-  execute("/lock dev");
-  execute("/unlock dev");
-  expect(execute("/lock dev")).toEqual("you have locked dev");
+test("can lock, unlock and lock resource", async () => {
+  await execute("/lock dev");
+  await execute("/unlock dev");
+  expect(await execute("/lock dev")).toEqual("you have locked dev");
 });
 
-test("can list locks when no locks", () => {
-  expect(execute("/locks")).toEqual("no active locks");
+test("can list locks when no locks", async () => {
+  expect(await execute("/locks")).toEqual("no active locks");
 });
 
-test("can list locks one lock exists", () => {
-  execute("/lock dev");
-  expect(execute("/locks")).toEqual("dev is locked by Connor");
+test("can list locks one lock exists", async () => {
+  await execute("/lock dev");
+  expect(await execute("/locks")).toEqual("dev is locked by Connor");
 });
 
-test("can list locks one lock exists different user", () => {
-  execute("/lock dev", "Dave");
-  expect(execute("/locks")).toEqual("dev is locked by Dave");
+test("can list locks one lock exists different user", async () => {
+  await execute("/lock dev", "Dave");
+  expect(await execute("/locks")).toEqual("dev is locked by Dave");
 });
 
-test("can list multiple locks", () => {
-  execute("/lock dev");
-  execute("/lock test", "Dave");
-  expect(execute("/locks")).toEqual(
+test("can list multiple locks", async () => {
+  await execute("/lock dev");
+  await execute("/lock test", "Dave");
+  expect(await execute("/locks")).toEqual(
     "dev is locked by Connor\ntest is locked by Dave"
   );
 });
