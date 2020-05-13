@@ -1,0 +1,24 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "12.x"
+      - run: yarn install --frozen-lockfile
+      - run: yarn eslint src/** test/**
+      - run: yarn tsc --noEmit
+      - name: Setup DynamoDB Local
+        uses: rrainn/dynamodb-action@v2.0.0
+      - run: yarn jest
+        env:
+          CI: true
