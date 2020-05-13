@@ -17,12 +17,8 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn eslint src/** test/**
       - run: yarn tsc --noEmit
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: "123"
-          aws-secret-access-key: "456"
-          aws-region: eu-west-1
+      - run: mkdir ~/.aws
+      - run: echo -e "[default]\naws_access_key_id=''\naws_secret_access_key=''" > ~/.aws/credentials
       - name: Setup DynamoDB Local
         uses: rrainn/dynamodb-action@v2.0.0
       - run: yarn jest --maxWorkers=1
