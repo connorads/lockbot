@@ -1,0 +1,52 @@
+service: lockbot
+
+plugins:
+  - serverless-dynamodb-local
+  - serverless-offline
+  - serverless-plugin-typescript
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  environment:
+    SLACK_SIGNING_SECRET: ${env:SLACK_SIGNING_SECRET}
+    SLACK_BOT_TOKEN: ${env:SLACK_BOT_TOKEN}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/Resources"
+
+functions:
+  slack-events-handler:
+    handler: src/index.handler
+    events:
+      - http:
+          method: post
+          path: /slack/events
+
+resources:
+  Resources:
+    usersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Resources
+        AttributeDefinitions:
+          - AttributeName: Name
+            AttributeType: S
+        KeySchema:
+          - AttributeName: Name
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+custom:
+  dynamodb:
+    stages:
+      - dev # https://bit.ly/35WR0TT

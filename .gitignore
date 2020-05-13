@@ -1,5 +1,8 @@
 node_modules
 
+.serverless
+.dynamodb
+
 ### Code ###
 .vscode/*
 !.vscode/settings.json
