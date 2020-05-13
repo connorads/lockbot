@@ -1,5 +1,7 @@
 # Lockbot
 
+![Node.js CI](https://github.com/connorads/lockbot/workflows/Node.js%20CI/badge.svg)
+
 Lockbot is a Slack bot to help coordinate use of shared resources in a team.
 
 - `/locks`
