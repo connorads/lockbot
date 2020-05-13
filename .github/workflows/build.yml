@@ -20,8 +20,8 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ""
-          aws-secret-access-key: ""
+          aws-access-key-id: "123"
+          aws-secret-access-key: "456"
           aws-region: eu-west-1
       - name: Setup DynamoDB Local
         uses: rrainn/dynamodb-action@v2.0.0
