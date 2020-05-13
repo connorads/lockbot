@@ -114,6 +114,8 @@ describe("dynamodb lock repo", () => {
     const db = new DynamoDB(options);
     try {
       await db.deleteTable({ TableName: "Resources" }).promise();
+    } catch (error) {
+      // No problem if the table doesn't exist
     } finally {
       await db
         .createTable({
