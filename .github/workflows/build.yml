@@ -19,6 +19,4 @@ jobs:
       - run: yarn tsc --noEmit
       - name: Setup DynamoDB Local
         uses: rrainn/dynamodb-action@v2.0.0
-      - run: yarn jest
-        env:
-          CI: true
+      - run: yarn jest --maxWorkers=1
