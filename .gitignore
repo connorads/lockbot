@@ -3,6 +3,8 @@ node_modules
 .serverless
 .dynamodb
 
+coverage
+
 ### Code ###
 .vscode/*
 !.vscode/settings.json
