@@ -10,43 +10,43 @@ export default class LockBot {
 
   lock = async (resource: string, user: string): Promise<string> => {
     if (!resource) {
-      return "please provide the name of resource to lock e.g. '/lock dev'";
+      return "Please provide the name of resource to lock e.g. '/lock dev'";
     }
     const lockOwner = await this.lockRepo.getOwner(resource);
     if (lockOwner) {
       if (user === lockOwner) {
-        return `you have already locked ${resource}`;
+        return `You have already locked ${resource} 🔒`;
       }
-      return `${resource} is already locked by ${lockOwner}`;
+      return `${resource} is already locked by ${lockOwner} 🔒`;
     }
     await this.lockRepo.setOwner(resource, user);
-    return `you have locked ${resource}`;
+    return `You have locked ${resource} 🔒`;
   };
 
   unlock = async (resource: string, user: string): Promise<string> => {
     if (!resource) {
-      return "please provide the name of resource to unlock e.g. '/unlock dev'";
+      return "Please provide the name of resource to unlock e.g. '/unlock dev'";
     }
     const lockOwner = await this.lockRepo.getOwner(resource);
     if (!lockOwner) {
-      return `${resource} is already unlocked`;
+      return `${resource} is already unlocked 🔓`;
     }
 
     if (user === lockOwner) {
       await this.lockRepo.delete(resource);
-      return `you have unlocked ${resource}`;
+      return `You have unlocked ${resource} 🔓`;
     }
-    return `Cannot unlock ${resource}, locked by ${lockOwner}`;
+    return `Cannot unlock ${resource}, locked by ${lockOwner} 🔒`;
   };
 
   locks = async (): Promise<string> => {
     const locks = await this.lockRepo.getAll();
     if (locks.size === 0) {
-      return "no active locks";
+      return "No active locks 🔓";
     }
     let locksMessage = "";
     locks.forEach((lockOwner, lockedResource) => {
-      locksMessage += `${lockedResource} is locked by ${lockOwner}\n`;
+      locksMessage += `${lockedResource} is locked by ${lockOwner} 🔒\n`;
     });
     return locksMessage.trimRight();
   };
