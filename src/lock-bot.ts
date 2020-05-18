@@ -5,49 +5,81 @@ export interface LockRepo {
   setOwner(resource: string, owner: string): Promise<void>;
 }
 
+export type Destination = "user" | "channel";
+
+export interface Response {
+  message: string;
+  destination: Destination;
+}
+
 export default class LockBot {
   constructor(private readonly lockRepo: LockRepo) {}
 
-  lock = async (resource: string, user: string): Promise<string> => {
+  lock = async (resource: string, user: string): Promise<Response> => {
     if (!resource) {
-      return "Please provide the name of resource to lock e.g. '/lock dev'";
+      return {
+        message: "Please provide the name of resource to lock e.g. '/lock dev'",
+        destination: "user",
+      };
     }
     const lockOwner = await this.lockRepo.getOwner(resource);
     if (lockOwner) {
       if (user === lockOwner) {
-        return `You have already locked ${resource} 🔒`;
+        return {
+          message: `You have already locked ${resource} 🔒`,
+          destination: "user",
+        };
       }
-      return `${resource} is already locked by ${lockOwner} 🔒`;
+      return {
+        message: `${resource} is already locked by ${lockOwner} 🔒`,
+        destination: "user",
+      };
     }
     await this.lockRepo.setOwner(resource, user);
-    return `${user} has locked ${resource} 🔒`;
+    return {
+      message: `${user} has locked ${resource} 🔒`,
+      destination: "channel",
+    };
   };
 
-  unlock = async (resource: string, user: string): Promise<string> => {
+  unlock = async (resource: string, user: string): Promise<Response> => {
     if (!resource) {
-      return "Please provide the name of resource to unlock e.g. '/unlock dev'";
+      return {
+        message:
+          "Please provide the name of resource to unlock e.g. '/unlock dev'",
+        destination: "user",
+      };
     }
     const lockOwner = await this.lockRepo.getOwner(resource);
     if (!lockOwner) {
-      return `${resource} is already unlocked 🔓`;
+      return {
+        message: `${resource} is already unlocked 🔓`,
+        destination: "user",
+      };
     }
 
     if (user === lockOwner) {
       await this.lockRepo.delete(resource);
-      return `${user} has unlocked ${resource} 🔓`;
+      return {
+        message: `${user} has unlocked ${resource} 🔓`,
+        destination: "channel",
+      };
     }
-    return `Cannot unlock ${resource}, locked by ${lockOwner} 🔒`;
+    return {
+      message: `Cannot unlock ${resource}, locked by ${lockOwner} 🔒`,
+      destination: "user",
+    };
   };
 
-  locks = async (): Promise<string> => {
+  locks = async (): Promise<Response> => {
     const locks = await this.lockRepo.getAll();
     if (locks.size === 0) {
-      return "No active locks 🔓";
+      return { message: "No active locks 🔓", destination: "user" };
     }
     let locksMessage = "";
     locks.forEach((lockOwner, lockedResource) => {
       locksMessage += `${lockedResource} is locked by ${lockOwner} 🔒\n`;
     });
-    return locksMessage.trimRight();
+    return { message: locksMessage.trimRight(), destination: "user" };
   };
 }
