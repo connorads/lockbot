@@ -20,7 +20,7 @@ export default class LockBot {
       return `${resource} is already locked by ${lockOwner} 🔒`;
     }
     await this.lockRepo.setOwner(resource, user);
-    return `You have locked ${resource} 🔒`;
+    return `${user} has locked ${resource} 🔒`;
   };
 
   unlock = async (resource: string, user: string): Promise<string> => {
@@ -34,7 +34,7 @@ export default class LockBot {
 
     if (user === lockOwner) {
       await this.lockRepo.delete(resource);
-      return `You have unlocked ${resource} 🔓`;
+      return `${user} has unlocked ${resource} 🔓`;
     }
     return `Cannot unlock ${resource}, locked by ${lockOwner} 🔒`;
   };

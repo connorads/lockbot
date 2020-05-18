@@ -21,10 +21,10 @@ const runAllTests = () => {
     return "Unhandled command";
   };
   test("can lock resource", async () => {
-    expect(await execute("/lock dev")).toEqual("You have locked dev 🔒");
+    expect(await execute("/lock dev")).toEqual("Connor has locked dev 🔒");
   });
   test("can lock different resource", async () => {
-    expect(await execute("/lock test")).toEqual("You have locked test 🔒");
+    expect(await execute("/lock test")).toEqual("Connor has locked test 🔒");
   });
   test("cannot lock resource twice", async () => {
     await execute("/lock dev");
@@ -54,11 +54,13 @@ const runAllTests = () => {
   });
   test("can unlock resource", async () => {
     await execute("/lock dev");
-    expect(await execute("/unlock dev")).toEqual("You have unlocked dev 🔓");
+    expect(await execute("/unlock dev")).toEqual("Connor has unlocked dev 🔓");
   });
   test("can unlock different resource", async () => {
     await execute("/lock test");
-    expect(await execute("/unlock test")).toEqual("You have unlocked test 🔓");
+    expect(await execute("/unlock test")).toEqual(
+      "Connor has unlocked test 🔓"
+    );
   });
   test("cannot unlock someone else's resource", async () => {
     await execute("/lock test");
@@ -80,7 +82,7 @@ const runAllTests = () => {
   test("can lock, unlock and lock resource", async () => {
     await execute("/lock dev");
     await execute("/unlock dev");
-    expect(await execute("/lock dev")).toEqual("You have locked dev 🔒");
+    expect(await execute("/lock dev")).toEqual("Connor has locked dev 🔒");
   });
   test("can list locks when no locks", async () => {
     expect(await execute("/locks")).toEqual("No active locks 🔓");
