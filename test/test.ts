@@ -139,7 +139,7 @@ const runAllTests = () => {
 };
 
 describe("in memory lock repo", () => {
-  beforeEach(async () => {
+  beforeEach(() => {
     lockBot = new LockBot(new InMemoryLockRepo());
   });
   runAllTests();
