@@ -28,7 +28,6 @@ const respond = async (
       case "user":
         await ack(response.message);
         break;
-      default:
     }
   } catch (e) {
     logger.error(e);
