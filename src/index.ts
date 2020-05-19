@@ -51,11 +51,11 @@ app.command("/locks", async ({ logger, ack, say }) => {
   await respond(logger, ack, say, responsePromise);
 });
 app.command("/lock", async ({ command, logger, ack, say }) => {
-  const responsePromise = lockBot.lock(command.text, command.user_name);
+  const responsePromise = lockBot.lock(command.text, `<@${command.user_id}>`);
   await respond(logger, ack, say, responsePromise);
 });
 app.command("/unlock", async ({ command, logger, ack, say }) => {
-  const responsePromise = lockBot.unlock(command.text, command.user_name);
+  const responsePromise = lockBot.unlock(command.text, `<@${command.user_id}>`);
   await respond(logger, ack, say, responsePromise);
 });
 
