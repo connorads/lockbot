@@ -39,9 +39,13 @@ resources:
         AttributeDefinitions:
           - AttributeName: Name
             AttributeType: S
+          - AttributeName: Channel
+            AttributeType: S
         KeySchema:
-          - AttributeName: Name
+          - AttributeName: Channel
             KeyType: HASH
+          - AttributeName: Name
+            KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1

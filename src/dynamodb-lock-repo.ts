@@ -4,18 +4,22 @@ import { LockRepo } from "./lock-bot";
 export default class DynamoDBLockRepo implements LockRepo {
   constructor(private readonly documentClient: DocumentClient) {}
 
-  async delete(resource: string): Promise<void> {
+  async delete(resource: string, channel: string): Promise<void> {
     await this.documentClient
       .delete({
         TableName: "Resources",
-        Key: { Name: resource },
+        Key: { Name: resource, Channel: channel },
       })
       .promise();
   }
 
-  async getAll(): Promise<Map<string, string>> {
+  async getAll(channel: string): Promise<Map<string, string>> {
     const result = await this.documentClient
-      .scan({ TableName: "Resources" })
+      .query({
+        TableName: "Resources",
+        KeyConditionExpression: "Channel = :channel",
+        ExpressionAttributeValues: { ":channel": channel },
+      })
       .promise();
     const map = new Map<string, string>();
     if (result.Items) {
@@ -24,21 +28,28 @@ export default class DynamoDBLockRepo implements LockRepo {
     return map;
   }
 
-  async getOwner(resource: string): Promise<string | undefined> {
+  async getOwner(
+    resource: string,
+    channel: string
+  ): Promise<string | undefined> {
     const result = await this.documentClient
       .get({
         TableName: "Resources",
-        Key: { Name: resource },
+        Key: { Name: resource, Channel: channel },
       })
       .promise();
     return result.Item?.Owner;
   }
 
-  async setOwner(resource: string, owner: string): Promise<void> {
+  async setOwner(
+    resource: string,
+    channel: string,
+    owner: string
+  ): Promise<void> {
     await this.documentClient
       .put({
         TableName: "Resources",
-        Item: { Name: resource, Owner: owner },
+        Item: { Name: resource, Channel: channel, Owner: owner },
       })
       .promise();
   }
