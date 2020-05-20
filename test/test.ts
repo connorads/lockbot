@@ -5,18 +5,23 @@ import DynamoDBLockRepo from "../src/dynamodb-lock-repo";
 
 let lockBot: LockBot;
 const runAllTests = () => {
-  const execute = async (input: string, user = "Connor"): Promise<Response> => {
+  const execute = async (
+    input: string,
+    params?: { user?: string; channel?: string }
+  ): Promise<Response> => {
     const tokens = input.split(" ");
     const command = tokens[0];
     const resource = tokens[1];
+    const user = params?.user ?? "Connor";
+    const channel = params?.channel ?? "general";
     if (command === "/locks") {
-      return lockBot.locks();
+      return lockBot.locks(channel);
     }
     if (command === "/unlock") {
-      return lockBot.unlock(resource, user);
+      return lockBot.unlock(resource, channel, user);
     }
     if (command === "/lock") {
-      return lockBot.lock(resource, user);
+      return lockBot.lock(resource, channel, user);
     }
     throw Error("Unhandled command");
   };
@@ -29,6 +34,13 @@ const runAllTests = () => {
   test("can lock different resource", async () => {
     expect(await execute("/lock test")).toEqual({
       message: "Connor has locked test 🔒",
+      destination: "channel",
+    });
+  });
+  test("can lock resource with same name in different channels", async () => {
+    await execute("/lock dev");
+    expect(await execute("/lock dev", { channel: "random" })).toEqual({
+      message: "Connor has locked dev 🔒",
       destination: "channel",
     });
   });
@@ -48,7 +60,7 @@ const runAllTests = () => {
   });
   test("cannot lock someone else's resource", async () => {
     await execute("/lock dev");
-    expect(await execute("/lock dev", "Dave")).toEqual({
+    expect(await execute("/lock dev", { user: "Dave" })).toEqual({
       message: "dev is already locked by Connor 🔒",
       destination: "user",
     });
@@ -79,15 +91,23 @@ const runAllTests = () => {
       destination: "channel",
     });
   });
+  test("cannot unlock resource with same name from a different channel", async () => {
+    await execute("/lock dev");
+    await execute("/unlock dev", { channel: "random" });
+    expect(await execute("/locks")).toEqual({
+      message: "dev is locked by Connor 🔒",
+      destination: "user",
+    });
+  });
   test("cannot unlock someone else's resource", async () => {
     await execute("/lock test");
-    expect(await execute("/unlock test", "Dave")).toEqual({
+    expect(await execute("/unlock test", { user: "Dave" })).toEqual({
       message: "Cannot unlock test, locked by Connor 🔒",
       destination: "user",
     });
   });
   test("cannot unlock someone else's resource (different user and resource)", async () => {
-    await execute("/lock dev", "Dave");
+    await execute("/lock dev", { user: "Dave" });
     expect(await execute("/unlock dev")).toEqual({
       message: "Cannot unlock dev, locked by Dave 🔒",
       destination: "user",
@@ -122,7 +142,7 @@ const runAllTests = () => {
     });
   });
   test("can list locks one lock exists different user", async () => {
-    await execute("/lock dev", "Dave");
+    await execute("/lock dev", { user: "Dave" });
     expect(await execute("/locks")).toEqual({
       message: "dev is locked by Dave 🔒",
       destination: "user",
@@ -130,9 +150,17 @@ const runAllTests = () => {
   });
   test("can list multiple locks", async () => {
     await execute("/lock dev");
-    await execute("/lock test", "Dave");
+    await execute("/lock test", { user: "Dave" });
     expect(await execute("/locks")).toEqual({
       message: "dev is locked by Connor 🔒\ntest is locked by Dave 🔒",
+      destination: "user",
+    });
+  });
+  test("cannot see locks in other channels", async () => {
+    await execute("/lock dev");
+    await execute("/lock test", { user: "Dave" });
+    expect(await execute("/locks", { channel: "random" })).toEqual({
+      message: "No active locks 🔓",
       destination: "user",
     });
   });
@@ -160,8 +188,14 @@ describe("dynamodb lock repo", () => {
       await db
         .createTable({
           TableName: "Resources",
-          AttributeDefinitions: [{ AttributeName: "Name", AttributeType: "S" }],
-          KeySchema: [{ AttributeName: "Name", KeyType: "HASH" }],
+          AttributeDefinitions: [
+            { AttributeName: "Name", AttributeType: "S" },
+            { AttributeName: "Channel", AttributeType: "S" },
+          ],
+          KeySchema: [
+            { AttributeName: "Channel", KeyType: "HASH" },
+            { AttributeName: "Name", KeyType: "RANGE" },
+          ],
           ProvisionedThroughput: {
             ReadCapacityUnits: 1,
             WriteCapacityUnits: 1,

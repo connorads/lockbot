@@ -46,16 +46,24 @@ const app = new App({
 });
 
 const lockBot = new LockBot(new DynamoDBLockRepo(new DocumentClient()));
-app.command("/locks", async ({ logger, ack, say }) => {
-  const responsePromise = lockBot.locks();
+app.command("/locks", async ({ command, logger, ack, say }) => {
+  const responsePromise = lockBot.locks(command.channel_id);
   await respond(logger, ack, say, responsePromise);
 });
 app.command("/lock", async ({ command, logger, ack, say }) => {
-  const responsePromise = lockBot.lock(command.text, `<@${command.user_id}>`);
+  const responsePromise = lockBot.lock(
+    command.text,
+    command.channel_id,
+    `<@${command.user_id}>`
+  );
   await respond(logger, ack, say, responsePromise);
 });
 app.command("/unlock", async ({ command, logger, ack, say }) => {
-  const responsePromise = lockBot.unlock(command.text, `<@${command.user_id}>`);
+  const responsePromise = lockBot.unlock(
+    command.text,
+    command.channel_id,
+    `<@${command.user_id}>`
+  );
   await respond(logger, ack, say, responsePromise);
 });
 
