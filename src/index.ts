@@ -2,38 +2,16 @@ import {
   App,
   ExpressReceiver,
   Logger,
-  AckFn,
-  RespondArguments,
-  SayFn,
+  RespondFn,
+  SlackCommandMiddlewareArgs,
+  Middleware,
+  SlashCommand,
 } from "@slack/bolt";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import * as awsServerlessExpress from "aws-serverless-express";
 import * as env from "env-var";
-import LockBot, { Response } from "./lock-bot";
+import LockBot, { Response, Destination } from "./lock-bot";
 import DynamoDBLockRepo from "./dynamodb-lock-repo";
-
-const respond = async (
-  logger: Logger,
-  ack: AckFn<string | RespondArguments>,
-  say: SayFn,
-  responsePromise: Promise<Response>
-): Promise<void> => {
-  try {
-    const response = await responsePromise;
-    switch (response.destination) {
-      case "channel":
-        await say(response.message);
-        await ack();
-        break;
-      case "user":
-        await ack(response.message);
-        break;
-    }
-  } catch (e) {
-    logger.error(e);
-    await ack(`❌ Unhandled error 😢`);
-  }
-};
 
 const expressReceiver = new ExpressReceiver({
   signingSecret: env.get("SLACK_SIGNING_SECRET").required().asString(),
@@ -45,27 +23,74 @@ const app = new App({
   processBeforeResponse: true,
 });
 
+const getResponseType = (destination: Destination) => {
+  let responseType: "in_channel" | "ephemeral";
+  switch (destination) {
+    case "channel":
+      responseType = "in_channel";
+      break;
+    case "user":
+      responseType = "ephemeral";
+      break;
+  }
+  return responseType;
+};
+
+const handleResponse = async (
+  response: Promise<Response>,
+  respond: RespondFn,
+  logger: Logger
+): Promise<void> => {
+  try {
+    const { message, destination } = await response;
+    const responseType = getResponseType(destination);
+    await respond({
+      text: message,
+      response_type: responseType,
+      as_user: true,
+    });
+  } catch (e) {
+    logger.error(e);
+    await respond({
+      text: `❌ Unhandled error 😢`,
+      response_type: "ephemeral",
+      as_user: true,
+    });
+  }
+};
+
+const handle = (getResponse: (command: SlashCommand) => Promise<Response>) => {
+  const handler: Middleware<SlackCommandMiddlewareArgs> = async ({
+    command,
+    logger,
+    ack,
+    respond,
+  }) => {
+    await ack();
+    const response = getResponse(command);
+    await handleResponse(response, respond, logger);
+  };
+  return handler;
+};
+
 const lockBot = new LockBot(new DynamoDBLockRepo(new DocumentClient()));
-app.command("/locks", async ({ command, logger, ack, say }) => {
-  const responsePromise = lockBot.locks(command.channel_id);
-  await respond(logger, ack, say, responsePromise);
-});
-app.command("/lock", async ({ command, logger, ack, say }) => {
-  const responsePromise = lockBot.lock(
-    command.text,
-    command.channel_id,
-    `<@${command.user_id}>`
-  );
-  await respond(logger, ack, say, responsePromise);
-});
-app.command("/unlock", async ({ command, logger, ack, say }) => {
-  const responsePromise = lockBot.unlock(
-    command.text,
-    command.channel_id,
-    `<@${command.user_id}>`
-  );
-  await respond(logger, ack, say, responsePromise);
-});
+
+app.command(
+  "/locks",
+  handle((command) => lockBot.locks(command.channel_id))
+);
+app.command(
+  "/lock",
+  handle((command) =>
+    lockBot.lock(command.text, command.channel_id, `<@${command.user_id}>`)
+  )
+);
+app.command(
+  "/unlock",
+  handle((command) =>
+    lockBot.unlock(command.text, command.channel_id, `<@${command.user_id}>`)
+  )
+);
 
 const server = awsServerlessExpress.createServer(expressReceiver.app);
 const handler = (event: any, context: any) =>
