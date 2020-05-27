@@ -27,67 +27,67 @@ const runAllTests = () => {
   };
   test("can lock resource", async () => {
     expect(await execute("/lock dev")).toEqual({
-      message: "Connor has locked dev 🔒",
+      message: "Connor has locked `dev` 🔒",
       destination: "channel",
     });
   });
   test("can lock different resource", async () => {
     expect(await execute("/lock test")).toEqual({
-      message: "Connor has locked test 🔒",
+      message: "Connor has locked `test` 🔒",
       destination: "channel",
     });
   });
   test("can lock resource with same name in different channels", async () => {
     await execute("/lock dev");
     expect(await execute("/lock dev", { channel: "random" })).toEqual({
-      message: "Connor has locked dev 🔒",
+      message: "Connor has locked `dev` 🔒",
       destination: "channel",
     });
   });
   test("cannot lock resource twice", async () => {
     await execute("/lock dev");
     expect(await execute("/lock dev")).toEqual({
-      message: "You have already locked dev 🔒",
+      message: "You have already locked `dev` 🔒",
       destination: "user",
     });
   });
   test("cannot lock different resource twice", async () => {
     await execute("/lock test");
     expect(await execute("/lock test")).toEqual({
-      message: "You have already locked test 🔒",
+      message: "You have already locked `test` 🔒",
       destination: "user",
     });
   });
   test("cannot lock someone else's resource", async () => {
     await execute("/lock dev");
     expect(await execute("/lock dev", { user: "Dave" })).toEqual({
-      message: "dev is already locked by Connor 🔒",
+      message: "`dev` is already locked by Connor 🔒",
       destination: "user",
     });
   });
   test("cannot lock without providing resource name", async () => {
     expect(await execute("/lock   ")).toEqual({
-      message: "Please provide the name of resource to lock e.g. '/lock dev'",
+      message: "Please provide the name of resource to lock e.g. `/lock dev`",
       destination: "user",
     });
   });
   test("unlock unlocked resource", async () => {
     expect(await execute("/unlock dev")).toEqual({
-      message: "dev is already unlocked 🔓",
+      message: "`dev` is already unlocked 🔓",
       destination: "user",
     });
   });
   test("can unlock resource", async () => {
     await execute("/lock dev");
     expect(await execute("/unlock dev")).toEqual({
-      message: "Connor has unlocked dev 🔓",
+      message: "Connor has unlocked `dev` 🔓",
       destination: "channel",
     });
   });
   test("can unlock different resource", async () => {
     await execute("/lock test");
     expect(await execute("/unlock test")).toEqual({
-      message: "Connor has unlocked test 🔓",
+      message: "Connor has unlocked `test` 🔓",
       destination: "channel",
     });
   });
@@ -95,28 +95,28 @@ const runAllTests = () => {
     await execute("/lock dev");
     await execute("/unlock dev", { channel: "random" });
     expect(await execute("/locks")).toEqual({
-      message: "dev is locked by Connor 🔒",
+      message: "`dev` is locked by Connor 🔒",
       destination: "user",
     });
   });
   test("cannot unlock someone else's resource", async () => {
     await execute("/lock test");
     expect(await execute("/unlock test", { user: "Dave" })).toEqual({
-      message: "Cannot unlock test, locked by Connor 🔒",
+      message: "Cannot unlock `test`, locked by Connor 🔒",
       destination: "user",
     });
   });
   test("cannot unlock someone else's resource (different user and resource)", async () => {
     await execute("/lock dev", { user: "Dave" });
     expect(await execute("/unlock dev")).toEqual({
-      message: "Cannot unlock dev, locked by Dave 🔒",
+      message: "Cannot unlock `dev`, locked by Dave 🔒",
       destination: "user",
     });
   });
   test("cannot unlock without providing resource name", async () => {
     expect(await execute("/unlock   ")).toEqual({
       message:
-        "Please provide the name of resource to unlock e.g. '/unlock dev'",
+        "Please provide the name of resource to unlock e.g. `/unlock dev`",
       destination: "user",
     });
   });
@@ -124,7 +124,7 @@ const runAllTests = () => {
     await execute("/lock dev");
     await execute("/unlock dev");
     expect(await execute("/lock dev")).toEqual({
-      message: "Connor has locked dev 🔒",
+      message: "Connor has locked `dev` 🔒",
       destination: "channel",
     });
   });
@@ -137,14 +137,14 @@ const runAllTests = () => {
   test("can list locks one lock exists", async () => {
     await execute("/lock dev");
     expect(await execute("/locks")).toEqual({
-      message: "dev is locked by Connor 🔒",
+      message: "`dev` is locked by Connor 🔒",
       destination: "user",
     });
   });
   test("can list locks one lock exists different user", async () => {
     await execute("/lock dev", { user: "Dave" });
     expect(await execute("/locks")).toEqual({
-      message: "dev is locked by Dave 🔒",
+      message: "`dev` is locked by Dave 🔒",
       destination: "user",
     });
   });
@@ -152,7 +152,7 @@ const runAllTests = () => {
     await execute("/lock dev");
     await execute("/lock test", { user: "Dave" });
     expect(await execute("/locks")).toEqual({
-      message: "dev is locked by Connor 🔒\ntest is locked by Dave 🔒",
+      message: "`dev` is locked by Connor 🔒\n`test` is locked by Dave 🔒",
       destination: "user",
     });
   });
