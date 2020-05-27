@@ -22,7 +22,7 @@ export default class LockBot {
   ): Promise<Response> => {
     if (!resource) {
       return {
-        message: "Please provide the name of resource to lock e.g. '/lock dev'",
+        message: "Please provide the name of resource to lock e.g. `/lock dev`",
         destination: "user",
       };
     }
@@ -30,18 +30,18 @@ export default class LockBot {
     if (lockOwner) {
       if (user === lockOwner) {
         return {
-          message: `You have already locked ${resource} 🔒`,
+          message: `You have already locked \`${resource}\` 🔒`,
           destination: "user",
         };
       }
       return {
-        message: `${resource} is already locked by ${lockOwner} 🔒`,
+        message: `\`${resource}\` is already locked by ${lockOwner} 🔒`,
         destination: "user",
       };
     }
     await this.lockRepo.setOwner(resource, channel, user);
     return {
-      message: `${user} has locked ${resource} 🔒`,
+      message: `${user} has locked \`${resource}\` 🔒`,
       destination: "channel",
     };
   };
@@ -54,14 +54,14 @@ export default class LockBot {
     if (!resource) {
       return {
         message:
-          "Please provide the name of resource to unlock e.g. '/unlock dev'",
+          "Please provide the name of resource to unlock e.g. `/unlock dev`",
         destination: "user",
       };
     }
     const lockOwner = await this.lockRepo.getOwner(resource, channel);
     if (!lockOwner) {
       return {
-        message: `${resource} is already unlocked 🔓`,
+        message: `\`${resource}\` is already unlocked 🔓`,
         destination: "user",
       };
     }
@@ -69,12 +69,12 @@ export default class LockBot {
     if (user === lockOwner) {
       await this.lockRepo.delete(resource, channel);
       return {
-        message: `${user} has unlocked ${resource} 🔓`,
+        message: `${user} has unlocked \`${resource}\` 🔓`,
         destination: "channel",
       };
     }
     return {
-      message: `Cannot unlock ${resource}, locked by ${lockOwner} 🔒`,
+      message: `Cannot unlock \`${resource}\`, locked by ${lockOwner} 🔒`,
       destination: "user",
     };
   };
@@ -86,7 +86,7 @@ export default class LockBot {
     }
     let locksMessage = "";
     locks.forEach((lockOwner, lockedResource) => {
-      locksMessage += `${lockedResource} is locked by ${lockOwner} 🔒\n`;
+      locksMessage += `\`${lockedResource}\` is locked by ${lockOwner} 🔒\n`;
     });
     return { message: locksMessage.trimRight(), destination: "user" };
   };
