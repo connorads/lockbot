@@ -8,6 +8,7 @@ import {
   SlashCommand,
 } from "@slack/bolt";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { APIGatewayProxyEvent, Context } from "aws-lambda";
 import * as awsServerlessExpress from "aws-serverless-express";
 import * as env from "env-var";
 import LockBot, { Response, Destination } from "./lock-bot";
@@ -93,6 +94,6 @@ app.command(
 );
 
 const server = awsServerlessExpress.createServer(expressReceiver.app);
-const handler = (event: any, context: any) =>
+const handler = (event: APIGatewayProxyEvent, context: Context) =>
   awsServerlessExpress.proxy(server, event, context);
 exports.handler = handler;
