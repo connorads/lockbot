@@ -42,9 +42,7 @@
       "@typescript-eslint/parser": [".ts"]
     },
     "import/resolver": {
-      "typescript": {
-        "alwaysTryTypes": true
-      }
+      "typescript": {}
     }
   }
 }
