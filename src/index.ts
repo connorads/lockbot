@@ -4,7 +4,6 @@ import {
   Logger,
   RespondFn,
   SlackCommandMiddlewareArgs,
-  Middleware,
   SlashCommand,
 } from "@slack/bolt";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
@@ -61,17 +60,18 @@ const handleResponse = async (
 };
 
 const handle = (getResponse: (command: SlashCommand) => Promise<Response>) => {
-  const handler: Middleware<SlackCommandMiddlewareArgs> = async ({
+  return async ({
     command,
     logger,
     ack,
     respond,
+  }: SlackCommandMiddlewareArgs & {
+    logger: Logger;
   }) => {
     await ack();
     const response = getResponse(command);
     await handleResponse(response, respond, logger);
   };
-  return handler;
 };
 
 const lockBot = new LockBot(new DynamoDBLockRepo(new DocumentClient()));
