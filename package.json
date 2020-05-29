@@ -21,9 +21,12 @@
     "serverless": "^1.69.0",
     "serverless-dynamodb-local": "^0.2.39",
     "serverless-offline": "^6.1.5",
-    "serverless-plugin-typescript": "^1.1.9",
+    "serverless-webpack": "^5.3.2",
     "ts-jest": "^25.4.0",
-    "typescript": "^3.8.3"
+    "ts-loader": "^7.0.5",
+    "typescript": "^3.8.3",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
   },
   "dependencies": {
     "@slack/bolt": "^2.0.1",

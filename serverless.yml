@@ -1,9 +1,9 @@
 service: lockbot
 
 plugins:
+  - serverless-webpack
   - serverless-dynamodb-local
   - serverless-offline
-  - serverless-plugin-typescript
 
 provider:
   name: aws
