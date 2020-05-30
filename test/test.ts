@@ -111,7 +111,7 @@ const runAllTests = () => {
     await execute("/lock dev");
     await execute("/unlock dev", { channel: "random" });
     expect(await execute("/locks")).toEqual({
-      message: "`dev` is locked by Connor 🔒",
+      message: "Active locks in this channel:\n> `dev` is locked by Connor 🔒",
       destination: "user",
     });
   });
@@ -161,21 +161,21 @@ const runAllTests = () => {
   });
   test("can list locks when no locks", async () => {
     expect(await execute("/locks")).toEqual({
-      message: "No active locks 🔓",
+      message: "No active locks in this channel 🔓",
       destination: "user",
     });
   });
   test("can list locks one lock exists", async () => {
     await execute("/lock dev");
     expect(await execute("/locks")).toEqual({
-      message: "`dev` is locked by Connor 🔒",
+      message: "Active locks in this channel:\n> `dev` is locked by Connor 🔒",
       destination: "user",
     });
   });
   test("can list locks one lock exists different user", async () => {
     await execute("/lock dev", { user: "Dave" });
     expect(await execute("/locks")).toEqual({
-      message: "`dev` is locked by Dave 🔒",
+      message: "Active locks in this channel:\n> `dev` is locked by Dave 🔒",
       destination: "user",
     });
   });
@@ -183,7 +183,8 @@ const runAllTests = () => {
     await execute("/lock dev");
     await execute("/lock test", { user: "Dave" });
     expect(await execute("/locks")).toEqual({
-      message: "`dev` is locked by Connor 🔒\n`test` is locked by Dave 🔒",
+      message:
+        "Active locks in this channel:\n> `dev` is locked by Connor 🔒\n> `test` is locked by Dave 🔒",
       destination: "user",
     });
   });
@@ -191,7 +192,7 @@ const runAllTests = () => {
     await execute("/lock dev");
     await execute("/lock test", { user: "Dave" });
     expect(await execute("/locks", { channel: "random" })).toEqual({
-      message: "No active locks 🔓",
+      message: "No active locks in this channel 🔓",
       destination: "user",
     });
   });
