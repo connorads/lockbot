@@ -91,11 +91,14 @@ export default class LockBot {
   locks = async (channel: string): Promise<Response> => {
     const locks = await this.lockRepo.getAll(channel);
     if (locks.size === 0) {
-      return { message: "No active locks 🔓", destination: "user" };
+      return {
+        message: `No active locks in this channel 🔓`,
+        destination: "user",
+      };
     }
-    let locksMessage = "";
+    let locksMessage = "Active locks in this channel:\n";
     locks.forEach((lockOwner, lockedResource) => {
-      locksMessage += `\`${lockedResource}\` is locked by ${lockOwner} 🔒\n`;
+      locksMessage += `> \`${lockedResource}\` is locked by ${lockOwner} 🔒\n`;
     });
     return { message: locksMessage.trimRight(), destination: "user" };
   };
