@@ -20,9 +20,14 @@ export default class LockBot {
     channel: string,
     user: string
   ): Promise<Response> => {
-    if (!resource) {
+    if (!resource || resource === "help") {
       return {
-        message: "Please provide the name of resource to lock e.g. `/lock dev`",
+        message:
+          "How to use `/lock`\n\n" +
+          "To lock a resource called `thingy`, use `/lock thingy`\n\n" +
+          "_Example:_\n" +
+          `> ${user}: \`/lock dev\`\n` +
+          `> *Lockbot*: ${user} has locked \`dev\` 🔒`,
         destination: "user",
       };
     }
@@ -51,10 +56,14 @@ export default class LockBot {
     channel: string,
     user: string
   ): Promise<Response> => {
-    if (!resource) {
+    if (!resource || resource === "help") {
       return {
         message:
-          "Please provide the name of resource to unlock e.g. `/unlock dev`",
+          "How to use `/unlock`\n\n" +
+          "To unlock an existing locked resource called `thingy`, use `/unlock thingy`\n\n" +
+          "_Example:_\n" +
+          `> ${user}: \`/unlock dev\`\n` +
+          `> *Lockbot*: ${user} has unlocked \`dev\` 🔓`,
         destination: "user",
       };
     }
