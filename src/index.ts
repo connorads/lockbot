@@ -74,7 +74,12 @@ const handle = (getResponse: (command: SlashCommand) => Promise<Response>) => {
   };
 };
 
-const lockBot = new LockBot(new DynamoDBLockRepo(new DocumentClient()));
+const lockBot = new LockBot(
+  new DynamoDBLockRepo(
+    new DocumentClient(),
+    env.get("RESOURCES_TABLE_NAME").required().asString()
+  )
+);
 
 app.command(
   "/locks",
