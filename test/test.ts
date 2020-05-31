@@ -69,7 +69,7 @@ const runAllTests = () => {
     expect(await execute("/lock   ")).toEqual({
       message:
         "How to use `/lock`\n\n" +
-        "To lock a resource called `thingy`, use `/lock thingy`\n\n" +
+        "To lock a resource in this channel called `thingy`, use `/lock thingy`\n\n" +
         "_Example:_\n" +
         `> Connor: \`/lock dev\`\n` +
         `> *Lockbot*: Connor has locked \`dev\` 🔒`,
@@ -80,7 +80,7 @@ const runAllTests = () => {
     expect(await execute("/lock help")).toEqual({
       message:
         "How to use `/lock`\n\n" +
-        "To lock a resource called `thingy`, use `/lock thingy`\n\n" +
+        "To lock a resource in this channel called `thingy`, use `/lock thingy`\n\n" +
         "_Example:_\n" +
         `> Connor: \`/lock dev\`\n` +
         `> *Lockbot*: Connor has locked \`dev\` 🔒`,
@@ -133,7 +133,7 @@ const runAllTests = () => {
     expect(await execute("/unlock   ")).toEqual({
       message:
         "How to use `/unlock`\n\n" +
-        "To unlock an existing locked resource called `thingy`, use `/unlock thingy`\n\n" +
+        "To unlock a resource in this channel called `thingy`, use `/unlock thingy`\n\n" +
         "_Example:_\n" +
         `> Connor: \`/unlock dev\`\n` +
         `> *Lockbot*: Connor has unlocked \`dev\` 🔓`,
@@ -144,7 +144,7 @@ const runAllTests = () => {
     expect(await execute("/unlock help")).toEqual({
       message:
         "How to use `/unlock`\n\n" +
-        "To unlock an existing locked resource called `thingy`, use `/unlock thingy`\n\n" +
+        "To unlock a resource in this channel called `thingy`, use `/unlock thingy`\n\n" +
         "_Example:_\n" +
         `> Connor: \`/unlock dev\`\n` +
         `> *Lockbot*: Connor has unlocked \`dev\` 🔓`,
