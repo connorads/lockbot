@@ -206,6 +206,7 @@ describe("in memory lock repo", () => {
 });
 
 describe("dynamodb lock repo", () => {
+  const resourcesTableName = "lockbot-resources";
   beforeEach(async () => {
     const options = {
       region: "localhost",
@@ -213,13 +214,13 @@ describe("dynamodb lock repo", () => {
     };
     const db = new DynamoDB(options);
     try {
-      await db.deleteTable({ TableName: "Resources" }).promise();
+      await db.deleteTable({ TableName: resourcesTableName }).promise();
     } catch (error) {
       // No problem if the table doesn't exist
     } finally {
       await db
         .createTable({
-          TableName: "Resources",
+          TableName: resourcesTableName,
           AttributeDefinitions: [
             { AttributeName: "Name", AttributeType: "S" },
             { AttributeName: "Channel", AttributeType: "S" },
@@ -229,13 +230,15 @@ describe("dynamodb lock repo", () => {
             { AttributeName: "Name", KeyType: "RANGE" },
           ],
           ProvisionedThroughput: {
-            ReadCapacityUnits: 1,
-            WriteCapacityUnits: 1,
+            ReadCapacityUnits: 5,
+            WriteCapacityUnits: 5,
           },
         })
         .promise();
     }
-    lockBot = new LockBot(new DynamoDBLockRepo(new DocumentClient(options)));
+    lockBot = new LockBot(
+      new DynamoDBLockRepo(new DocumentClient(options), resourcesTableName)
+    );
   });
   runAllTests();
 });

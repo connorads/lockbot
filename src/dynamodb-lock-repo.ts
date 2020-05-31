@@ -2,12 +2,15 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { LockRepo } from "./lock-bot";
 
 export default class DynamoDBLockRepo implements LockRepo {
-  constructor(private readonly documentClient: DocumentClient) {}
+  constructor(
+    private readonly documentClient: DocumentClient,
+    private readonly resourcesTableName: string
+  ) {}
 
   async delete(resource: string, channel: string): Promise<void> {
     await this.documentClient
       .delete({
-        TableName: "Resources",
+        TableName: this.resourcesTableName,
         Key: { Name: resource, Channel: channel },
       })
       .promise();
@@ -16,7 +19,7 @@ export default class DynamoDBLockRepo implements LockRepo {
   async getAll(channel: string): Promise<Map<string, string>> {
     const result = await this.documentClient
       .query({
-        TableName: "Resources",
+        TableName: this.resourcesTableName,
         KeyConditionExpression: "Channel = :channel",
         ExpressionAttributeValues: { ":channel": channel },
       })
@@ -34,7 +37,7 @@ export default class DynamoDBLockRepo implements LockRepo {
   ): Promise<string | undefined> {
     const result = await this.documentClient
       .get({
-        TableName: "Resources",
+        TableName: this.resourcesTableName,
         Key: { Name: resource, Channel: channel },
       })
       .promise();
@@ -48,7 +51,7 @@ export default class DynamoDBLockRepo implements LockRepo {
   ): Promise<void> {
     await this.documentClient
       .put({
-        TableName: "Resources",
+        TableName: this.resourcesTableName,
         Item: { Name: resource, Channel: channel, Owner: owner },
       })
       .promise();

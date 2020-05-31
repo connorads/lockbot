@@ -11,6 +11,7 @@ provider:
   environment:
     SLACK_SIGNING_SECRET: ${env:SLACK_SIGNING_SECRET}
     SLACK_BOT_TOKEN: ${env:SLACK_BOT_TOKEN}
+    RESOURCES_TABLE_NAME: ${self:custom.resourcesTableName}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -20,7 +21,8 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/Resources"
+      Resource:
+        - "Fn::GetAtt": [resourcesTable, Arn]
 
 functions:
   slack-events-handler:
@@ -32,10 +34,10 @@ functions:
 
 resources:
   Resources:
-    usersTable:
+    resourcesTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: Resources
+        TableName: ${self:custom.resourcesTableName}
         AttributeDefinitions:
           - AttributeName: Name
             AttributeType: S
@@ -47,10 +49,12 @@ resources:
           - AttributeName: Name
             KeyType: RANGE
         ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
 
 custom:
+  stage: ${opt:stage, self:provider.stage}
+  resourcesTableName: ${self:custom.stage}-lockbot-resources
   dynamodb:
     stages:
       - dev # https://bit.ly/35WR0TT
