@@ -7,21 +7,22 @@ let lockBot: LockBot;
 const runAllTests = () => {
   const execute = async (
     input: string,
-    params?: { user?: string; channel?: string }
+    params?: { user?: string; channel?: string; team?: string }
   ): Promise<Response> => {
     const tokens = input.split(" ");
     const command = tokens[0];
     const resource = tokens[1];
     const user = params?.user ?? "Connor";
     const channel = params?.channel ?? "general";
+    const team = params?.team ?? "our-team";
     if (command === "/locks") {
-      return lockBot.locks(channel);
+      return lockBot.locks(channel, team);
     }
     if (command === "/unlock") {
-      return lockBot.unlock(resource, channel, user);
+      return lockBot.unlock(resource, user, channel, team);
     }
     if (command === "/lock") {
-      return lockBot.lock(resource, channel, user);
+      return lockBot.lock(resource, user, channel, team);
     }
     throw Error("Unhandled command");
   };
@@ -196,6 +197,14 @@ const runAllTests = () => {
       destination: "user",
     });
   });
+  test("cannot see locks in the same channel on another team", async () => {
+    await execute("/lock dev");
+    await execute("/lock test", { user: "Dave" });
+    expect(await execute("/locks", { team: "another-team" })).toEqual({
+      message: "No active locks in this channel 🔓",
+      destination: "user",
+    });
+  });
 };
 
 describe("in memory lock repo", () => {
@@ -222,12 +231,12 @@ describe("dynamodb lock repo", () => {
         .createTable({
           TableName: resourcesTableName,
           AttributeDefinitions: [
-            { AttributeName: "Name", AttributeType: "S" },
-            { AttributeName: "Channel", AttributeType: "S" },
+            { AttributeName: "Resource", AttributeType: "S" },
+            { AttributeName: "Group", AttributeType: "S" },
           ],
           KeySchema: [
-            { AttributeName: "Channel", KeyType: "HASH" },
-            { AttributeName: "Name", KeyType: "RANGE" },
+            { AttributeName: "Group", KeyType: "HASH" },
+            { AttributeName: "Resource", KeyType: "RANGE" },
           ],
           ProvisionedThroughput: {
             ReadCapacityUnits: 5,

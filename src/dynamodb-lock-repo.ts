@@ -7,38 +7,40 @@ export default class DynamoDBLockRepo implements LockRepo {
     private readonly resourcesTableName: string
   ) {}
 
-  async delete(resource: string, channel: string): Promise<void> {
+  async delete(resource: string, channel: string, team: string): Promise<void> {
     await this.documentClient
       .delete({
         TableName: this.resourcesTableName,
-        Key: { Name: resource, Channel: channel },
+        Key: { Resource: resource, Group: `${team}#${channel}` },
       })
       .promise();
   }
 
-  async getAll(channel: string): Promise<Map<string, string>> {
+  async getAll(channel: string, team: string): Promise<Map<string, string>> {
     const result = await this.documentClient
       .query({
         TableName: this.resourcesTableName,
-        KeyConditionExpression: "Channel = :channel",
-        ExpressionAttributeValues: { ":channel": channel },
+        KeyConditionExpression: "#group = :g",
+        ExpressionAttributeValues: { ":g": `${team}#${channel}` },
+        ExpressionAttributeNames: { "#group": "Group" },
       })
       .promise();
     const map = new Map<string, string>();
     if (result.Items) {
-      result.Items.forEach((i) => map.set(i.Name, i.Owner));
+      result.Items.forEach((i) => map.set(i.Resource, i.Owner));
     }
     return map;
   }
 
   async getOwner(
     resource: string,
-    channel: string
+    channel: string,
+    team: string
   ): Promise<string | undefined> {
     const result = await this.documentClient
       .get({
         TableName: this.resourcesTableName,
-        Key: { Name: resource, Channel: channel },
+        Key: { Resource: resource, Group: `${team}#${channel}` },
       })
       .promise();
     return result.Item?.Owner;
@@ -46,13 +48,18 @@ export default class DynamoDBLockRepo implements LockRepo {
 
   async setOwner(
     resource: string,
+    owner: string,
     channel: string,
-    owner: string
+    team: string
   ): Promise<void> {
     await this.documentClient
       .put({
         TableName: this.resourcesTableName,
-        Item: { Name: resource, Channel: channel, Owner: owner },
+        Item: {
+          Resource: resource,
+          Group: `${team}#${channel}`,
+          Owner: owner,
+        },
       })
       .promise();
   }
