@@ -83,18 +83,28 @@ const lockBot = new LockBot(
 
 app.command(
   "/locks",
-  handle((command) => lockBot.locks(command.channel_id))
+  handle((command) => lockBot.locks(command.channel_id, command.team_id))
 );
 app.command(
   "/lock",
   handle((command) =>
-    lockBot.lock(command.text, command.channel_id, `<@${command.user_id}>`)
+    lockBot.lock(
+      command.text,
+      `<@${command.user_id}>`,
+      command.channel_id,
+      command.team_id
+    )
   )
 );
 app.command(
   "/unlock",
   handle((command) =>
-    lockBot.unlock(command.text, command.channel_id, `<@${command.user_id}>`)
+    lockBot.unlock(
+      command.text,
+      `<@${command.user_id}>`,
+      command.channel_id,
+      command.team_id
+    )
   )
 );
 

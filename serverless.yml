@@ -39,14 +39,14 @@ resources:
       Properties:
         TableName: ${self:custom.resourcesTableName}
         AttributeDefinitions:
-          - AttributeName: Name
+          - AttributeName: Resource
             AttributeType: S
-          - AttributeName: Channel
+          - AttributeName: Group
             AttributeType: S
         KeySchema:
-          - AttributeName: Channel
+          - AttributeName: Group
             KeyType: HASH
-          - AttributeName: Name
+          - AttributeName: Resource
             KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 5

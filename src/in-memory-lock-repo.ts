@@ -5,28 +5,31 @@ export default class InMemoryLockRepo implements LockRepo {
 
   private static readonly separator = "🎱🈂️💟🍐🍚🕕😽🎉⛎4️⃣";
 
-  private static toKey = (resource: string, channel: string) => {
-    return `${channel}${InMemoryLockRepo.separator}${resource}`;
+  private static toKey = (resource: string, channel: string, team: string) => {
+    return `${channel}${InMemoryLockRepo.separator}${resource}${InMemoryLockRepo.separator}${team}`;
   };
 
   private static fromKey = (key: string) => {
     const strings = key.split(InMemoryLockRepo.separator);
     const channel = strings[0];
     const resource = strings[1];
-    return { resource, channel };
+    const team = strings[2];
+    return { resource, channel, team };
   };
 
-  async delete(resource: string, channel: string): Promise<void> {
-    this.lockMap.delete(InMemoryLockRepo.toKey(resource, channel));
+  async delete(resource: string, channel: string, team: string): Promise<void> {
+    this.lockMap.delete(InMemoryLockRepo.toKey(resource, channel, team));
   }
 
-  async getAll(channel: string): Promise<Map<string, string>> {
+  async getAll(channel: string, team: string): Promise<Map<string, string>> {
     const all: Map<string, string> = new Map();
     this.lockMap.forEach((value, key) => {
-      const { resource, channel: resourceChannel } = InMemoryLockRepo.fromKey(
-        key
-      );
-      if (resourceChannel === channel) {
+      const {
+        resource,
+        channel: resourceChannel,
+        team: resourceTeam,
+      } = InMemoryLockRepo.fromKey(key);
+      if (resourceTeam === team && resourceChannel === channel) {
         all.set(resource, value);
       }
     });
@@ -35,16 +38,18 @@ export default class InMemoryLockRepo implements LockRepo {
 
   async getOwner(
     resource: string,
-    channel: string
+    channel: string,
+    team: string
   ): Promise<string | undefined> {
-    return this.lockMap.get(InMemoryLockRepo.toKey(resource, channel));
+    return this.lockMap.get(InMemoryLockRepo.toKey(resource, channel, team));
   }
 
   async setOwner(
     resource: string,
+    owner: string,
     channel: string,
-    owner: string
+    team: string
   ): Promise<void> {
-    this.lockMap.set(InMemoryLockRepo.toKey(resource, channel), owner);
+    this.lockMap.set(InMemoryLockRepo.toKey(resource, channel, team), owner);
   }
 }

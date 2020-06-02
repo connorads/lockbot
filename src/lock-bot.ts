@@ -1,8 +1,17 @@
 export interface LockRepo {
-  delete(resource: string, channel: string): Promise<void>;
-  getAll(channel: string): Promise<Map<string, string>>;
-  getOwner(resource: string, channel: string): Promise<string | undefined>;
-  setOwner(resource: string, channel: string, owner: string): Promise<void>;
+  delete(resource: string, channel: string, team: string): Promise<void>;
+  getAll(channel: string, team: string): Promise<Map<string, string>>;
+  getOwner(
+    resource: string,
+    channel: string,
+    team: string
+  ): Promise<string | undefined>;
+  setOwner(
+    resource: string,
+    owner: string,
+    channel: string,
+    team: string
+  ): Promise<void>;
 }
 
 export type Destination = "user" | "channel";
@@ -17,8 +26,9 @@ export default class LockBot {
 
   lock = async (
     resource: string,
+    user: string,
     channel: string,
-    user: string
+    team: string
   ): Promise<Response> => {
     if (!resource || resource === "help") {
       return {
@@ -31,7 +41,7 @@ export default class LockBot {
         destination: "user",
       };
     }
-    const lockOwner = await this.lockRepo.getOwner(resource, channel);
+    const lockOwner = await this.lockRepo.getOwner(resource, channel, team);
     if (lockOwner) {
       if (user === lockOwner) {
         return {
@@ -44,7 +54,7 @@ export default class LockBot {
         destination: "user",
       };
     }
-    await this.lockRepo.setOwner(resource, channel, user);
+    await this.lockRepo.setOwner(resource, user, channel, team);
     return {
       message: `${user} has locked \`${resource}\` 🔒`,
       destination: "channel",
@@ -53,8 +63,9 @@ export default class LockBot {
 
   unlock = async (
     resource: string,
+    user: string,
     channel: string,
-    user: string
+    team: string
   ): Promise<Response> => {
     if (!resource || resource === "help") {
       return {
@@ -67,7 +78,7 @@ export default class LockBot {
         destination: "user",
       };
     }
-    const lockOwner = await this.lockRepo.getOwner(resource, channel);
+    const lockOwner = await this.lockRepo.getOwner(resource, channel, team);
     if (!lockOwner) {
       return {
         message: `\`${resource}\` is already unlocked 🔓`,
@@ -76,7 +87,7 @@ export default class LockBot {
     }
 
     if (user === lockOwner) {
-      await this.lockRepo.delete(resource, channel);
+      await this.lockRepo.delete(resource, channel, team);
       return {
         message: `${user} has unlocked \`${resource}\` 🔓`,
         destination: "channel",
@@ -88,8 +99,8 @@ export default class LockBot {
     };
   };
 
-  locks = async (channel: string): Promise<Response> => {
-    const locks = await this.lockRepo.getAll(channel);
+  locks = async (channel: string, team: string): Promise<Response> => {
+    const locks = await this.lockRepo.getAll(channel, team);
     if (locks.size === 0) {
       return {
         message: `No active locks in this channel 🔓`,
