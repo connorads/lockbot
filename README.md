@@ -13,20 +13,17 @@ Lockbot is a Slack bot to help coordinate use of shared resources in a team.
 
 ### Install dependencies
 
-`yarn`
+`yarn install`
 
 ### Setup local DynamoDB
 
-```shell
-yarn serverless plugin install --name serverless-dynamodb-local
-yarn serverless dynamodb install
-yarn serverless dynamodb start
-```
+`yarn db:install`
+`yarn db:start`
 
 ### Run tests
 
-`yarn jest`
+`yarn test`
 
 ### Deploy
 
-`yarn serverless deploy`
+`yarn deploy`

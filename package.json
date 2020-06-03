@@ -5,6 +5,12 @@
   "repository": "https://github.com/connorads/lockbot",
   "author": "Connor Adams",
   "license": "MIT",
+  "scripts": {
+    "db:install": "serverless plugin install --name serverless-dynamodb-local && serverless dynamodb install",
+    "db:start": "serverless dynamodb start",
+    "test": "jest",
+    "deploy": "serverless deploy"
+  },
   "devDependencies": {
     "@types/jest": "^25.2.1",
     "@typescript-eslint/eslint-plugin": "^2.29.0",
