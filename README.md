@@ -15,9 +15,14 @@ Lockbot is a Slack bot to help coordinate use of shared resources in a team.
 
 `yarn install`
 
+### Lint
+
+`yarn lint`
+
 ### Setup local DynamoDB
 
 `yarn db:install`
+
 `yarn db:start`
 
 ### Run tests

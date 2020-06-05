@@ -6,6 +6,7 @@
   "author": "Connor Adams",
   "license": "MIT",
   "scripts": {
+    "lint": "yarn tsc --noEmit && eslint . src/** test/**",
     "db:install": "serverless plugin install --name serverless-dynamodb-local && serverless dynamodb install",
     "db:start": "serverless dynamodb start",
     "test": "jest",
