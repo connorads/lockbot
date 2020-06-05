@@ -15,8 +15,7 @@ jobs:
         with:
           node-version: "12.x"
       - run: yarn install --frozen-lockfile
-      - run: yarn eslint src/** test/**
-      - run: yarn tsc --noEmit
+      - run: yarn lint
       - name: Setup DynamoDB Local
         uses: rrainn/dynamodb-action@v2.0.0
       - name: Setup AWS credentials
