@@ -1,5 +1,5 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { LockRepo } from "./lock-bot";
+import { LockRepo } from "../lock-bot";
 
 export default class DynamoDBLockRepo implements LockRepo {
   constructor(

@@ -10,8 +10,11 @@ provider:
   runtime: nodejs12.x
   environment:
     SLACK_SIGNING_SECRET: ${env:SLACK_SIGNING_SECRET}
-    SLACK_BOT_TOKEN: ${env:SLACK_BOT_TOKEN}
+    SLACK_CLIENT_ID: ${env:SLACK_CLIENT_ID}
+    SLACK_CLIENT_SECRET: ${env:SLACK_CLIENT_SECRET}
+    STATE_SECRET: ${env:STATE_SECRET}
     RESOURCES_TABLE_NAME: ${self:custom.resourcesTableName}
+    INSTALLATIONS_TABLE_NAME: ${self:custom.installationsTableName}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -23,14 +26,21 @@ provider:
         - dynamodb:DeleteItem
       Resource:
         - "Fn::GetAtt": [resourcesTable, Arn]
+        - "Fn::GetAtt": [installationsTable, Arn]
 
 functions:
-  slack-events-handler:
-    handler: src/index.handler
+  slack-handler:
+    handler: src/slack.handler
     events:
       - http:
           method: post
           path: /slack/events
+      - http:
+          method: get
+          path: /slack/install
+      - http:
+          method: get
+          path: /slack/oauth_redirect
 
 resources:
   Resources:
@@ -51,10 +61,24 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 5
           WriteCapacityUnits: 5
+    installationsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.installationsTableName}
+        AttributeDefinitions:
+          - AttributeName: Team
+            AttributeType: S
+        KeySchema:
+          - AttributeName: Team
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
 
 custom:
   stage: ${opt:stage, self:provider.stage}
   resourcesTableName: ${self:custom.stage}-lockbot-resources
+  installationsTableName: ${self:custom.stage}-lockbot-installations
   dynamodb:
     stages:
       - dev # https://bit.ly/35WR0TT

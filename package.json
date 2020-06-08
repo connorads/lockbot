@@ -36,7 +36,7 @@
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
-    "@slack/bolt": "^2.0.1",
+    "@slack/bolt": "^2.1.1",
     "@types/aws-serverless-express": "^3.3.3",
     "aws-lambda": "^1.0.6",
     "aws-sdk": "^2.673.0",
