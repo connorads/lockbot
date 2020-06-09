@@ -1,7 +1,7 @@
 import DynamoDB, { DocumentClient } from "aws-sdk/clients/dynamodb";
 import LockBot, { Response } from "../src/lock-bot";
-import InMemoryLockRepo from "../src/in-memory-lock-repo";
-import DynamoDBLockRepo from "../src/dynamodb-lock-repo";
+import InMemoryLockRepo from "../src/storage/in-memory-lock-repo";
+import DynamoDBLockRepo from "../src/storage/dynamodb-lock-repo";
 
 let lockBot: LockBot;
 const runAllTests = () => {

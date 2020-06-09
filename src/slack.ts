@@ -11,16 +11,48 @@ import { APIGatewayProxyEvent, Context } from "aws-lambda";
 import * as awsServerlessExpress from "aws-serverless-express";
 import * as env from "env-var";
 import LockBot, { Response, Destination } from "./lock-bot";
-import DynamoDBLockRepo from "./dynamodb-lock-repo";
+import DynamoDBLockRepo from "./storage/dynamodb-lock-repo";
+
+const documentClient = new DocumentClient();
+
+const installationsTableName = env
+  .get("INSTALLATIONS_TABLE_NAME")
+  .required()
+  .asString();
 
 const expressReceiver = new ExpressReceiver({
   signingSecret: env.get("SLACK_SIGNING_SECRET").required().asString(),
+  clientId: env.get("SLACK_CLIENT_ID").required().asString(),
+  clientSecret: env.get("SLACK_CLIENT_SECRET").required().asString(),
+  stateSecret: env.get("STATE_SECRET").required().asString(),
+  scopes: ["commands"],
   processBeforeResponse: true,
+  installationStore: {
+    storeInstallation: async (installation) => {
+      await documentClient
+        .put({
+          TableName: installationsTableName,
+          Item: {
+            Team: installation.team.id,
+            Installation: installation,
+          },
+        })
+        .promise();
+    },
+    fetchInstallation: async (installQuery) => {
+      const result = await documentClient
+        .get({
+          TableName: installationsTableName,
+          Key: { Team: installQuery.teamId },
+        })
+        .promise();
+      return Promise.resolve(result.Item?.Installation);
+    },
+  },
 });
+
 const app = new App({
-  token: env.get("SLACK_BOT_TOKEN").required().asString(),
   receiver: expressReceiver,
-  processBeforeResponse: true,
 });
 
 const getResponseType = (destination: Destination) => {
@@ -76,7 +108,7 @@ const handle = (getResponse: (command: SlashCommand) => Promise<Response>) => {
 
 const lockBot = new LockBot(
   new DynamoDBLockRepo(
-    new DocumentClient(),
+    documentClient,
     env.get("RESOURCES_TABLE_NAME").required().asString()
   )
 );

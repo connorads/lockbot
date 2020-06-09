@@ -1,4 +1,4 @@
-import { LockRepo } from "./lock-bot";
+import { LockRepo } from "../lock-bot";
 
 export default class InMemoryLockRepo implements LockRepo {
   private readonly lockMap: Map<string, string> = new Map();
