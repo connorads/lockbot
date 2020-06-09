@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/10026538/84210020-8ffde000-aaaf-11ea-9568-e579129f4f8a.png">
+</p>
+
 # Lockbot
 
 ![Node.js CI](https://github.com/connorads/lockbot/workflows/Node.js%20CI/badge.svg)
