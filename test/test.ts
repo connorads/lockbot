@@ -72,7 +72,7 @@ const runAllTests = () => {
         "How to use `/lock`\n\n" +
         "To lock a resource in this channel called `thingy`, use `/lock thingy`\n\n" +
         "_Example:_\n" +
-        `> Connor: \`/lock dev\`\n` +
+        `> *Connor*: \`/lock dev\`\n` +
         `> *Lockbot*: Connor has locked \`dev\` 🔒`,
       destination: "user",
     });
@@ -83,7 +83,7 @@ const runAllTests = () => {
         "How to use `/lock`\n\n" +
         "To lock a resource in this channel called `thingy`, use `/lock thingy`\n\n" +
         "_Example:_\n" +
-        `> Connor: \`/lock dev\`\n` +
+        `> *Connor*: \`/lock dev\`\n` +
         `> *Lockbot*: Connor has locked \`dev\` 🔒`,
       destination: "user",
     });
@@ -136,7 +136,7 @@ const runAllTests = () => {
         "How to use `/unlock`\n\n" +
         "To unlock a resource in this channel called `thingy`, use `/unlock thingy`\n\n" +
         "_Example:_\n" +
-        `> Connor: \`/unlock dev\`\n` +
+        `> *Connor*: \`/unlock dev\`\n` +
         `> *Lockbot*: Connor has unlocked \`dev\` 🔓`,
       destination: "user",
     });
@@ -147,7 +147,7 @@ const runAllTests = () => {
         "How to use `/unlock`\n\n" +
         "To unlock a resource in this channel called `thingy`, use `/unlock thingy`\n\n" +
         "_Example:_\n" +
-        `> Connor: \`/unlock dev\`\n` +
+        `> *Connor*: \`/unlock dev\`\n` +
         `> *Lockbot*: Connor has unlocked \`dev\` 🔓`,
       destination: "user",
     });

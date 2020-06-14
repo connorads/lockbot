@@ -36,7 +36,7 @@ export default class LockBot {
           "How to use `/lock`\n\n" +
           "To lock a resource in this channel called `thingy`, use `/lock thingy`\n\n" +
           "_Example:_\n" +
-          `> ${user}: \`/lock dev\`\n` +
+          `> *${user}*: \`/lock dev\`\n` +
           `> *Lockbot*: ${user} has locked \`dev\` 🔒`,
         destination: "user",
       };
@@ -73,7 +73,7 @@ export default class LockBot {
           "How to use `/unlock`\n\n" +
           "To unlock a resource in this channel called `thingy`, use `/unlock thingy`\n\n" +
           "_Example:_\n" +
-          `> ${user}: \`/unlock dev\`\n` +
+          `> *${user}*: \`/unlock dev\`\n` +
           `> *Lockbot*: ${user} has unlocked \`dev\` 🔓`,
         destination: "user",
       };
