@@ -1,7 +1,7 @@
 {
   "name": "lockbot",
   "version": "1.0.0",
-  "description": "Coordinate use of your team's shared resources - in Slack 🤝",
+  "description": "Coordinate use of your team's shared resources, in Slack 🤝",
   "repository": "https://github.com/connorads/lockbot",
   "author": "Connor Adams",
   "license": "MIT",
