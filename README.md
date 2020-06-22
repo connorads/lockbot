@@ -38,11 +38,13 @@ When someone successfully locks or unlocks a resource, the channel is notified.
 
 ## Contributing
 
-Contributions are welcome. Please feel free to raise a GitHub issue or PR if you find a bug or join the [Lockbot Slack workspace](https://join.slack.com/t/connorads-lockbot/shared_invite/zt-ewpng7t1-Fm78z1SMinWuG_~0DvXa8A) for discussions.
+Don't be a stranger, contributions are welcome ✨
+
+- Raise an issue or PR for bugs and enhancements
+- Join the [Lockbot Community Slack workspace](https://join.slack.com/t/connorads-lockbot/shared_invite/zt-ewpng7t1-Fm78z1SMinWuG_~0DvXa8A)
+- Contact [@connorads](https://connoradams.co.uk)
 
 ## Local development
-
-Clone the repo and ...
 
 ### Install dependencies
 
