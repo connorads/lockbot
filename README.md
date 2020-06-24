@@ -44,6 +44,10 @@ Don't be a stranger, contributions are welcome ✨
 - Join the [Lockbot Community Slack workspace](https://join.slack.com/t/connorads-lockbot/shared_invite/zt-ewpng7t1-Fm78z1SMinWuG_~0DvXa8A)
 - Contact [@connorads](https://connoradams.co.uk)
 
+## Security
+
+If you discover a security vulnerability, please send an e-mail to security@lockbot.app
+
 ## Local development
 
 ### Install dependencies
