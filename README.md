@@ -29,8 +29,8 @@ Your team must agree to use Lockbot whenever they start or stop using a shared r
 Lockbot has three commands:
 
 - `/locks` Get locked resources list 📜
-- `/lock [resource name]` Lock a resource 🔒
-- `/unlock [resource name]` Unlock a resource 🔓
+- `/lock [resource-name]` Lock a resource 🔒
+- `/unlock [resource-name]` Unlock a resource 🔓
 
 Each Slack channel has its own list of resources.
 
@@ -41,8 +41,8 @@ When someone successfully locks or unlocks a resource, the channel is notified.
 Don't be a stranger, contributions are welcome ✨
 
 - Give this repo a Star ⭐️
-- Questions, suggestions and feedback welcome in [issues](https://github.com/connorads/lockbot/issues)
-- Raise an issue or PR for bugs and enhancements
+- Ask questions and share your feedback in [issues](https://github.com/connorads/lockbot/issues)
+- Create a PR or issue for bugs, enhancements, ideas and suggestions
 - Join the [Lockbot Community Slack workspace](https://join.slack.com/t/connorads-lockbot/shared_invite/zt-ewpng7t1-Fm78z1SMinWuG_~0DvXa8A)
 - Contact [@connorads](https://connoradams.co.uk)
 
