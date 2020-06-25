@@ -40,6 +40,8 @@ When someone successfully locks or unlocks a resource, the channel is notified.
 
 Don't be a stranger, contributions are welcome ✨
 
+- Give this repo a Star ⭐️
+- Questions, suggestions and feedback welcome in [issues](https://github.com/connorads/lockbot/issues)
 - Raise an issue or PR for bugs and enhancements
 - Join the [Lockbot Community Slack workspace](https://join.slack.com/t/connorads-lockbot/shared_invite/zt-ewpng7t1-Fm78z1SMinWuG_~0DvXa8A)
 - Contact [@connorads](https://connoradams.co.uk)
