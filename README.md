@@ -40,6 +40,8 @@ When someone successfully locks or unlocks a resource, the channel is notified.
 
 Don't be a stranger, contributions are welcome ✨
 
+See the [Contributing Guide](https://github.com/connorads/lockbot/blob/master/CONTRIBUTING.md) for development setup instructions.
+
 - Give this repo a Star ⭐️
 - Ask questions and share your feedback in [issues](https://github.com/connorads/lockbot/issues)
 - Create a PR or issue for bugs, enhancements, ideas and suggestions
@@ -49,31 +51,3 @@ Don't be a stranger, contributions are welcome ✨
 ## Security
 
 If you discover a security vulnerability, please send an e-mail to security@lockbot.app
-
-## Local development
-
-### Install dependencies
-
-`yarn install`
-
-### Lint
-
-`yarn lint`
-
-### Setup local DynamoDB
-
-The automated tests run against a local DynamoDB instance
-
-`yarn db:install`
-
-`yarn db:start`
-
-### Run tests
-
-`yarn test`
-
-### Deploy
-
-TBC: You'll need to setup AWS, a Slack App and some Environment Variables.
-
-`yarn deploy`
