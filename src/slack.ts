@@ -6,6 +6,7 @@ import {
   SlackCommandMiddlewareArgs,
   SlashCommand,
 } from "@slack/bolt";
+import { Installation } from "@slack/oauth";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { APIGatewayProxyEvent, Context } from "aws-lambda";
 import * as awsServerlessExpress from "aws-serverless-express";
@@ -28,7 +29,7 @@ const expressReceiver = new ExpressReceiver({
   scopes: ["commands"],
   processBeforeResponse: true,
   installationStore: {
-    storeInstallation: async (installation) => {
+    storeInstallation: async (installation, logger) => {
       await documentClient
         .put({
           TableName: installationsTableName,
@@ -38,15 +39,28 @@ const expressReceiver = new ExpressReceiver({
           },
         })
         .promise();
+      const { team, user, bot } = installation;
+      logger?.info("Installation stored.", {
+        team,
+        userId: user.id,
+        botScopes: bot?.scopes,
+      });
     },
-    fetchInstallation: async (installQuery) => {
+    fetchInstallation: async (installQuery, logger) => {
       const result = await documentClient
         .get({
           TableName: installationsTableName,
           Key: { Team: installQuery.teamId },
         })
         .promise();
-      return Promise.resolve(result.Item?.Installation);
+      const installation = result.Item?.Installation as Installation;
+      const { team, user, bot } = installation;
+      logger?.info("Installation fetched.", {
+        team,
+        userId: user.id,
+        botScopes: bot?.scopes,
+      });
+      return Promise.resolve(installation);
     },
   },
 });
@@ -75,23 +89,29 @@ const handleResponse = async (
 ): Promise<void> => {
   try {
     const { message, destination } = await response;
-    const responseType = getResponseType(destination);
-    await respond({
+    const respondArguments = {
       text: message,
-      response_type: responseType,
+      response_type: getResponseType(destination),
       as_user: true,
-    });
-  } catch (e) {
-    logger.error(e);
+    };
+    logger.info("Sending response.", respondArguments);
+    await respond(respondArguments);
+    logger.info("Response sent.");
+  } catch (error) {
+    logger.error(error);
     await respond({
-      text: `❌ Unhandled error 😢`,
+      text:
+        "❌ Oops, something went wrong!\n" +
+        "Contact support@lockbot.app if this issue persists.",
       response_type: "ephemeral",
       as_user: true,
     });
   }
 };
 
-const handle = (getResponse: (command: SlashCommand) => Promise<Response>) => {
+const handleCommand = (
+  getResponse: (command: SlashCommand) => Promise<Response>
+) => {
   return async ({
     command,
     logger,
@@ -100,9 +120,13 @@ const handle = (getResponse: (command: SlashCommand) => Promise<Response>) => {
   }: SlackCommandMiddlewareArgs & {
     logger: Logger;
   }) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, camelcase
+    const { token, trigger_id, response_url, ...commandProps } = command;
+    logger.info("Command received.", commandProps);
     await ack();
     const response = getResponse(command);
     await handleResponse(response, respond, logger);
+    logger.info("Command handled.");
   };
 };
 
@@ -117,11 +141,11 @@ const getResource = (commandText: string) => commandText.split(" ")[0];
 
 app.command(
   "/locks",
-  handle((command) => lockBot.locks(command.channel_id, command.team_id))
+  handleCommand((command) => lockBot.locks(command.channel_id, command.team_id))
 );
 app.command(
   "/lock",
-  handle((command) =>
+  handleCommand((command) =>
     lockBot.lock(
       getResource(command.text),
       `<@${command.user_id}>`,
@@ -132,7 +156,7 @@ app.command(
 );
 app.command(
   "/unlock",
-  handle((command) =>
+  handleCommand((command) =>
     lockBot.unlock(
       getResource(command.text),
       `<@${command.user_id}>`,
