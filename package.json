@@ -16,7 +16,7 @@
     "@types/jest": "^25.2.1",
     "@typescript-eslint/eslint-plugin": "^2.29.0",
     "@typescript-eslint/parser": "^2.29.0",
-    "eslint": "6.8.0",
+    "eslint": "7.5.0",
     "eslint-config-airbnb-base": "^14.1.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-import-resolver-typescript": "^2.0.0",
@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "@slack/bolt": "^2.1.1",
+    "@slack/oauth": "^1.1.0",
     "@types/aws-serverless-express": "^3.3.3",
     "aws-lambda": "^1.0.6",
     "aws-sdk": "^2.673.0",
