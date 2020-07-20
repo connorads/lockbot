@@ -113,6 +113,8 @@ const lockBot = new LockBot(
   )
 );
 
+const getResource = (commandText: string) => commandText.split(" ")[0];
+
 app.command(
   "/locks",
   handle((command) => lockBot.locks(command.channel_id, command.team_id))
@@ -121,7 +123,7 @@ app.command(
   "/lock",
   handle((command) =>
     lockBot.lock(
-      command.text,
+      getResource(command.text),
       `<@${command.user_id}>`,
       command.channel_id,
       command.team_id
@@ -132,7 +134,7 @@ app.command(
   "/unlock",
   handle((command) =>
     lockBot.unlock(
-      command.text,
+      getResource(command.text),
       `<@${command.user_id}>`,
       command.channel_id,
       command.team_id
