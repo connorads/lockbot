@@ -59,6 +59,7 @@ export default class DynamoDBLockRepo implements LockRepo {
           Resource: resource,
           Group: `${team}#${channel}`,
           Owner: owner,
+          Created: new Date().toISOString(),
         },
       })
       .promise();
