@@ -1,0 +1,12 @@
+version: "3.4"
+services:
+  serverless-offline:
+    build: .
+    ports:
+      - "3000:3000"
+    #network_mode: host
+  dynamodb-local:
+    image: amazon/dynamodb-local
+    ports:
+      - "8000:8000"
+    #network_mode: host

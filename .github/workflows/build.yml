@@ -11,13 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Start DynamoDB Local & Serverless Offline
+        run: docker-compose up -d
       - uses: actions/setup-node@v1
         with:
           node-version: "12.x"
       - run: yarn install --frozen-lockfile
       - run: yarn lint
-      - name: Setup DynamoDB Local
-        uses: rrainn/dynamodb-action@v2.0.0
       - name: Setup AWS credentials
         run: |
           mkdir ~/.aws

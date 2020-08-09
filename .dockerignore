@@ -1,0 +1,9 @@
+.git
+
+node_modules
+
+.serverless
+.dynamodb
+.webpack
+
+.github
