@@ -9,7 +9,6 @@ import { isLeft } from "fp-ts/lib/Either";
 import DynamoDBLockRepo from "../storage/dynamodb-lock-repo";
 import TokenAuthorizer from "../token-authorizer";
 import DynamoDBAccessTokenRepo from "../storage/dynamodb-token-repo";
-import LockBot from "../lock-bot";
 
 const app = express();
 app.use(express.json());
