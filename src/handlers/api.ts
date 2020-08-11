@@ -4,6 +4,8 @@ import { APIGatewayProxyEvent, Context } from "aws-lambda";
 import * as env from "env-var";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import auth from "basic-auth";
+import * as D from "io-ts/lib/Decoder";
+import { isLeft } from "fp-ts/lib/Either";
 import DynamoDBLockRepo from "../storage/dynamodb-lock-repo";
 import TokenAuthorizer from "../token-authorizer";
 import DynamoDBAccessTokenRepo from "../storage/dynamodb-token-repo";
@@ -29,10 +31,12 @@ const lockRepo = new DynamoDBLockRepo(
   env.get("RESOURCES_TABLE_NAME").required().asString()
 );
 
-interface Lock {
-  name: string;
-  owner: string;
-}
+const Lock = D.type({
+  name: D.string,
+  owner: D.string,
+});
+
+interface Lock extends D.TypeOf<typeof Lock> {}
 
 app.get("/api/teams/:team/channels/:channel/locks", async (req, res) => {
   const { channel, team } = req.params;
@@ -43,7 +47,6 @@ app.get("/api/teams/:team/channels/:channel/locks", async (req, res) => {
   } else if (
     await tokenAuthorizer.isAuthorized(user.pass, user.name, channel, team)
   ) {
-    // const locks = Object.fromEntries(await lockRepo.getAll(channel, team));
     const locksMap = await lockRepo.getAll(channel, team);
     const locks: Lock[] = [];
     locksMap.forEach((v, k) => locks.push({ name: k, owner: v }));
@@ -66,10 +69,11 @@ app.post("/api/teams/:team/channels/:channel/locks", async (req, res) => {
   ) {
     console.log("req.body", req.body); // TODO remove
 
-    if (!req.body?.name || !req.body?.owner) {
-      res.status(400).json({});
+    const decoded = Lock.decode(req.body);
+    if (isLeft(decoded)) {
+      res.status(400).json({ error: D.draw(decoded.left) });
     } else {
-      const lock = req.body as Lock;
+      const lock: Lock = decoded.right;
 
       // TODO wrong owner
       //const lockOwner = await lockRepo.getOwner(lock.name, channel, team);

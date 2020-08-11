@@ -105,14 +105,37 @@ describe("dynamodb token repo", () => {
   });
 
   test.each([
-    [{ name: "dev" }, { status: "error", errors: "" }],
-    [{ owner: "U012345MNOP" }, {}],
-    [{}, {}],
+    [
+      { name: "dev" },
+      {
+        error:
+          'required property "owner"\n' +
+          "└─ cannot decode undefined, should be string",
+      },
+    ],
+    [
+      { owner: "U012345MNOP" },
+      {
+        error:
+          'required property "name"\n' +
+          "└─ cannot decode undefined, should be string",
+      },
+    ],
+    [
+      {},
+      {
+        error:
+          'required property "name"\n' +
+          "└─ cannot decode undefined, should be string\n" +
+          'required property "owner"\n' +
+          "└─ cannot decode undefined, should be string",
+      },
+    ],
   ])("try create lock with bad payload", async (req, expectedResponseBody) => {
     const res = await server
       .post("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
       .set("Authorization", `Basic ${credentials}`)
-      .send(JSON.stringify(req));
+      .send(req);
 
     expect(res.status).toBe(400);
     expect(res.text).toBe(JSON.stringify(expectedResponseBody));
