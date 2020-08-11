@@ -11,8 +11,10 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { APIGatewayProxyEvent, Context } from "aws-lambda";
 import * as awsServerlessExpress from "aws-serverless-express";
 import * as env from "env-var";
-import LockBot, { Response, Destination } from "./lock-bot";
-import DynamoDBLockRepo from "./storage/dynamodb-lock-repo";
+import LockBot, { Response, Destination } from "../lock-bot";
+import DynamoDBLockRepo from "../storage/dynamodb-lock-repo";
+import TokenAuthorizer from "../token-authorizer";
+import DynamoDBAccessTokenRepo from "../storage/dynamodb-token-repo";
 
 const documentClient = new DocumentClient();
 
@@ -134,32 +136,52 @@ const lockBot = new LockBot(
   new DynamoDBLockRepo(
     documentClient,
     env.get("RESOURCES_TABLE_NAME").required().asString()
+  ),
+  new TokenAuthorizer(
+    new DynamoDBAccessTokenRepo(
+      documentClient,
+      env.get("ACCESS_TOKENS_TABLE_NAME").required().asString()
+    )
   )
 );
 
-const getResource = (commandText: string) => commandText.split(" ")[0];
+const prefix =
+  env.get("SERVERLESS_STAGE").required().asString() === "dev" ? "dev" : "";
+
+const getFirstParam = (commandText: string) => commandText.split(" ")[0];
 
 app.command(
-  "/locks",
+  `/${prefix}locks`,
   handleCommand((command) => lockBot.locks(command.channel_id, command.team_id))
 );
 app.command(
-  "/lock",
+  `/${prefix}lock`,
   handleCommand((command) =>
     lockBot.lock(
-      getResource(command.text),
-      `<@${command.user_id}>`,
+      getFirstParam(command.text),
+      `<@${command.user_id}>`, // TODO Move this <@> to message formatting?
       command.channel_id,
       command.team_id
     )
   )
 );
 app.command(
-  "/unlock",
+  `/${prefix}unlock`,
   handleCommand((command) =>
     lockBot.unlock(
-      getResource(command.text),
-      `<@${command.user_id}>`,
+      getFirstParam(command.text),
+      `<@${command.user_id}>`, // TODO Move this <@> to message formatting?
+      command.channel_id,
+      command.team_id
+    )
+  )
+);
+app.command(
+  `/${prefix}lbtoken`,
+  handleCommand((command) =>
+    lockBot.lbtoken(
+      getFirstParam(command.text),
+      command.user_id,
       command.channel_id,
       command.team_id
     )

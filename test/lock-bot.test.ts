@@ -1,7 +1,11 @@
-import DynamoDB, { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import LockBot, { Response } from "../src/lock-bot";
 import InMemoryLockRepo from "../src/storage/in-memory-lock-repo";
 import DynamoDBLockRepo from "../src/storage/dynamodb-lock-repo";
+import TokenAuthorizer from "../src/token-authorizer";
+import InMemoryAccessTokenRepo from "../src/storage/in-memory-token-repo";
+import DynamoDBAccessTokenRepo from "../src/storage/dynamodb-token-repo";
+import { recreateResourcesTable } from "./utils";
 
 let lockBot: LockBot;
 const runAllTests = () => {
@@ -22,6 +26,9 @@ const runAllTests = () => {
       return lockBot.unlock(resource, user, channel, team);
     }
     if (command === "/lock") {
+      return lockBot.lock(resource, user, channel, team);
+    }
+    if (command === "/lockbot") {
       return lockBot.lock(resource, user, channel, team);
     }
     throw Error("Unhandled command");
@@ -205,48 +212,49 @@ const runAllTests = () => {
       destination: "user",
     });
   });
+  test("get new access token", async () => {
+    await execute("/lockbot token");
+    // assert text
+    // assert token? maybe? not sure?
+  });
+
+  test("replace existing access token", async () => {
+    await execute("/lockbot dev");
+    // assert text
+    // assert text
+    // assert token is different
+  });
+
+  test("get access token help", async () => {
+    await execute("/lockbot dev");
+    // assert text
+  });
 };
 
 describe("in memory lock repo", () => {
   beforeEach(() => {
-    lockBot = new LockBot(new InMemoryLockRepo());
+    lockBot = new LockBot(
+      new InMemoryLockRepo(),
+      new TokenAuthorizer(new InMemoryAccessTokenRepo())
+    );
   });
   runAllTests();
 });
 
 describe("dynamodb lock repo", () => {
-  const resourcesTableName = "lockbot-resources";
+  const resourcesTableName = "lock-bot-tests-resources";
+  const accessTokenTableName = "lock-bot-tests-tokens";
   beforeEach(async () => {
-    const options = {
+    await recreateResourcesTable(resourcesTableName);
+    const documentClient = new DocumentClient({
       region: "localhost",
       endpoint: "http://localhost:8000",
-    };
-    const db = new DynamoDB(options);
-    try {
-      await db.deleteTable({ TableName: resourcesTableName }).promise();
-    } catch (error) {
-      // No problem if the table doesn't exist
-    } finally {
-      await db
-        .createTable({
-          TableName: resourcesTableName,
-          AttributeDefinitions: [
-            { AttributeName: "Resource", AttributeType: "S" },
-            { AttributeName: "Group", AttributeType: "S" },
-          ],
-          KeySchema: [
-            { AttributeName: "Group", KeyType: "HASH" },
-            { AttributeName: "Resource", KeyType: "RANGE" },
-          ],
-          ProvisionedThroughput: {
-            ReadCapacityUnits: 5,
-            WriteCapacityUnits: 5,
-          },
-        })
-        .promise();
-    }
+    });
     lockBot = new LockBot(
-      new DynamoDBLockRepo(new DocumentClient(options), resourcesTableName)
+      new DynamoDBLockRepo(documentClient, resourcesTableName),
+      new TokenAuthorizer(
+        new DynamoDBAccessTokenRepo(documentClient, accessTokenTableName)
+      )
     );
   });
   runAllTests();

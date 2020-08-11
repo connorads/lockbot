@@ -1,3 +1,5 @@
+import TokenAuthorizer from "./token-authorizer";
+
 export interface LockRepo {
   delete(resource: string, channel: string, team: string): Promise<void>;
   getAll(channel: string, team: string): Promise<Map<string, string>>;
@@ -22,7 +24,10 @@ export interface Response {
 }
 
 export default class LockBot {
-  constructor(private readonly lockRepo: LockRepo) {}
+  constructor(
+    private readonly lockRepo: LockRepo,
+    private readonly tokenAuthorizer: TokenAuthorizer
+  ) {}
 
   lock = async (
     resource: string,
@@ -112,5 +117,34 @@ export default class LockBot {
       locksMessage += `> \`${lockedResource}\` is locked by ${lockOwner} 🔒\n`;
     });
     return { message: locksMessage.trimRight(), destination: "user" };
+  };
+
+  lbtoken = async (
+    param: string,
+    user: string,
+    channel: string,
+    team: string
+  ): Promise<Response> => {
+    if (param !== "new") {
+      return {
+        message: "How to use `/lbtoken`\n\n Get a token blah\n",
+        destination: "user",
+      };
+    }
+    const accessToken = await this.tokenAuthorizer.createAccessToken(
+      user,
+      channel,
+      team
+    );
+    return {
+      message:
+        `Here is your access token: \`${accessToken}\`\n` +
+        "Make note of it because it won't be displayed again.\n" +
+        "If you create a new token in this channel it will invalidate this channel\n" +
+        `${param} ${user} ${channel} ${team}` +
+        "_Example:_\n" +
+        "``` curl something something```\n",
+      destination: "user",
+    };
   };
 }

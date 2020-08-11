@@ -3,8 +3,7 @@ service: lockbot
 plugins:
   - serverless-webpack
   - serverless-dynamodb-local
-  - serverless-offline
-
+  - "@connorads/serverless-offline"
 provider:
   name: aws
   runtime: nodejs12.x
@@ -15,6 +14,8 @@ provider:
     STATE_SECRET: ${env:STATE_SECRET}
     RESOURCES_TABLE_NAME: ${self:custom.resourcesTableName}
     INSTALLATIONS_TABLE_NAME: ${self:custom.installationsTableName}
+    ACCESS_TOKENS_TABLE_NAME: ${self:custom.accessTokensTableName}
+    SERVERLESS_STAGE: ${self:custom.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -27,10 +28,11 @@ provider:
       Resource:
         - "Fn::GetAtt": [resourcesTable, Arn]
         - "Fn::GetAtt": [installationsTable, Arn]
+        - "Fn::GetAtt": [accessTokensTable, Arn]
 
 functions:
   slack-handler:
-    handler: src/slack.handler
+    handler: src/handlers/slack.handler
     events:
       - http:
           method: post
@@ -41,6 +43,15 @@ functions:
       - http:
           method: get
           path: /slack/oauth_redirect
+  api-handler:
+    handler: src/handlers/api.handler
+    events:
+      - http:
+          method: get
+          path: /api/teams/{team}/channels/{channel}/locks
+      - http:
+          method: post
+          path: /api/teams/{team}/channels/{channel}/locks
 
 resources:
   Resources:
@@ -59,8 +70,8 @@ resources:
           - AttributeName: Resource
             KeyType: RANGE
         ProvisionedThroughput:
-          ReadCapacityUnits: 5
-          WriteCapacityUnits: 5
+          ReadCapacityUnits: 4
+          WriteCapacityUnits: 4
     installationsTable:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -72,13 +83,27 @@ resources:
           - AttributeName: Team
             KeyType: HASH
         ProvisionedThroughput:
-          ReadCapacityUnits: 5
-          WriteCapacityUnits: 5
+          ReadCapacityUnits: 4
+          WriteCapacityUnits: 2
+    accessTokensTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.accessTokensTableName}
+        AttributeDefinitions:
+          - AttributeName: Scope
+            AttributeType: S
+        KeySchema:
+          - AttributeName: Scope
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 4
+          WriteCapacityUnits: 2
 
 custom:
   stage: ${opt:stage, self:provider.stage}
   resourcesTableName: ${self:custom.stage}-lockbot-resources
   installationsTableName: ${self:custom.stage}-lockbot-installations
+  accessTokensTableName: ${self:custom.stage}-lockbot-tokens
   dynamodb:
     stages:
       - dev # https://bit.ly/35WR0TT

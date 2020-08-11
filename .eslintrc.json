@@ -20,6 +20,7 @@
   },
   "plugins": ["@typescript-eslint"],
   "rules": {
+    "no-console": "off",
     "no-useless-constructor": "off",
     "@typescript-eslint/no-useless-constructor": ["error"],
     "no-unused-vars": "off",
