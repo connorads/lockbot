@@ -35,7 +35,6 @@ const Lock = D.type({
   name: D.string,
   owner: D.string,
 });
-
 interface Lock extends D.TypeOf<typeof Lock> {}
 
 app.get("/api/teams/:team/channels/:channel/locks", async (req, res) => {
@@ -67,11 +66,11 @@ app.post("/api/teams/:team/channels/:channel/locks", async (req, res) => {
   } else if (
     await tokenAuthorizer.isAuthorized(user.pass, user.name, channel, team)
   ) {
-    console.log("req.body", req.body); // TODO remove
-
     const decoded = Lock.decode(req.body);
     if (isLeft(decoded)) {
-      res.status(400).json({ error: D.draw(decoded.left) });
+      const error = D.draw(decoded.left);
+      console.log("Invalid request", { body: req.body, error });
+      res.status(400).json({ error });
     } else {
       const lock: Lock = decoded.right;
 
