@@ -41,14 +41,14 @@ const authorizer = async (req: Request, res: Response, next: NextFunction) => {
   const user = auth(req);
   if (!user) {
     console.log("Missing basic auth", { channel, team });
-    res.status(401).send("Missing basic auth");
+    res.status(401).send({ error: "Missing basic auth" });
   } else if (
     await tokenAuthorizer.isAuthorized(user.pass, user.name, channel, team)
   ) {
     next();
   } else {
     console.log("Unauthorized", { channel, team, user: user.name });
-    res.status(401).send("Unauthorized");
+    res.status(401).send({ error: "Unauthorized" });
   }
 };
 

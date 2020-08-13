@@ -39,7 +39,7 @@ describe("dynamodb token repo", () => {
     const res = await apiCall;
 
     expect(res.status).toBe(401);
-    expect(res.text).toBe("Missing basic auth");
+    expect(res.text).toBe(JSON.stringify({ error: "Missing basic auth" }));
   });
 
   test.each([
@@ -56,7 +56,7 @@ describe("dynamodb token repo", () => {
     );
 
     expect(res.status).toBe(401);
-    expect(res.text).toBe("Unauthorized");
+    expect(res.text).toBe(JSON.stringify({ error: "Unauthorized" }));
   });
 
   test.each([
@@ -66,7 +66,7 @@ describe("dynamodb token repo", () => {
     const res = await apiCall.set("Authorization", `Basic ${credentials}`);
 
     expect(res.status).toBe(401);
-    expect(res.text).toBe("Unauthorized");
+    expect(res.text).toBe(JSON.stringify({ error: "Unauthorized" }));
   });
 
   test("Get locks", async () => {
