@@ -4,14 +4,15 @@ import TokenAuthorizer from "../src/token-authorizer";
 import DynamoDBAccessTokenRepo from "../src/storage/dynamodb-token-repo";
 import { recreateAccessTokenTable, recreateResourcesTable } from "./utils";
 
-let credentials: string;
+let credentials1: string;
+let credentials2: string;
 describe("dynamodb token repo", () => {
   const accessTokenTableName = "dev-lockbot-tokens";
   const resourcesTableName = "dev-lockbot-resources";
   beforeEach(async () => {
     await recreateAccessTokenTable(accessTokenTableName);
     await recreateResourcesTable(resourcesTableName);
-    const ta = new TokenAuthorizer(
+    const tokenAuthorizer = new TokenAuthorizer(
       new DynamoDBAccessTokenRepo(
         new DocumentClient({
           region: "localhost",
@@ -20,14 +21,14 @@ describe("dynamodb token repo", () => {
         accessTokenTableName
       )
     );
-    const accessToken = await ta.createAccessToken(
-      "U012345MNOP",
-      "C012345ABCD",
-      "T012345WXYZ"
-    );
-    credentials = `${Buffer.from(`U012345MNOP:${accessToken}`).toString(
-      "base64"
-    )}`;
+    const createToken = (user: string) =>
+      tokenAuthorizer.createAccessToken(user, "C012345ABCD", "T012345WXYZ");
+
+    const token1 = await createToken("U012345MNOP");
+    credentials1 = `${Buffer.from(`U012345MNOP:${token1}`).toString("base64")}`;
+
+    const token2 = await createToken("U012345QRST");
+    credentials2 = `${Buffer.from(`U012345QRST:${token2}`).toString("base64")}`;
   });
 
   const server = request("http://localhost:3000");
@@ -63,7 +64,7 @@ describe("dynamodb token repo", () => {
     [server.get("/dev/api/teams/T012345WXYZ/channels/C012345EFGH/locks")],
     [server.post("/dev/api/teams/T012345WXYZ/channels/C012345EFGH/locks")],
   ])("Valid credentials, incorrect channel", async (apiCall) => {
-    const res = await apiCall.set("Authorization", `Basic ${credentials}`);
+    const res = await apiCall.set("Authorization", `Basic ${credentials1}`);
 
     expect(res.status).toBe(401);
     expect(res.text).toBe(JSON.stringify({ error: "Unauthorized" }));
@@ -72,7 +73,7 @@ describe("dynamodb token repo", () => {
   test("Get locks", async () => {
     const res = await server
       .get("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
-      .set("Authorization", `Basic ${credentials}`);
+      .set("Authorization", `Basic ${credentials1}`);
 
     expect(res.status).toBe(200);
     expect(res.text).toBe(JSON.stringify([]));
@@ -81,7 +82,7 @@ describe("dynamodb token repo", () => {
   test("Create lock", async () => {
     const res = await server
       .post("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
-      .set("Authorization", `Basic ${credentials}`)
+      .set("Authorization", `Basic ${credentials1}`)
       .send({ name: "dev", owner: "U012345MNOP" });
 
     expect(res.status).toBe(201);
@@ -93,15 +94,15 @@ describe("dynamodb token repo", () => {
   test("Create two locks, get locks", async () => {
     await server
       .post("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
-      .set("Authorization", `Basic ${credentials}`)
+      .set("Authorization", `Basic ${credentials1}`)
       .send({ name: "dev", owner: "U012345MNOP" });
     await server
       .post("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
-      .set("Authorization", `Basic ${credentials}`)
+      .set("Authorization", `Basic ${credentials1}`)
       .send({ name: "test", owner: "U012345MNOP" });
     const res = await server
       .get("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
-      .set("Authorization", `Basic ${credentials}`);
+      .set("Authorization", `Basic ${credentials1}`);
 
     expect(res.status).toBe(200);
     expect(res.text).toBe(
@@ -142,7 +143,7 @@ describe("dynamodb token repo", () => {
   ])("Try create lock with bad payload", async (req, expectedResponseBody) => {
     const res = await server
       .post("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
-      .set("Authorization", `Basic ${credentials}`)
+      .set("Authorization", `Basic ${credentials1}`)
       .send(req);
 
     expect(res.status).toBe(400);
@@ -151,7 +152,21 @@ describe("dynamodb token repo", () => {
 
   test("try lock your existing lock", async () => {});
 
-  test("try lock someone else's existing lock", async () => {});
+  test("Try lock someone else's existing lock", async () => {
+    await server
+      .post("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
+      .set("Authorization", `Basic ${credentials2}`)
+      .send({ name: "dev", owner: "U012345QRST" });
+    const res = await server
+      .post("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
+      .set("Authorization", `Basic ${credentials1}`)
+      .send({ name: "dev", owner: "U012345MNOP" });
+
+    expect(res.status).toBe(403);
+    expect(res.text).toBe(
+      JSON.stringify({ error: "dev is already locked by U012345QRST" })
+    );
+  });
 
   test("create lock, delete lock", async () => {});
 

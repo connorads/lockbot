@@ -81,13 +81,19 @@ app.post(
   authorizer,
   validator,
   async (req, res) => {
-    // TODO wrong owner
-    //const lockOwner = await lockRepo.getOwner(lock.name, channel, team);
     const { channel, team } = req.params;
     const lock = req.body as Lock;
-    await lockRepo.setOwner(lock.name, lock.owner, channel, team);
-    console.log("Added lock", { channel, team, lock });
-    res.status(201).json(lock);
+    const lockOwner = await lockRepo.getOwner(lock.name, channel, team);
+    if (!lockOwner) {
+      await lockRepo.setOwner(lock.name, lock.owner, channel, team);
+      console.log("Added lock", { channel, team, lock });
+      res.status(201).json(lock);
+    } else {
+      console.log("Already locked", { channel, team, lock, lockOwner });
+      res
+        .status(403)
+        .json({ error: `${lock.name} is already locked by ${lockOwner}` });
+    }
   }
 );
 
