@@ -1,5 +1,5 @@
 import awsServerlessExpress from "aws-serverless-express";
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import { APIGatewayProxyEvent, Context } from "aws-lambda";
 import * as env from "env-var";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
@@ -36,7 +36,7 @@ const Lock = D.type({
 });
 interface Lock extends D.TypeOf<typeof Lock> {}
 
-app.get("/api/teams/:team/channels/:channel/locks", async (req, res) => {
+const authorizer = async (req: Request, res: Response, next: NextFunction) => {
   const { channel, team } = req.params;
   const user = auth(req);
   if (!user) {
@@ -45,46 +45,51 @@ app.get("/api/teams/:team/channels/:channel/locks", async (req, res) => {
   } else if (
     await tokenAuthorizer.isAuthorized(user.pass, user.name, channel, team)
   ) {
+    next();
+  } else {
+    console.log("Unauthorized", { channel, team, user: user.name });
+    res.status(401).send("Unauthorized");
+  }
+};
+
+app.get(
+  "/api/teams/:team/channels/:channel/locks",
+  authorizer,
+  async (req, res) => {
+    const { channel, team } = req.params;
     const locksMap = await lockRepo.getAll(channel, team);
     const locks: Lock[] = [];
     locksMap.forEach((v, k) => locks.push({ name: k, owner: v }));
     console.log("Retrieved locks", { channel, team, locks });
     res.status(200).json(locks);
-  } else {
-    console.log("Unauthorized", { channel, team, user: user.name });
-    res.status(401).send("Unauthorized");
   }
-});
+);
 
-app.post("/api/teams/:team/channels/:channel/locks", async (req, res) => {
-  const { channel, team } = req.params;
-  const user = auth(req);
-  if (!user) {
-    console.log("Missing basic auth", { channel, team });
-    res.status(401).send("Missing basic auth");
-  } else if (
-    await tokenAuthorizer.isAuthorized(user.pass, user.name, channel, team)
-  ) {
-    const decoded = Lock.decode(req.body);
-    if (isLeft(decoded)) {
-      const error = D.draw(decoded.left);
-      console.log("Invalid request", { body: req.body, error });
-      res.status(400).json({ error });
-    } else {
-      const lock: Lock = decoded.right;
-
-      // TODO wrong owner
-      //const lockOwner = await lockRepo.getOwner(lock.name, channel, team);
-
-      await lockRepo.setOwner(lock.name, lock.owner, channel, team);
-      console.log("Added lock", { channel, team, lock });
-      res.status(201).json(lock);
-    }
+const validator = async (req: Request, res: Response, next: NextFunction) => {
+  const decoded = Lock.decode(req.body);
+  if (isLeft(decoded)) {
+    const error = D.draw(decoded.left);
+    console.log("Invalid request", { body: req.body, error });
+    res.status(400).json({ error });
   } else {
-    console.log("Unauthorized", { channel, team, user: user.name });
-    res.status(401).send("Unauthorized");
+    next();
   }
-});
+};
+
+app.post(
+  "/api/teams/:team/channels/:channel/locks",
+  authorizer,
+  validator,
+  async (req, res) => {
+    // TODO wrong owner
+    //const lockOwner = await lockRepo.getOwner(lock.name, channel, team);
+    const { channel, team } = req.params;
+    const lock = req.body as Lock;
+    await lockRepo.setOwner(lock.name, lock.owner, channel, team);
+    console.log("Added lock", { channel, team, lock });
+    res.status(201).json(lock);
+  }
+);
 
 const server = awsServerlessExpress.createServer(app);
 const handler = (event: APIGatewayProxyEvent, context: Context) =>
