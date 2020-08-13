@@ -88,8 +88,11 @@ app.post(
       await lockRepo.setOwner(lock.name, lock.owner, channel, team);
       console.log("Added lock", { channel, team, lock });
       res.status(201).json(lock);
+    } else if (lockOwner === lock.owner) {
+      console.log("Lock exists", { channel, team, lock });
+      res.status(200).json(lock);
     } else {
-      console.log("Already locked", { channel, team, lock, lockOwner });
+      console.log("Cannot lock", { channel, team, lock, lockOwner });
       res
         .status(403)
         .json({ error: `${lock.name} is already locked by ${lockOwner}` });

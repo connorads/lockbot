@@ -150,7 +150,21 @@ describe("dynamodb token repo", () => {
     expect(res.text).toBe(JSON.stringify(expectedResponseBody));
   });
 
-  test("try lock your existing lock", async () => {});
+  test("Try lock your existing lock", async () => {
+    await server
+      .post("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
+      .set("Authorization", `Basic ${credentials1}`)
+      .send({ name: "dev", owner: "U012345MNOP" });
+    const res = await server
+      .post("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
+      .set("Authorization", `Basic ${credentials1}`)
+      .send({ name: "dev", owner: "U012345MNOP" });
+
+    expect(res.status).toBe(200);
+    expect(res.text).toBe(
+      JSON.stringify({ name: "dev", owner: "U012345MNOP" })
+    );
+  });
 
   test("Try lock someone else's existing lock", async () => {
     await server
