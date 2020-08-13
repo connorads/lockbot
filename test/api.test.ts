@@ -32,36 +32,44 @@ describe("dynamodb token repo", () => {
 
   const server = request("http://localhost:3000");
 
-  test("Missing basic auth", async () => {
-    const res = await server.get(
-      "/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks"
-    );
+  test.each([
+    [server.get("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")],
+    [server.post("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")],
+  ])("Missing basic auth", async (apiCall) => {
+    const res = await apiCall;
+
     expect(res.status).toBe(401);
     expect(res.text).toBe("Missing basic auth");
   });
 
-  test("Invalid credentials", async () => {
+  test.each([
+    [server.get("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")],
+    [server.post("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")],
+  ])("Invalid credentials", async (apiCall) => {
     const invalidCredentials = `${Buffer.from(`h4ck3r:b4dt0k3n`).toString(
       "base64"
     )}`;
-    const res = await server
-      .get("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
-      .set("Authorization", `Basic ${invalidCredentials}`);
+
+    const res = await apiCall.set(
+      "Authorization",
+      `Basic ${invalidCredentials}`
+    );
 
     expect(res.status).toBe(401);
     expect(res.text).toBe("Unauthorized");
   });
 
-  test("Valid credentials, incorrect channel", async () => {
-    const res = await server
-      .get("/dev/api/teams/T012345WXYZ/channels/C012345EFGH/locks")
-      .set("Authorization", `Basic ${credentials}`);
+  test.each([
+    [server.get("/dev/api/teams/T012345WXYZ/channels/C012345EFGH/locks")],
+    [server.post("/dev/api/teams/T012345WXYZ/channels/C012345EFGH/locks")],
+  ])("Valid credentials, incorrect channel", async (apiCall) => {
+    const res = await apiCall.set("Authorization", `Basic ${credentials}`);
 
     expect(res.status).toBe(401);
     expect(res.text).toBe("Unauthorized");
   });
 
-  test("No resources", async () => {
+  test("Get locks", async () => {
     const res = await server
       .get("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
       .set("Authorization", `Basic ${credentials}`);
@@ -70,7 +78,7 @@ describe("dynamodb token repo", () => {
     expect(res.text).toBe(JSON.stringify([]));
   });
 
-  test("create lock", async () => {
+  test("Create lock", async () => {
     const res = await server
       .post("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
       .set("Authorization", `Basic ${credentials}`)
@@ -82,7 +90,7 @@ describe("dynamodb token repo", () => {
     );
   });
 
-  test("create two locks", async () => {
+  test("Create two locks, get locks", async () => {
     await server
       .post("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
       .set("Authorization", `Basic ${credentials}`)
@@ -131,7 +139,7 @@ describe("dynamodb token repo", () => {
           "└─ cannot decode undefined, should be string",
       },
     ],
-  ])("try create lock with bad payload", async (req, expectedResponseBody) => {
+  ])("Try create lock with bad payload", async (req, expectedResponseBody) => {
     const res = await server
       .post("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
       .set("Authorization", `Basic ${credentials}`)
