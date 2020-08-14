@@ -118,6 +118,30 @@ app.post(
   }
 );
 
+app.delete(
+  "/api/teams/:team/channels/:channel/locks/:lock",
+  authorizer,
+  async (req, res) => {
+    const { team, channel, lock: lockName } = req.params;
+    const lockOwner = await lockRepo.getOwner(lockName, channel, team);
+    if (!lockOwner) {
+      console.log("No lock to delete", { lockName });
+      res.status(204).end();
+    } else if (lockOwner === auth(req)!.name) {
+      const lock: Lock = { name: lockName, owner: lockOwner };
+      await lockRepo.delete(lockName, channel, team);
+      console.log("Lock deleted", { lock });
+      res.status(204).end();
+    } else {
+      const lock: Lock = { name: lockName, owner: lockOwner };
+      console.log("Cannot unlock", { lock });
+      res
+        .status(403)
+        .json({ error: `Cannot unlock ${lock.name}, locked by ${lockOwner}` });
+    }
+  }
+);
+
 const server = awsServerlessExpress.createServer(app);
 const handler = (event: APIGatewayProxyEvent, context: Context) =>
   awsServerlessExpress.proxy(server, event, context);

@@ -36,7 +36,8 @@ describe("dynamodb token repo", () => {
   test.each([
     [server.get("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")],
     [server.post("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")],
-  ])("Missing basic auth", async (apiCall) => {
+    [server.delete("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks/yo")],
+  ])("Missing basic auth (%#)", async (apiCall) => {
     const res = await apiCall;
 
     expect(res.status).toBe(401);
@@ -46,7 +47,8 @@ describe("dynamodb token repo", () => {
   test.each([
     [server.get("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")],
     [server.post("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")],
-  ])("Invalid credentials", async (apiCall) => {
+    [server.delete("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks/yo")],
+  ])("Invalid credentials (%#)", async (apiCall) => {
     const invalidCredentials = `${Buffer.from(`h4ck3r:b4dt0k3n`).toString(
       "base64"
     )}`;
@@ -63,7 +65,8 @@ describe("dynamodb token repo", () => {
   test.each([
     [server.get("/dev/api/teams/T012345WXYZ/channels/C012345EFGH/locks")],
     [server.post("/dev/api/teams/T012345WXYZ/channels/C012345EFGH/locks")],
-  ])("Valid credentials, incorrect channel", async (apiCall) => {
+    [server.delete("/dev/api/teams/T012345WXYZ/channels/C012345EFGH/locks/yo")],
+  ])("Valid credentials, incorrect channel (%#)", async (apiCall) => {
     const res = await apiCall.set("Authorization", `Basic ${credentials1}`);
 
     expect(res.status).toBe(401);
@@ -207,9 +210,45 @@ describe("dynamodb token repo", () => {
     );
   });
 
-  test("create lock, delete lock", async () => {});
+  test("Create lock, delete lock, get locks", async () => {
+    await server
+      .post("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
+      .set("Authorization", `Basic ${credentials1}`)
+      .send({ name: "dev", owner: "U012345MNOP" });
 
-  test("try delete non-existant lock", async () => {});
+    await server
+      .delete("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks/dev")
+      .set("Authorization", `Basic ${credentials1}`)
+      .expect(204);
 
-  test("try delete someone else's lock", async () => {});
+    const res = await server
+      .get("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
+      .set("Authorization", `Basic ${credentials1}`);
+    expect(res.status).toBe(200);
+    expect(res.text).toBe(JSON.stringify([]));
+  });
+
+  test("Delete non-existant lock", async () => {
+    const res = await server
+      .delete("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks/dev")
+      .set("Authorization", `Basic ${credentials1}`);
+
+    expect(res.status).toBe(204);
+  });
+
+  test("Try delete someone else's existing lock", async () => {
+    await server
+      .post("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
+      .set("Authorization", `Basic ${credentials2}`)
+      .send({ name: "dev", owner: "U012345QRST" });
+
+    const res = await server
+      .delete("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks/dev")
+      .set("Authorization", `Basic ${credentials1}`);
+
+    expect(res.status).toBe(403);
+    expect(res.text).toBe(
+      JSON.stringify({ error: "Cannot unlock dev, locked by U012345QRST" })
+    );
+  });
 });

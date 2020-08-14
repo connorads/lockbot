@@ -55,6 +55,9 @@ functions:
       - http:
           method: get
           path: /api/teams/{team}/channels/{channel}/locks/{lock}
+      - http:
+          method: delete
+          path: /api/teams/{team}/channels/{channel}/locks/{lock}
 
 resources:
   Resources:
