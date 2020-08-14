@@ -41,14 +41,14 @@ const authorizer = async (req: Request, res: Response, next: NextFunction) => {
   const user = auth(req);
   if (!user) {
     console.log("Missing basic auth", { channel, team });
-    res.status(401).send({ error: "Missing basic auth" });
+    res.status(401).json({ error: "Missing basic auth" });
   } else if (
     await tokenAuthorizer.isAuthorized(user.pass, user.name, channel, team)
   ) {
     next();
   } else {
     console.log("Unauthorized", { channel, team, user: user.name });
-    res.status(401).send({ error: "Unauthorized" });
+    res.status(401).json({ error: "Unauthorized" });
   }
 };
 
@@ -62,6 +62,23 @@ app.get(
     locksMap.forEach((v, k) => locks.push({ name: k, owner: v }));
     console.log("Retrieved locks", { channel, team, locks });
     res.status(200).json(locks);
+  }
+);
+
+app.get(
+  "/api/teams/:team/channels/:channel/locks/:resource",
+  authorizer,
+  async (req, res) => {
+    const { channel, team, resource } = req.params;
+    const lockOwner = await lockRepo.getOwner(resource, channel, team);
+    if (lockOwner) {
+      const lock: Lock = { name: resource, owner: lockOwner };
+      console.log("Retrieved lock", { channel, team, lock });
+      res.status(200).json(lock);
+    } else {
+      console.log("Lock not found", { channel, team, resource });
+      res.status(404).json({ error: `${resource} not found` });
+    }
   }
 );
 

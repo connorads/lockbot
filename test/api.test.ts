@@ -70,13 +70,22 @@ describe("dynamodb token repo", () => {
     expect(res.text).toBe(JSON.stringify({ error: "Unauthorized" }));
   });
 
-  test("Get locks", async () => {
+  test("Get non-existent locks", async () => {
     const res = await server
       .get("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
       .set("Authorization", `Basic ${credentials1}`);
 
     expect(res.status).toBe(200);
     expect(res.text).toBe(JSON.stringify([]));
+  });
+
+  test("Get non-existent lock", async () => {
+    const res = await server
+      .get("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks/dev")
+      .set("Authorization", `Basic ${credentials1}`);
+
+    expect(res.status).toBe(404);
+    expect(res.text).toBe(JSON.stringify({ error: "dev not found" }));
   });
 
   test("Create lock", async () => {
@@ -86,6 +95,22 @@ describe("dynamodb token repo", () => {
       .send({ name: "dev", owner: "U012345MNOP" });
 
     expect(res.status).toBe(201);
+    expect(res.text).toBe(
+      JSON.stringify({ name: "dev", owner: "U012345MNOP" })
+    );
+  });
+
+  test("Get lock", async () => {
+    await server
+      .post("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
+      .set("Authorization", `Basic ${credentials1}`)
+      .send({ name: "dev", owner: "U012345MNOP" });
+
+    const res = await server
+      .get("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks/dev")
+      .set("Authorization", `Basic ${credentials1}`);
+
+    expect(res.status).toBe(200);
     expect(res.text).toBe(
       JSON.stringify({ name: "dev", owner: "U012345MNOP" })
     );
