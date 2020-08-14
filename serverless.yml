@@ -54,7 +54,7 @@ functions:
           path: /api/teams/{team}/channels/{channel}/locks
       - http:
           method: get
-          path: /api/teams/{team}/channels/{channel}/locks/{resource}
+          path: /api/teams/{team}/channels/{channel}/locks/{lock}
 
 resources:
   Resources:
