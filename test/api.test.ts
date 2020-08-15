@@ -159,6 +159,54 @@ describe("dynamodb token repo", () => {
       },
     ],
     [
+      { name: "", owner: "U012345MNOP" },
+      {
+        error:
+          'required property "name"\n' +
+          '└─ cannot decode "", should be NonEmptyWhitespaceFreeString',
+      },
+    ],
+    [
+      { name: "   ", owner: "U012345MNOP" },
+      {
+        error:
+          'required property "name"\n' +
+          '└─ cannot decode "   ", should be NonEmptyWhitespaceFreeString',
+      },
+    ],
+    [
+      { name: "dev 1", owner: "U012345MNOP" },
+      {
+        error:
+          'required property "name"\n' +
+          '└─ cannot decode "dev 1", should be NonEmptyWhitespaceFreeString',
+      },
+    ],
+    [
+      { name: "dev", owner: "" },
+      {
+        error:
+          'required property "owner"\n' +
+          '└─ cannot decode "", should be NonEmptyWhitespaceFreeString',
+      },
+    ],
+    [
+      { name: "dev", owner: "   " },
+      {
+        error:
+          'required property "owner"\n' +
+          '└─ cannot decode "   ", should be NonEmptyWhitespaceFreeString',
+      },
+    ],
+    [
+      { name: "dev", owner: "connor ads" },
+      {
+        error:
+          'required property "owner"\n' +
+          '└─ cannot decode "connor ads", should be NonEmptyWhitespaceFreeString',
+      },
+    ],
+    [
       {},
       {
         error:
@@ -168,17 +216,34 @@ describe("dynamodb token repo", () => {
           "└─ cannot decode undefined, should be string",
       },
     ],
-  ])("Try create lock with bad payload", async (req, expectedResponseBody) => {
+  ])(
+    "Cannot create lock with bad payload %p",
+    async (payload, expectedResponseBody) => {
+      const res = await server
+        .post("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
+        .set("Authorization", `Basic ${credentials1}`)
+        .send(payload);
+
+      expect(res.status).toBe(400);
+      expect(res.text).toBe(JSON.stringify(expectedResponseBody));
+    }
+  );
+
+  test("Cannot create lock for someone else", async () => {
     const res = await server
       .post("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
       .set("Authorization", `Basic ${credentials1}`)
-      .send(req);
+      .send({ name: "dev", owner: "U012345QRST" });
 
-    expect(res.status).toBe(400);
-    expect(res.text).toBe(JSON.stringify(expectedResponseBody));
+    expect(res.status).toBe(403);
+    expect(res.text).toBe(
+      JSON.stringify({
+        error: "U012345MNOP cannot lock for another user U012345QRST",
+      })
+    );
   });
 
-  test("Try lock your existing lock", async () => {
+  test("Can lock your existing lock", async () => {
     await server
       .post("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
       .set("Authorization", `Basic ${credentials1}`)
@@ -194,7 +259,7 @@ describe("dynamodb token repo", () => {
     );
   });
 
-  test("Try lock someone else's existing lock", async () => {
+  test("Cannot lock someone else's existing lock", async () => {
     await server
       .post("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
       .set("Authorization", `Basic ${credentials2}`)
@@ -236,7 +301,7 @@ describe("dynamodb token repo", () => {
     expect(res.status).toBe(204);
   });
 
-  test("Try delete someone else's existing lock", async () => {
+  test("Cannot delete someone else's existing lock", async () => {
     await server
       .post("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
       .set("Authorization", `Basic ${credentials2}`)

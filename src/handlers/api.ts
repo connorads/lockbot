@@ -5,6 +5,7 @@ import * as env from "env-var";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import auth from "basic-auth";
 import * as D from "io-ts/lib/Decoder";
+import { pipe } from "fp-ts/lib/function";
 import { isLeft } from "fp-ts/lib/Either";
 import DynamoDBLockRepo from "../storage/dynamodb-lock-repo";
 import TokenAuthorizer from "../token-authorizer";
@@ -30,9 +31,24 @@ const lockRepo = new DynamoDBLockRepo(
   env.get("RESOURCES_TABLE_NAME").required().asString()
 );
 
+interface NonEmptyWhitespaceFreeStringBrand {
+  readonly NonEmptyWhitespaceFreeString: unique symbol;
+}
+type NonEmptyWhitespaceFreeString = string & NonEmptyWhitespaceFreeStringBrand;
+const NonEmptyWhitespaceFreeString: D.Decoder<
+  unknown,
+  NonEmptyWhitespaceFreeString
+> = pipe(
+  D.string,
+  D.refine(
+    (s): s is NonEmptyWhitespaceFreeString => s.length > 0 && !/\s/.test(s),
+    "NonEmptyWhitespaceFreeString"
+  )
+);
+
 const Lock = D.type({
-  name: D.string,
-  owner: D.string,
+  name: NonEmptyWhitespaceFreeString,
+  owner: NonEmptyWhitespaceFreeString,
 });
 interface Lock extends D.TypeOf<typeof Lock> {}
 
@@ -60,7 +76,7 @@ app.get(
     const { team, channel } = req.params;
     const locksMap = await lockRepo.getAll(channel, team);
     const locks: Lock[] = [];
-    locksMap.forEach((v, k) => locks.push({ name: k, owner: v }));
+    locksMap.forEach((v, k) => locks.push({ name: k, owner: v } as Lock));
     console.log("Retrieved locks", { locks });
     res.status(200).json(locks);
   }
@@ -73,7 +89,7 @@ app.get(
     const { team, channel, lock: lockName } = req.params;
     const lockOwner = await lockRepo.getOwner(lockName, channel, team);
     if (lockOwner) {
-      const lock: Lock = { name: lockName, owner: lockOwner };
+      const lock = { name: lockName, owner: lockOwner } as Lock;
       console.log("Retrieved lock", { lock });
       res.status(200).json(lock);
     } else {
@@ -99,21 +115,27 @@ app.post(
   authorizer,
   validator,
   async (req, res) => {
+    const username = auth(req)!.name;
     const { channel, team } = req.params;
     const lock = req.body as Lock;
-    const lockOwner = await lockRepo.getOwner(lock.name, channel, team);
-    if (!lockOwner) {
-      await lockRepo.setOwner(lock.name, lock.owner, channel, team);
-      console.log("Added lock", { lock });
-      res.status(201).json(lock);
-    } else if (lockOwner === lock.owner) {
-      console.log("Lock exists", { lock });
-      res.status(200).json(lock);
+    if (lock.owner !== username) {
+      const error = `${username} cannot lock for another user ${lock.owner}`;
+      console.log("Cannot lock", { username, body: req.body, error });
+      res.status(403).json({ error });
     } else {
-      console.log("Cannot lock", { lock, lockOwner });
-      res
-        .status(403)
-        .json({ error: `${lock.name} is already locked by ${lockOwner}` });
+      const lockOwner = await lockRepo.getOwner(lock.name, channel, team);
+      if (!lockOwner) {
+        await lockRepo.setOwner(lock.name, lock.owner, channel, team);
+        console.log("Added lock", { lock });
+        res.status(201).json(lock);
+      } else if (lockOwner === lock.owner) {
+        console.log("Lock exists", { lock });
+        res.status(200).json(lock);
+      } else {
+        const error = `${lock.name} is already locked by ${lockOwner}`;
+        console.log("Cannot lock", { lock, lockOwner, error });
+        res.status(403).json({ error });
+      }
     }
   }
 );
@@ -128,16 +150,15 @@ app.delete(
       console.log("No lock to delete", { lockName });
       res.status(204).end();
     } else if (lockOwner === auth(req)!.name) {
-      const lock: Lock = { name: lockName, owner: lockOwner };
+      const lock = { name: lockName, owner: lockOwner } as Lock;
       await lockRepo.delete(lockName, channel, team);
       console.log("Lock deleted", { lock });
       res.status(204).end();
     } else {
-      const lock: Lock = { name: lockName, owner: lockOwner };
-      console.log("Cannot unlock", { lock });
-      res
-        .status(403)
-        .json({ error: `Cannot unlock ${lock.name}, locked by ${lockOwner}` });
+      const lock = { name: lockName, owner: lockOwner } as Lock;
+      const error = `Cannot unlock ${lock.name}, locked by ${lockOwner}`;
+      console.log("Cannot unlock", { lock, error });
+      res.status(403).json({ error });
     }
   }
 );
