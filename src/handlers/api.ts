@@ -99,11 +99,15 @@ app.get(
   }
 );
 
-const validator = async (req: Request, res: Response, next: NextFunction) => {
+const bodyValidator = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const decoded = Lock.decode(req.body);
   if (isLeft(decoded)) {
     const error = D.draw(decoded.left);
-    console.log("Invalid request", { body: req.body, error });
+    console.log("Invalid request body", { body: req.body, error });
     res.status(400).json({ error });
   } else {
     next();
@@ -113,7 +117,7 @@ const validator = async (req: Request, res: Response, next: NextFunction) => {
 app.post(
   "/api/teams/:team/channels/:channel/locks",
   authorizer,
-  validator,
+  bodyValidator,
   async (req, res) => {
     const username = auth(req)!.name;
     const { channel, team } = req.params;
@@ -140,9 +144,28 @@ app.post(
   }
 );
 
+const paramsValidator = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const Params = D.type({
+    lock: NonEmptyWhitespaceFreeString,
+  });
+  const decoded = Params.decode(req.params);
+  if (isLeft(decoded)) {
+    const error = D.draw(decoded.left);
+    console.log("Invalid request params", { params: req.params, error });
+    res.status(400).json({ error });
+  } else {
+    next();
+  }
+};
+
 app.delete(
   "/api/teams/:team/channels/:channel/locks/:lock",
   authorizer,
+  paramsValidator,
   async (req, res) => {
     const { team, channel, lock: lockName } = req.params;
     const lockOwner = await lockRepo.getOwner(lockName, channel, team);

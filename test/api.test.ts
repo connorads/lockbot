@@ -293,6 +293,21 @@ describe("dynamodb token repo", () => {
     expect(res.text).toBe(JSON.stringify([]));
   });
 
+  test("Cannot delete lock with bad route", async () => {
+    const res = await server
+      .delete("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks/dev 1")
+      .set("Authorization", `Basic ${credentials1}`);
+
+    expect(res.status).toBe(400);
+    expect(res.text).toBe(
+      JSON.stringify({
+        error:
+          'required property "lock"\n' +
+          '└─ cannot decode "dev 1", should be NonEmptyWhitespaceFreeString',
+      })
+    );
+  });
+
   test("Delete non-existant lock", async () => {
     const res = await server
       .delete("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks/dev")
