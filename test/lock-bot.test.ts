@@ -28,20 +28,20 @@ const runAllTests = () => {
   };
   test("can lock resource", async () => {
     expect(await execute("/lock dev")).toEqual({
-      message: "Connor has locked `dev` 🔒",
+      message: "<@Connor> has locked `dev` 🔒",
       destination: "channel",
     });
   });
   test("can lock different resource", async () => {
     expect(await execute("/lock test")).toEqual({
-      message: "Connor has locked `test` 🔒",
+      message: "<@Connor> has locked `test` 🔒",
       destination: "channel",
     });
   });
   test("can lock resource with same name in different channels", async () => {
     await execute("/lock dev");
     expect(await execute("/lock dev", { channel: "random" })).toEqual({
-      message: "Connor has locked `dev` 🔒",
+      message: "<@Connor> has locked `dev` 🔒",
       destination: "channel",
     });
   });
@@ -62,7 +62,7 @@ const runAllTests = () => {
   test("cannot lock someone else's resource", async () => {
     await execute("/lock dev");
     expect(await execute("/lock dev", { user: "Dave" })).toEqual({
-      message: "`dev` is already locked by Connor 🔒",
+      message: "`dev` is already locked by <@Connor> 🔒",
       destination: "user",
     });
   });
@@ -72,8 +72,8 @@ const runAllTests = () => {
         "How to use `/lock`\n\n" +
         "To lock a resource in this channel called `thingy`, use `/lock thingy`\n\n" +
         "_Example:_\n" +
-        `> *Connor*: \`/lock dev\`\n` +
-        `> *Lockbot*: Connor has locked \`dev\` 🔒`,
+        `> *<@Connor>*: \`/lock dev\`\n` +
+        `> *Lockbot*: <@Connor> has locked \`dev\` 🔒`,
       destination: "user",
     });
   });
@@ -83,8 +83,8 @@ const runAllTests = () => {
         "How to use `/lock`\n\n" +
         "To lock a resource in this channel called `thingy`, use `/lock thingy`\n\n" +
         "_Example:_\n" +
-        `> *Connor*: \`/lock dev\`\n` +
-        `> *Lockbot*: Connor has locked \`dev\` 🔒`,
+        `> *<@Connor>*: \`/lock dev\`\n` +
+        `> *Lockbot*: <@Connor> has locked \`dev\` 🔒`,
       destination: "user",
     });
   });
@@ -97,14 +97,14 @@ const runAllTests = () => {
   test("can unlock resource", async () => {
     await execute("/lock dev");
     expect(await execute("/unlock dev")).toEqual({
-      message: "Connor has unlocked `dev` 🔓",
+      message: "<@Connor> has unlocked `dev` 🔓",
       destination: "channel",
     });
   });
   test("can unlock different resource", async () => {
     await execute("/lock test");
     expect(await execute("/unlock test")).toEqual({
-      message: "Connor has unlocked `test` 🔓",
+      message: "<@Connor> has unlocked `test` 🔓",
       destination: "channel",
     });
   });
@@ -112,21 +112,22 @@ const runAllTests = () => {
     await execute("/lock dev");
     await execute("/unlock dev", { channel: "random" });
     expect(await execute("/locks")).toEqual({
-      message: "Active locks in this channel:\n> `dev` is locked by Connor 🔒",
+      message:
+        "Active locks in this channel:\n> `dev` is locked by <@Connor> 🔒",
       destination: "user",
     });
   });
   test("cannot unlock someone else's resource", async () => {
     await execute("/lock test");
     expect(await execute("/unlock test", { user: "Dave" })).toEqual({
-      message: "Cannot unlock `test`, locked by Connor 🔒",
+      message: "Cannot unlock `test`, locked by <@Connor> 🔒",
       destination: "user",
     });
   });
   test("cannot unlock someone else's resource (different user and resource)", async () => {
     await execute("/lock dev", { user: "Dave" });
     expect(await execute("/unlock dev")).toEqual({
-      message: "Cannot unlock `dev`, locked by Dave 🔒",
+      message: "Cannot unlock `dev`, locked by <@Dave> 🔒",
       destination: "user",
     });
   });
@@ -136,8 +137,8 @@ const runAllTests = () => {
         "How to use `/unlock`\n\n" +
         "To unlock a resource in this channel called `thingy`, use `/unlock thingy`\n\n" +
         "_Example:_\n" +
-        `> *Connor*: \`/unlock dev\`\n` +
-        `> *Lockbot*: Connor has unlocked \`dev\` 🔓`,
+        `> *<@Connor>*: \`/unlock dev\`\n` +
+        `> *Lockbot*: <@Connor> has unlocked \`dev\` 🔓`,
       destination: "user",
     });
   });
@@ -147,8 +148,8 @@ const runAllTests = () => {
         "How to use `/unlock`\n\n" +
         "To unlock a resource in this channel called `thingy`, use `/unlock thingy`\n\n" +
         "_Example:_\n" +
-        `> *Connor*: \`/unlock dev\`\n` +
-        `> *Lockbot*: Connor has unlocked \`dev\` 🔓`,
+        `> *<@Connor>*: \`/unlock dev\`\n` +
+        `> *Lockbot*: <@Connor> has unlocked \`dev\` 🔓`,
       destination: "user",
     });
   });
@@ -156,7 +157,7 @@ const runAllTests = () => {
     await execute("/lock dev");
     await execute("/unlock dev");
     expect(await execute("/lock dev")).toEqual({
-      message: "Connor has locked `dev` 🔒",
+      message: "<@Connor> has locked `dev` 🔒",
       destination: "channel",
     });
   });
@@ -169,14 +170,15 @@ const runAllTests = () => {
   test("can list locks one lock exists", async () => {
     await execute("/lock dev");
     expect(await execute("/locks")).toEqual({
-      message: "Active locks in this channel:\n> `dev` is locked by Connor 🔒",
+      message:
+        "Active locks in this channel:\n> `dev` is locked by <@Connor> 🔒",
       destination: "user",
     });
   });
   test("can list locks one lock exists different user", async () => {
     await execute("/lock dev", { user: "Dave" });
     expect(await execute("/locks")).toEqual({
-      message: "Active locks in this channel:\n> `dev` is locked by Dave 🔒",
+      message: "Active locks in this channel:\n> `dev` is locked by <@Dave> 🔒",
       destination: "user",
     });
   });
@@ -185,7 +187,7 @@ const runAllTests = () => {
     await execute("/lock test", { user: "Dave" });
     expect(await execute("/locks")).toEqual({
       message:
-        "Active locks in this channel:\n> `dev` is locked by Connor 🔒\n> `test` is locked by Dave 🔒",
+        "Active locks in this channel:\n> `dev` is locked by <@Connor> 🔒\n> `test` is locked by <@Dave> 🔒",
       destination: "user",
     });
   });
