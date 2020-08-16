@@ -145,8 +145,8 @@ const lockBot = new LockBot(
   )
 );
 
-const prefix =
-  env.get("SERVERLESS_STAGE").required().asString() === "dev" ? "dev" : "";
+const stage = env.get("SERVERLESS_STAGE").required().asString();
+const prefix = stage === "dev" ? "dev" : "";
 
 const getFirstParam = (commandText: string) => commandText.split(" ")[0];
 
@@ -176,6 +176,11 @@ app.command(
     )
   )
 );
+
+const url = env.get("IS_OFFLINE").asBool()
+  ? `http://localhost/3000/${stage}`
+  : env.get("API_GATEWAY_URL").required().asString();
+
 app.command(
   `/${prefix}lbtoken`,
   handleCommand((command) =>
@@ -183,7 +188,8 @@ app.command(
       getFirstParam(command.text),
       command.user_id,
       command.channel_id,
-      command.team_id
+      command.team_id,
+      url
     )
   )
 );

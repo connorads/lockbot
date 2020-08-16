@@ -16,6 +16,12 @@ provider:
     INSTALLATIONS_TABLE_NAME: ${self:custom.installationsTableName}
     ACCESS_TOKENS_TABLE_NAME: ${self:custom.accessTokensTableName}
     SERVERLESS_STAGE: ${self:custom.stage}
+    API_GATEWAY_URL:
+      Fn::Join:
+        - ""
+        - - "https://"
+          - Ref: "ApiGatewayRestApi"
+          - ".execute-api.${self:custom.region}.amazonaws.com/${self:custom.stage}"
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -107,6 +113,7 @@ resources:
 
 custom:
   stage: ${opt:stage, self:provider.stage}
+  region: ${opt:region, self:provider.region}
   resourcesTableName: ${self:custom.stage}-lockbot-resources
   installationsTableName: ${self:custom.stage}-lockbot-installations
   accessTokensTableName: ${self:custom.stage}-lockbot-tokens

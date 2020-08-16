@@ -76,8 +76,8 @@ export default class LockBot {
       return {
         message:
           "How to use `/unlock`\n\n" +
-          "To unlock a resource in this channel called `thingy`, use `/unlock thingy`\n\n" +
-          "_Example:_\n" +
+          "To unlock a resource in this channel called `thingy`, " +
+          "use `/unlock thingy`\n\n_Example:_\n" +
           `> *<@${user}>*: \`/unlock dev\`\n` +
           `> *Lockbot*: <@${user}> has unlocked \`dev\` 🔓`,
         destination: "user",
@@ -123,11 +123,24 @@ export default class LockBot {
     param: string,
     user: string,
     channel: string,
-    team: string
+    team: string,
+    url: string
   ): Promise<Response> => {
     if (param !== "new") {
       return {
-        message: "How to use `/lbtoken`\n\n Get a token blah\n",
+        message:
+          "How to use `/lbtoken`\n\n" +
+          "To generate a new access token for the " +
+          "Lockbot API use `/lbtoken new`\n\n" +
+          `• The token is scoped to your user \`${user}\` ` +
+          `and this channel \`${channel}\`\n` +
+          "• Make a note of your token as it won't be displayed again\n" +
+          "• If you generate a new token in this channel it will " +
+          "invalidate the existing token for this channel\n\n" +
+          "The API is secured using basic access authentication. " +
+          "To authenticate with the API you must set a header:\n" +
+          "```Authorization: Basic <credentials>```\n" +
+          "where `<credentials>` is `user:token` base64 encoded",
         destination: "user",
       };
     }
@@ -136,14 +149,28 @@ export default class LockBot {
       channel,
       team
     );
+    const credentials = `${Buffer.from(`${user}:${accessToken}`).toString(
+      "base64"
+    )}`;
+    const auth = `--header 'Authorization: Basic ${credentials}'`;
+    const baseUrl = `${url}/api/teams/${team}/channels/${channel}/locks`;
+    const get = "--request GET";
+    const del = "--request DELETE";
+    const post = "--request POST";
+    const json = "--header 'Content-Type: application/json'";
+    const body = `--data-raw '{ "name": "dev", "owner": "${user}"}'`;
     return {
       message:
-        `Here is your access token: \`${accessToken}\`\n` +
-        "Make note of it because it won't be displayed again.\n" +
-        "If you create a new token in this channel it will invalidate this channel\n" +
-        `${param} ${user} ${channel} ${team}` +
-        "_Example:_\n" +
-        "``` curl something something```\n",
+        `Here is your new access token: \`${accessToken}\`\n\n` +
+        "_Example API usage with `curl`:_\n\n" +
+        "> Fetch all locks 📜\n" +
+        `\`\`\`curl ${get} '${baseUrl}' ${auth}\`\`\`\n\n` +
+        "> Fetch lock `dev` 👀\n" +
+        `\`\`\`curl ${get} '${baseUrl}/dev' ${auth}\`\`\`\n\n` +
+        "> Create lock `dev` 🔒\n" +
+        `\`\`\`curl ${post} '${baseUrl}' ${auth} ${json} ${body}\`\`\`\n\n` +
+        "> Delete lock `dev` 🔓\n" +
+        `\`\`\`curl ${del} '${baseUrl}/dev' ${auth}\`\`\``,
       destination: "user",
     };
   };
