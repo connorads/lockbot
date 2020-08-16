@@ -159,7 +159,7 @@ app.command(
   handleCommand((command) =>
     lockBot.lock(
       getFirstParam(command.text),
-      `<@${command.user_id}>`, // TODO Move this <@> to message formatting?
+      command.user_id,
       command.channel_id,
       command.team_id
     )
@@ -170,7 +170,7 @@ app.command(
   handleCommand((command) =>
     lockBot.unlock(
       getFirstParam(command.text),
-      `<@${command.user_id}>`, // TODO Move this <@> to message formatting?
+      command.user_id,
       command.channel_id,
       command.team_id
     )

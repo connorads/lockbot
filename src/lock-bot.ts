@@ -41,8 +41,8 @@ export default class LockBot {
           "How to use `/lock`\n\n" +
           "To lock a resource in this channel called `thingy`, use `/lock thingy`\n\n" +
           "_Example:_\n" +
-          `> *${user}*: \`/lock dev\`\n` +
-          `> *Lockbot*: ${user} has locked \`dev\` 🔒`,
+          `> *<@${user}>*: \`/lock dev\`\n` +
+          `> *Lockbot*: <@${user}> has locked \`dev\` 🔒`,
         destination: "user",
       };
     }
@@ -55,13 +55,13 @@ export default class LockBot {
         };
       }
       return {
-        message: `\`${resource}\` is already locked by ${lockOwner} 🔒`,
+        message: `\`${resource}\` is already locked by <@${lockOwner}> 🔒`,
         destination: "user",
       };
     }
     await this.lockRepo.setOwner(resource, user, channel, team);
     return {
-      message: `${user} has locked \`${resource}\` 🔒`,
+      message: `<@${user}> has locked \`${resource}\` 🔒`,
       destination: "channel",
     };
   };
@@ -78,8 +78,8 @@ export default class LockBot {
           "How to use `/unlock`\n\n" +
           "To unlock a resource in this channel called `thingy`, use `/unlock thingy`\n\n" +
           "_Example:_\n" +
-          `> *${user}*: \`/unlock dev\`\n` +
-          `> *Lockbot*: ${user} has unlocked \`dev\` 🔓`,
+          `> *<@${user}>*: \`/unlock dev\`\n` +
+          `> *Lockbot*: <@${user}> has unlocked \`dev\` 🔓`,
         destination: "user",
       };
     }
@@ -94,12 +94,12 @@ export default class LockBot {
     if (user === lockOwner) {
       await this.lockRepo.delete(resource, channel, team);
       return {
-        message: `${user} has unlocked \`${resource}\` 🔓`,
+        message: `<@${user}> has unlocked \`${resource}\` 🔓`,
         destination: "channel",
       };
     }
     return {
-      message: `Cannot unlock \`${resource}\`, locked by ${lockOwner} 🔒`,
+      message: `Cannot unlock \`${resource}\`, locked by <@${lockOwner}> 🔒`,
       destination: "user",
     };
   };
@@ -114,7 +114,7 @@ export default class LockBot {
     }
     let locksMessage = "Active locks in this channel:\n";
     locks.forEach((lockOwner, lockedResource) => {
-      locksMessage += `> \`${lockedResource}\` is locked by ${lockOwner} 🔒\n`;
+      locksMessage += `> \`${lockedResource}\` is locked by <@${lockOwner}> 🔒\n`;
     });
     return { message: locksMessage.trimRight(), destination: "user" };
   };
