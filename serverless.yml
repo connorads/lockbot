@@ -15,6 +15,7 @@ provider:
     STATE_SECRET: ${env:STATE_SECRET}
     RESOURCES_TABLE_NAME: ${self:custom.resourcesTableName}
     INSTALLATIONS_TABLE_NAME: ${self:custom.installationsTableName}
+    SERVERLESS_STAGE: ${self:custom.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -30,7 +31,7 @@ provider:
 
 functions:
   slack-handler:
-    handler: src/slack.handler
+    handler: src/handlers/slack.handler
     events:
       - http:
           method: post
