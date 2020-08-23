@@ -95,7 +95,7 @@ describe("dynamodb token repo", () => {
     const res = await server
       .post("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
       .set("Authorization", `Basic ${credentials1}`)
-      .send({ name: "dev", owner: "U012345MNOP" });
+      .send('{ "name": "dev", "owner": "U012345MNOP" }');
 
     expect(res.status).toBe(201);
     expect(res.text).toBe(

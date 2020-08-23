@@ -12,7 +12,11 @@ import TokenAuthorizer from "../token-authorizer";
 import DynamoDBAccessTokenRepo from "../storage/dynamodb-token-repo";
 
 const app = express();
-app.use(express.json());
+app.use(
+  express.json({
+    type: "*/*",
+  })
+);
 
 const documentClient = env.get("IS_OFFLINE").asBool()
   ? new DocumentClient({
