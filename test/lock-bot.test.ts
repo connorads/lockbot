@@ -251,6 +251,7 @@ const runAllTests = () => {
       "curl --request DELETE 'https://lockbot.app/api/teams/our-team/channels/general/locks/dev'"
     );
   });
+};
 
 describe("in memory lock repo", () => {
   beforeEach(() => {
