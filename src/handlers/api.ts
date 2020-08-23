@@ -190,6 +190,14 @@ app.delete(
   }
 );
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  const { statusCode, message } = err;
+  res.status(statusCode).json({
+    error: message,
+  });
+});
+
 const server = awsServerlessExpress.createServer(app);
 const handler = (event: APIGatewayProxyEvent, context: Context) =>
   awsServerlessExpress.proxy(server, event, context);
