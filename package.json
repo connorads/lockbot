@@ -22,7 +22,6 @@
     "deploy": "serverless deploy"
   },
   "devDependencies": {
-    "@connorads/serverless-offline": "^6.5.0",
     "@types/jest": "^25.2.1",
     "@types/supertest": "^2.0.10",
     "@typescript-eslint/eslint-plugin": "^2.29.0",
@@ -39,6 +38,7 @@
     "prettier": "2.0.5",
     "serverless": "^1.69.0",
     "serverless-dynamodb-local": "^0.2.39",
+    "serverless-offline": "^6.8.0",
     "serverless-webpack": "^5.3.2",
     "supertest": "^4.0.2",
     "ts-jest": "^25.4.0",

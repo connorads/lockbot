@@ -278,40 +278,6 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@connorads/serverless-offline@^6.5.0":
-  version "6.5.0"
-  resolved "https://registry.yarnpkg.com/@connorads/serverless-offline/-/serverless-offline-6.5.0.tgz#0c4f091786ea39868a04502d8bef2685e90a02a4"
-  integrity sha512-3Di+XmhmZHMW1ijCTDd7U/SAfj2kubkHFxgqWseOtiN9slNJq3nooHEV8fb5yeupoZ7/6lVNK/eYZ581wGdfmA==
-  dependencies:
-    "@hapi/boom" "^7.4.11"
-    "@hapi/h2o2" "^8.3.2"
-    "@hapi/hapi" "^18.4.1"
-    boxen "^4.2.0"
-    chalk "^3.0.0"
-    cuid "^2.1.8"
-    execa "^4.0.0"
-    extend "^3.0.2"
-    fs-extra "^8.1.0"
-    java-invoke-local "0.0.6"
-    js-string-escape "^1.0.1"
-    jsonpath-plus "^3.0.0"
-    jsonschema "^1.2.6"
-    jsonwebtoken "^8.5.1"
-    jszip "^3.2.2"
-    luxon "^1.22.0"
-    node-fetch "^2.6.0"
-    node-schedule "^1.3.2"
-    object.fromentries "^2.0.2"
-    p-memoize "^4.0.0"
-    p-queue "^6.3.0"
-    p-retry "^4.2.0"
-    please-upgrade-node "^3.2.0"
-    portfinder "^1.0.25"
-    semver "^7.1.3"
-    update-notifier "^4.1.0"
-    velocityjs "^2.0.0"
-    ws "^7.2.1"
-
 "@hapi/accept@^3.2.4":
   version "3.2.4"
   resolved "https://registry.yarnpkg.com/@hapi/accept/-/accept-3.2.4.tgz#687510529493fe1d7d47954c31aff360d9364bd1"
@@ -2038,6 +2004,21 @@ aws-sdk@*:
     uuid "3.3.2"
     xml2js "0.4.19"
 
+aws-sdk@^2.624.0:
+  version "2.783.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.783.0.tgz#f6a2fb2d1af2e7c5a6ec2959436499ff5b6c705b"
+  integrity sha512-u3/ZvY/ag1hEkPpgBJxypWRGf8930prIDOWk221pgH0WhlRA9qp3IE8D0j/BKFei0giqlxbN/AB05RITp/XlwQ==
+  dependencies:
+    buffer "4.9.2"
+    events "1.1.1"
+    ieee754 "1.1.13"
+    jmespath "0.15.0"
+    querystring "0.2.0"
+    sax "1.2.1"
+    url "0.10.3"
+    uuid "3.3.2"
+    xml2js "0.4.19"
+
 aws-sdk@^2.665.0, aws-sdk@^2.7.0:
   version "2.670.0"
   resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.670.0.tgz#d54d18b9245df7b89bea96102e5bdebd99587701"
@@ -2508,7 +2489,7 @@ buffer@4.9.1:
     ieee754 "^1.1.4"
     isarray "^1.0.0"
 
-buffer@^4.3.0:
+buffer@4.9.2, buffer@^4.3.0:
   version "4.9.2"
   resolved "https://registry.yarnpkg.com/buffer/-/buffer-4.9.2.tgz#230ead344002988644841ab0244af8c44bbe3ef8"
   integrity sha512-xq+q3SRMOxGivLhBNaUdC64hDTQwejJ+H0T/NB1XMtTVEwNTrfFF3gAxiyW0Bu/xWEGhjVKgUcMhCrUy2+uCWg==
@@ -9351,6 +9332,41 @@ serverless-dynamodb-local@^0.2.39:
     bluebird "^3.4.6"
     dynamodb-localhost "0.0.9"
     lodash "^4.17.0"
+
+serverless-offline@^6.8.0:
+  version "6.8.0"
+  resolved "https://registry.yarnpkg.com/serverless-offline/-/serverless-offline-6.8.0.tgz#65d2192e41ef87ebcbc1093108db6a25059d6ab5"
+  integrity sha512-DBDMcU58Bl+zZGSTAZ96Ed57k11oh0fQwgSoH2iVJpO6xFV9dTIttBYzTCwnfAgG0kB6NZK99Q/69b4brChTnQ==
+  dependencies:
+    "@hapi/boom" "^7.4.11"
+    "@hapi/h2o2" "^8.3.2"
+    "@hapi/hapi" "^18.4.1"
+    aws-sdk "^2.624.0"
+    boxen "^4.2.0"
+    chalk "^3.0.0"
+    cuid "^2.1.8"
+    execa "^4.0.0"
+    extend "^3.0.2"
+    fs-extra "^8.1.0"
+    java-invoke-local "0.0.6"
+    js-string-escape "^1.0.1"
+    jsonpath-plus "^3.0.0"
+    jsonschema "^1.2.6"
+    jsonwebtoken "^8.5.1"
+    jszip "^3.2.2"
+    luxon "^1.22.0"
+    node-fetch "^2.6.0"
+    node-schedule "^1.3.2"
+    object.fromentries "^2.0.2"
+    p-memoize "^4.0.0"
+    p-queue "^6.3.0"
+    p-retry "^4.2.0"
+    please-upgrade-node "^3.2.0"
+    portfinder "^1.0.25"
+    semver "^7.1.3"
+    update-notifier "^4.1.0"
+    velocityjs "^2.0.0"
+    ws "^7.2.1"
 
 serverless-webpack@^5.3.2:
   version "5.3.2"

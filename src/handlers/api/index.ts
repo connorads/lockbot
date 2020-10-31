@@ -1,77 +1,23 @@
 import awsServerlessExpress from "aws-serverless-express";
-import express, { Request, Response, NextFunction } from "express";
+import express from "express";
 import { APIGatewayProxyEvent, Context } from "aws-lambda";
-import * as env from "env-var";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import auth from "basic-auth";
-import * as D from "io-ts/lib/Decoder";
-import { pipe } from "fp-ts/lib/function";
-import { isLeft } from "fp-ts/lib/Either";
-import DynamoDBLockRepo from "../storage/dynamodb-lock-repo";
-import TokenAuthorizer from "../token-authorizer";
-import DynamoDBAccessTokenRepo from "../storage/dynamodb-token-repo";
+import {
+  authorizer,
+  bodyValidator,
+  handleErrors,
+  paramsValidator,
+  parseAllContentAsJson,
+} from "./middleware";
+import { Lock } from "./types";
+import { lockRepo } from "./infra";
 
 const app = express();
-app.use(
-  express.json({
-    type: "*/*",
-  })
-);
 
-const documentClient = env.get("IS_OFFLINE").asBool()
-  ? new DocumentClient({
-      region: "localhost",
-      endpoint: "http://localhost:8000",
-    })
-  : new DocumentClient();
-const tokenAuthorizer = new TokenAuthorizer(
-  new DynamoDBAccessTokenRepo(
-    documentClient,
-    env.get("ACCESS_TOKENS_TABLE_NAME").required().asString()
-  )
-);
-const lockRepo = new DynamoDBLockRepo(
-  documentClient,
-  env.get("RESOURCES_TABLE_NAME").required().asString()
-);
+app.use(parseAllContentAsJson);
+app.use(handleErrors);
 
-interface NonEmptyWhitespaceFreeStringBrand {
-  readonly NonEmptyWhitespaceFreeString: unique symbol;
-}
-type NonEmptyWhitespaceFreeString = string & NonEmptyWhitespaceFreeStringBrand;
-const NonEmptyWhitespaceFreeString: D.Decoder<
-  unknown,
-  NonEmptyWhitespaceFreeString
-> = pipe(
-  D.string,
-  D.refine(
-    (s): s is NonEmptyWhitespaceFreeString => s.length > 0 && !/\s/.test(s),
-    "NonEmptyWhitespaceFreeString"
-  )
-);
-
-const Lock = D.type({
-  name: NonEmptyWhitespaceFreeString,
-  owner: NonEmptyWhitespaceFreeString,
-});
-interface Lock extends D.TypeOf<typeof Lock> {}
-
-const authorizer = async (req: Request, res: Response, next: NextFunction) => {
-  const { channel, team } = req.params;
-  const user = auth(req);
-  if (!user) {
-    console.log("Missing basic auth", { channel, team });
-    res.status(401).json({ error: "Missing basic auth" });
-  } else if (
-    await tokenAuthorizer.isAuthorized(user.pass, user.name, channel, team)
-  ) {
-    console.log("Authorized", { team, channel, username: user.name });
-    next();
-  } else {
-    console.log("Unauthorized", { team, channel, username: user.name });
-    res.status(401).json({ error: "Unauthorized" });
-  }
-};
+// TODO add openapi spec?
 
 app.get(
   "/api/teams/:team/channels/:channel/locks",
@@ -103,21 +49,6 @@ app.get(
   }
 );
 
-const bodyValidator = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const decoded = Lock.decode(req.body);
-  if (isLeft(decoded)) {
-    const error = D.draw(decoded.left);
-    console.log("Invalid request body", { body: req.body, error });
-    res.status(400).json({ error });
-  } else {
-    next();
-  }
-};
-
 app.post(
   "/api/teams/:team/channels/:channel/locks",
   authorizer,
@@ -148,24 +79,6 @@ app.post(
   }
 );
 
-const paramsValidator = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const Params = D.type({
-    lock: NonEmptyWhitespaceFreeString,
-  });
-  const decoded = Params.decode(req.params);
-  if (isLeft(decoded)) {
-    const error = D.draw(decoded.left);
-    console.log("Invalid request params", { params: req.params, error });
-    res.status(400).json({ error });
-  } else {
-    next();
-  }
-};
-
 app.delete(
   "/api/teams/:team/channels/:channel/locks/:lock",
   authorizer,
@@ -189,14 +102,6 @@ app.delete(
     }
   }
 );
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  const { statusCode, message } = err;
-  res.status(statusCode).json({
-    error: message,
-  });
-});
 
 const server = awsServerlessExpress.createServer(app);
 const handler = (event: APIGatewayProxyEvent, context: Context) =>
