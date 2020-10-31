@@ -16,14 +16,14 @@ export const handleErrors = (
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   next: NextFunction
 ) => {
-  const { statusCode, message } = err;
-  if (statusCode === 400) {
+  const { statusCode, message, stack } = err;
+  if (statusCode && statusCode >= 400 && statusCode < 500) {
     console.log("Client error", { message });
     res.status(statusCode).json({
       error: message,
     });
   } else {
-    console.error("Unhandled error", { statusCode, message, stack: err.stack });
+    console.error("Unhandled error", { statusCode, message, stack });
     res.status(500).send({ error: "Internal server error" });
   }
 };

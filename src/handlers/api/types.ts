@@ -22,18 +22,6 @@ export const Lock = D.type({
 });
 export interface Lock extends D.TypeOf<typeof Lock> {}
 
-export class ExpressError extends Error {
-  statusCode: number;
-
-  message: string;
-
-  error: string | null;
-
-  constructor(statusCode: number, message: string, error?: string) {
-    super(message);
-
-    this.statusCode = statusCode;
-    this.message = message;
-    this.error = error || null;
-  }
+export interface ExpressError extends Error {
+  statusCode?: number;
 }
