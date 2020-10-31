@@ -8,7 +8,7 @@
   "scripts": {
     "lint": "npm-run-all -p -c lint:*",
     "lint:tsc": "tsc --noEmit",
-    "lint:eslint": "eslint . src/*.ts src/handlers/*.ts src/storage/*.ts test/*.ts",
+    "lint:eslint": "eslint . src/*.ts src/handlers/api/*.ts src/handlers/slack/*.ts src/storage/*.ts test/*.ts",
     "db:install": "serverless plugin install --name serverless-dynamodb-local && serverless dynamodb install",
     "db:start": "serverless dynamodb start",
     "dev": "serverless offline",
