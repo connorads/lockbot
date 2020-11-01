@@ -1,0 +1,177 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Lockbot",
+    "description": "Coordinate use of your team's shared resources, in Slack 🤝 ... or via HTTP API",
+    "contact": {
+      "name": "Lockbot.app",
+      "url": "https://lockbot.app/"
+    },
+    "version": "1.0.0"
+  },
+  "externalDocs": {
+    "description": "GitHub Repository",
+    "url": "https://github.com/connorads/lockbot"
+  },
+  "servers": [
+    {
+      "url": "https://2p30aws1sc.execute-api.eu-west-1.amazonaws.com/dev/api/",
+      "description": "dev"
+    },
+    {
+      "url": "https://xjj5kgewr8.execute-api.eu-west-1.amazonaws.com/prod/api/",
+      "description": "prod"
+    }
+  ],
+  "paths": {
+    "/teams/{team}/channels/{channel}/locks": {
+      "get": {
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ],
+        "tags": ["conferenceMapper"],
+        "summary": "Create or retrieve conference ID mapping",
+        "description": "stuff",
+        "operationId": "fetchAllLocks",
+        "parameters": [
+          {
+            "name": "team",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "channel",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "mapping search performed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/locks"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        }
+      },
+      "post": {
+        "tags": ["conferenceMapper"],
+        "summary": "fdsfsd",
+        "description": "sfdfsdf",
+        "operationId": "createLock",
+        "parameters": [
+          {
+            "name": "team",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "channel",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "adsasda",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/lock"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Lock exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/lock"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Lock created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/lock"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Cannot Lock",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "lock": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          }
+        },
+        "description": "Lockkkkkk"
+      },
+      "locks": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/lock"
+        }
+      },
+      "error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "basicAuth": {
+        "type": "http",
+        "scheme": "basic"
+      }
+    }
+  }
+}
