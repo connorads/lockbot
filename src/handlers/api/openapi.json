@@ -31,9 +31,8 @@
             "basicAuth": []
           }
         ],
-        "tags": ["conferenceMapper"],
-        "summary": "Create or retrieve conference ID mapping",
-        "description": "stuff",
+        "tags": ["Locks"],
+        "summary": "Fetch all locks 📜",
         "operationId": "fetchAllLocks",
         "parameters": [
           {
@@ -55,7 +54,7 @@
         ],
         "responses": {
           "200": {
-            "description": "mapping search performed",
+            "description": "List of active locks",
             "content": {
               "application/json": {
                 "schema": {
@@ -63,16 +62,17 @@
                 }
               }
             }
-          },
-          "400": {
-            "description": "Invalid input"
           }
         }
       },
       "post": {
-        "tags": ["conferenceMapper"],
-        "summary": "fdsfsd",
-        "description": "sfdfsdf",
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ],
+        "tags": ["Locks"],
+        "summary": "Create lock 🔒",
         "operationId": "createLock",
         "parameters": [
           {
@@ -93,7 +93,6 @@
           }
         ],
         "requestBody": {
-          "description": "adsasda",
           "content": {
             "application/json": {
               "schema": {
@@ -124,8 +123,139 @@
               }
             }
           },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
           "403": {
-            "description": "Cannot Lock",
+            "description": "Cannot create lock",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/teams/{team}/channels/{channel}/locks/{lock}": {
+      "get": {
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ],
+        "tags": ["Locks"],
+        "summary": "Fetch lock 👀",
+        "operationId": "fetchLock",
+        "parameters": [
+          {
+            "name": "team",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "channel",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "lock",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lock found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/lock"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Lock not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ],
+        "tags": ["Locks"],
+        "summary": "Delete lock 🔓",
+        "operationId": "deleteLock",
+        "parameters": [
+          {
+            "name": "team",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "channel",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "lock",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Lock deleted or doesn't exist"
+          },
+          "403": {
+            "description": "Cannot delete lock",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Lock not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -150,13 +280,17 @@
             "type": "string"
           }
         },
-        "description": "Lockkkkkk"
+        "example": { "name": "dev", "owner": "U012345MNOP" }
       },
       "locks": {
         "type": "array",
         "items": {
           "$ref": "#/components/schemas/lock"
-        }
+        },
+        "example": [
+          { "name": "dev", "owner": "U012345MNOP" },
+          { "name": "test", "owner": "U012345MNOP" }
+        ]
       },
       "error": {
         "type": "object",
@@ -164,7 +298,8 @@
           "error": {
             "type": "string"
           }
-        }
+        },
+        "example": { "error": "Insert specific error message here" }
       }
     },
     "securitySchemes": {
