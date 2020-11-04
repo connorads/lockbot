@@ -17,8 +17,6 @@ const app = express();
 app.use(parseAllContentAsJson);
 app.use(handleErrors);
 
-// TODO add openapi spec?
-
 app.get(
   "/api/teams/:team/channels/:channel/locks",
   authorizer,

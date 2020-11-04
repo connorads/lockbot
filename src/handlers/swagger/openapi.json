@@ -13,16 +13,6 @@
     "description": "GitHub Repository",
     "url": "https://github.com/connorads/lockbot"
   },
-  "servers": [
-    {
-      "url": "https://2p30aws1sc.execute-api.eu-west-1.amazonaws.com/dev/api/",
-      "description": "dev"
-    },
-    {
-      "url": "https://xjj5kgewr8.execute-api.eu-west-1.amazonaws.com/prod/api/",
-      "description": "prod"
-    }
-  ],
   "paths": {
     "/teams/{team}/channels/{channel}/locks": {
       "get": {

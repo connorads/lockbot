@@ -64,6 +64,16 @@ functions:
       - http:
           method: delete
           path: /api/teams/{team}/channels/{channel}/locks/{lock}
+  swagger:
+    handler: src/handlers/swagger/index.handler
+    events:
+      - http:
+          method: get
+          path: /api-docs
+      - http:
+          method: get
+          path: /openapi.json
+
 
 resources:
   Resources:
