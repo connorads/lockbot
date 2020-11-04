@@ -23,7 +23,6 @@
         ],
         "tags": ["Locks"],
         "summary": "Fetch all locks 📜",
-        "operationId": "fetchAllLocks",
         "parameters": [
           {
             "name": "team",
@@ -63,7 +62,6 @@
         ],
         "tags": ["Locks"],
         "summary": "Create lock 🔒",
-        "operationId": "createLock",
         "parameters": [
           {
             "name": "team",
@@ -145,7 +143,6 @@
         ],
         "tags": ["Locks"],
         "summary": "Fetch lock 👀",
-        "operationId": "fetchLock",
         "parameters": [
           {
             "name": "team",
@@ -203,7 +200,6 @@
         ],
         "tags": ["Locks"],
         "summary": "Delete lock 🔓",
-        "operationId": "deleteLock",
         "parameters": [
           {
             "name": "team",
