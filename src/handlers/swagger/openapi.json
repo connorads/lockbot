@@ -14,7 +14,7 @@
     "url": "https://github.com/connorads/lockbot"
   },
   "paths": {
-    "/teams/{team}/channels/{channel}/locks": {
+    "/api/teams/{team}/channels/{channel}/locks": {
       "get": {
         "security": [
           {
@@ -134,7 +134,7 @@
         }
       }
     },
-    "/teams/{team}/channels/{channel}/locks/{lock}": {
+    "/api/teams/{team}/channels/{channel}/locks/{lock}": {
       "get": {
         "security": [
           {
