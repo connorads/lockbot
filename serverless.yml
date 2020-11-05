@@ -4,6 +4,8 @@ plugins:
   - serverless-webpack
   - serverless-dynamodb-local
   - serverless-offline
+  - serverless-api-gateway-throttling
+
 provider:
   name: aws
   runtime: nodejs12.x
@@ -130,3 +132,6 @@ custom:
   dynamodb:
     stages:
       - dev # https://bit.ly/35WR0TT
+  apiGatewayThrottling:
+    maxRequestsPerSecond: 200
+    maxConcurrentRequests: 100
