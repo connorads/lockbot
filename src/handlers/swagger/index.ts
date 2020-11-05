@@ -16,7 +16,7 @@ app.get("/api-docs", async (req, res) => {
   res.send(swaggerHtml);
 });
 
-app.get("/openapi.json", async (req, res) => {
+app.get(["/openapi.json", "/api-docs/openapi.json"], async (req, res) => {
   res.set("Content-Type", "application/json; charset=utf-8");
   res.send(openApiJson);
 });

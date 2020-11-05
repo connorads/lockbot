@@ -75,6 +75,9 @@ functions:
       - http:
           method: get
           path: /openapi.json
+      - http:
+          method: get
+          path: /api-docs/openapi.json
 
 
 resources:
