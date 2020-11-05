@@ -12,12 +12,12 @@ openApiJson.servers = [{ url: `/${stage}` }];
 const app = express();
 
 app.get("/api-docs", async (req, res) => {
-  res.set("Content-Type", "text/html");
+  res.set("Content-Type", "text/html; charset=utf-8");
   res.send(swaggerHtml);
 });
 
 app.get("/openapi.json", async (req, res) => {
-  res.set("Content-Type", "application/json");
+  res.set("Content-Type", "application/json; charset=utf-8");
   res.send(openApiJson);
 });
 
