@@ -281,11 +281,11 @@
       "error": {
         "type": "object",
         "properties": {
-          "error": {
+          "message": {
             "type": "string"
           }
         },
-        "example": { "error": "Insert specific error message here" }
+        "example": { "message": "Insert specific error message here" }
       }
     },
     "securitySchemes": {

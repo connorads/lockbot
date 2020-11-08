@@ -41,7 +41,7 @@ describe("dynamodb token repo", () => {
     const res = await apiCall;
 
     expect(res.status).toBe(401);
-    expect(res.text).toBe(JSON.stringify({ error: "Missing basic auth" }));
+    expect(res.text).toBe(JSON.stringify({ message: "Missing basic auth" }));
   });
 
   test.each([
@@ -59,7 +59,7 @@ describe("dynamodb token repo", () => {
     );
 
     expect(res.status).toBe(401);
-    expect(res.text).toBe(JSON.stringify({ error: "Unauthorized" }));
+    expect(res.text).toBe(JSON.stringify({ message: "Unauthorized" }));
   });
 
   test.each([
@@ -70,7 +70,7 @@ describe("dynamodb token repo", () => {
     const res = await apiCall.set("Authorization", `Basic ${credentials1}`);
 
     expect(res.status).toBe(401);
-    expect(res.text).toBe(JSON.stringify({ error: "Unauthorized" }));
+    expect(res.text).toBe(JSON.stringify({ message: "Unauthorized" }));
   });
 
   test("Get non-existent locks", async () => {
@@ -88,7 +88,7 @@ describe("dynamodb token repo", () => {
       .set("Authorization", `Basic ${credentials1}`);
 
     expect(res.status).toBe(404);
-    expect(res.text).toBe(JSON.stringify({ error: "dev not found" }));
+    expect(res.text).toBe(JSON.stringify({ message: "dev not found" }));
   });
 
   test("Create lock", async () => {
@@ -149,7 +149,7 @@ describe("dynamodb token repo", () => {
 
     expect(res.status).toBe(400);
     expect(res.text).toBe(
-      JSON.stringify({ error: "Unexpected token / in JSON at position 0" })
+      JSON.stringify({ message: "Unexpected token / in JSON at position 0" })
     );
   });
 
@@ -157,7 +157,7 @@ describe("dynamodb token repo", () => {
     [
       { name: "dev" },
       {
-        error:
+        message:
           'required property "owner"\n' +
           "└─ cannot decode undefined, should be string",
       },
@@ -165,7 +165,7 @@ describe("dynamodb token repo", () => {
     [
       { owner: "U012345MNOP" },
       {
-        error:
+        message:
           'required property "name"\n' +
           "└─ cannot decode undefined, should be string",
       },
@@ -173,7 +173,7 @@ describe("dynamodb token repo", () => {
     [
       { name: "", owner: "U012345MNOP" },
       {
-        error:
+        message:
           'required property "name"\n' +
           '└─ cannot decode "", should be NonEmptyWhitespaceFreeString',
       },
@@ -181,7 +181,7 @@ describe("dynamodb token repo", () => {
     [
       { name: "   ", owner: "U012345MNOP" },
       {
-        error:
+        message:
           'required property "name"\n' +
           '└─ cannot decode "   ", should be NonEmptyWhitespaceFreeString',
       },
@@ -189,7 +189,7 @@ describe("dynamodb token repo", () => {
     [
       { name: "dev 1", owner: "U012345MNOP" },
       {
-        error:
+        message:
           'required property "name"\n' +
           '└─ cannot decode "dev 1", should be NonEmptyWhitespaceFreeString',
       },
@@ -197,7 +197,7 @@ describe("dynamodb token repo", () => {
     [
       { name: "dev", owner: "" },
       {
-        error:
+        message:
           'required property "owner"\n' +
           '└─ cannot decode "", should be NonEmptyWhitespaceFreeString',
       },
@@ -205,7 +205,7 @@ describe("dynamodb token repo", () => {
     [
       { name: "dev", owner: "   " },
       {
-        error:
+        message:
           'required property "owner"\n' +
           '└─ cannot decode "   ", should be NonEmptyWhitespaceFreeString',
       },
@@ -213,7 +213,7 @@ describe("dynamodb token repo", () => {
     [
       { name: "dev", owner: "connor ads" },
       {
-        error:
+        message:
           'required property "owner"\n' +
           '└─ cannot decode "connor ads", should be NonEmptyWhitespaceFreeString',
       },
@@ -221,7 +221,7 @@ describe("dynamodb token repo", () => {
     [
       {},
       {
-        error:
+        message:
           'required property "name"\n' +
           "└─ cannot decode undefined, should be string\n" +
           'required property "owner"\n' +
@@ -250,7 +250,7 @@ describe("dynamodb token repo", () => {
     expect(res.status).toBe(403);
     expect(res.text).toBe(
       JSON.stringify({
-        error: "U012345MNOP cannot lock for another user U012345QRST",
+        message: "U012345MNOP cannot lock for another user U012345QRST",
       })
     );
   });
@@ -283,7 +283,7 @@ describe("dynamodb token repo", () => {
 
     expect(res.status).toBe(403);
     expect(res.text).toBe(
-      JSON.stringify({ error: "dev is already locked by U012345QRST" })
+      JSON.stringify({ message: "dev is already locked by U012345QRST" })
     );
   });
 
@@ -313,7 +313,7 @@ describe("dynamodb token repo", () => {
     expect(res.status).toBe(400);
     expect(res.text).toBe(
       JSON.stringify({
-        error:
+        message:
           'required property "lock"\n' +
           '└─ cannot decode "dev 1", should be NonEmptyWhitespaceFreeString',
       })
@@ -340,7 +340,7 @@ describe("dynamodb token repo", () => {
 
     expect(res.status).toBe(403);
     expect(res.text).toBe(
-      JSON.stringify({ error: "Cannot unlock dev, locked by U012345QRST" })
+      JSON.stringify({ message: "Cannot unlock dev, locked by U012345QRST" })
     );
   });
 });

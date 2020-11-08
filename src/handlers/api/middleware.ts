@@ -20,11 +20,11 @@ export const handleErrors = (
   if (statusCode && statusCode >= 400 && statusCode < 500) {
     console.log("Client error", { message });
     res.status(statusCode).json({
-      error: message,
+      message,
     });
   } else {
     console.error("Unhandled error", { statusCode, message, stack });
-    res.status(500).send({ error: "Internal server error" });
+    res.status(500).send({ message: "Internal server error" });
   }
 };
 
@@ -37,7 +37,7 @@ export const authorizer = async (
   const user = auth(req);
   if (!user) {
     console.log("Missing basic auth", { channel, team });
-    res.status(401).json({ error: "Missing basic auth" });
+    res.status(401).json({ message: "Missing basic auth" });
   } else if (
     await tokenAuthorizer.isAuthorized(user.pass, user.name, channel, team)
   ) {
@@ -45,7 +45,7 @@ export const authorizer = async (
     next();
   } else {
     console.log("Unauthorized", { team, channel, username: user.name });
-    res.status(401).json({ error: "Unauthorized" });
+    res.status(401).json({ message: "Unauthorized" });
   }
 };
 
@@ -58,7 +58,7 @@ export const bodyValidator = async (
   if (isLeft(decoded)) {
     const error = D.draw(decoded.left);
     console.log("Invalid request body", { body: req.body, error });
-    res.status(400).json({ error });
+    res.status(400).json({ message: error });
   } else {
     next();
   }
@@ -76,7 +76,7 @@ export const paramsValidator = async (
   if (isLeft(decoded)) {
     const error = D.draw(decoded.left);
     console.log("Invalid request params", { params: req.params, error });
-    res.status(400).json({ error });
+    res.status(400).json({ message: error });
   } else {
     next();
   }

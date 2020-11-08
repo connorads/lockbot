@@ -42,7 +42,7 @@ app.get(
       res.status(200).json(lock);
     } else {
       console.log("Lock not found", { lockName });
-      res.status(404).json({ error: `${lockName} not found` });
+      res.status(404).json({ message: `${lockName} not found` });
     }
   }
 );
@@ -58,7 +58,7 @@ app.post(
     if (lock.owner !== username) {
       const error = `${username} cannot lock for another user ${lock.owner}`;
       console.log("Cannot lock", { username, body: req.body, error });
-      res.status(403).json({ error });
+      res.status(403).json({ message: error });
     } else {
       const lockOwner = await lockRepo.getOwner(lock.name, channel, team);
       if (!lockOwner) {
@@ -71,7 +71,7 @@ app.post(
       } else {
         const error = `${lock.name} is already locked by ${lockOwner}`;
         console.log("Cannot lock", { lock, lockOwner, error });
-        res.status(403).json({ error });
+        res.status(403).json({ message: error });
       }
     }
   }
@@ -96,7 +96,7 @@ app.delete(
       const lock = { name: lockName, owner: lockOwner } as Lock;
       const error = `Cannot unlock ${lock.name}, locked by ${lockOwner}`;
       console.log("Cannot unlock", { lock, error });
-      res.status(403).json({ error });
+      res.status(403).json({ message: error });
     }
   }
 );
