@@ -44,10 +44,10 @@ To explore the API take a look at the [OpenAPI spec](src/handlers/swagger/openap
 
 The API is secured using basic access authentication.
 
-- `/lbtoken` Learn about Lockbot API Tokens 💡
-- `/lbtoken new` Generate a new Lockbot API Token 🎫
+- `/lbtoken` Learn about Lockbot API access tokens 💡
+- `/lbtoken new` Generate a new Lockbot API access token 🎫
 
-Each token is scoped to the Slack `team` and `channel` they were created in and to the `user` who created them.
+Each access token is scoped to the Slack `team` and `channel` they were created in and to the `user` who created them.
 
 ## Contributing
 
