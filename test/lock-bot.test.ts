@@ -220,12 +220,13 @@ const runAllTests = () => {
       message:
         "How to use `/lbtoken`\n\n" +
         "To generate a new access token for the Lockbot API use `/lbtoken new`\n\n" +
-        "• The token is scoped to your user `Connor` and this channel `general`\n" +
+        "• The token is scoped to your user `Connor`, this team `our-team` and this channel `general`\n" +
         "• Make a note of your token as it won't be displayed again\n" +
         "• If you generate a new token in this channel it will invalidate the existing token for this channel\n\n" +
         "The API is secured using basic access authentication. To authenticate with the API you must set a header:\n" +
         "```Authorization: Basic <credentials>```\n" +
-        "where `<credentials>` is `user:token` base64 encoded",
+        "where `<credentials>` is `user:token` base64 encoded\n\n" +
+        "Explore the Lockbot API with OpenAPI 3 and Swagger UI: https://lockbot.app/api-docs",
       destination: "user",
     });
   });

@@ -132,15 +132,17 @@ export default class LockBot {
           "How to use `/lbtoken`\n\n" +
           "To generate a new access token for the " +
           "Lockbot API use `/lbtoken new`\n\n" +
-          `• The token is scoped to your user \`${user}\` ` +
-          `and this channel \`${channel}\`\n` +
+          `• The token is scoped to your user \`${user}\`, ` +
+          `this team \`${team}\` and this channel \`${channel}\`\n` +
           "• Make a note of your token as it won't be displayed again\n" +
           "• If you generate a new token in this channel it will " +
           "invalidate the existing token for this channel\n\n" +
           "The API is secured using basic access authentication. " +
           "To authenticate with the API you must set a header:\n" +
           "```Authorization: Basic <credentials>```\n" +
-          "where `<credentials>` is `user:token` base64 encoded",
+          "where `<credentials>` is `user:token` base64 encoded\n\n" +
+          `Explore the Lockbot API with OpenAPI 3 ` +
+          `and Swagger UI: ${url}/api-docs`,
         destination: "user",
       };
     }
