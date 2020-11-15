@@ -22,7 +22,8 @@ jobs:
         run: |
           mkdir ~/.aws
           echo -e "[default]\naws_access_key_id=''\naws_secret_access_key=''" > ~/.aws/credentials
-      - run: yarn jest --maxWorkers=1 --coverage
+      - name: Setup Serverless Offline & Run Tests
+        run: yarn ci
       - name: Coveralls
         uses: coverallsapp/github-action@v1.1.1
         with:

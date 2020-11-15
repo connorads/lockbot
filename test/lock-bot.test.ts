@@ -1,7 +1,11 @@
-import DynamoDB, { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import LockBot, { Response } from "../src/lock-bot";
 import InMemoryLockRepo from "../src/storage/in-memory-lock-repo";
 import DynamoDBLockRepo from "../src/storage/dynamodb-lock-repo";
+import TokenAuthorizer from "../src/token-authorizer";
+import InMemoryAccessTokenRepo from "../src/storage/in-memory-token-repo";
+import DynamoDBAccessTokenRepo from "../src/storage/dynamodb-token-repo";
+import { recreateResourcesTable, recreateAccessTokenTable } from "./utils";
 
 let lockBot: LockBot;
 const runAllTests = () => {
@@ -11,7 +15,7 @@ const runAllTests = () => {
   ): Promise<Response> => {
     const tokens = input.split(" ");
     const command = tokens[0];
-    const resource = tokens[1];
+    const param = tokens[1];
     const user = params?.user ?? "Connor";
     const channel = params?.channel ?? "general";
     const team = params?.team ?? "our-team";
@@ -19,10 +23,13 @@ const runAllTests = () => {
       return lockBot.locks(channel, team);
     }
     if (command === "/unlock") {
-      return lockBot.unlock(resource, user, channel, team);
+      return lockBot.unlock(param, user, channel, team);
     }
     if (command === "/lock") {
-      return lockBot.lock(resource, user, channel, team);
+      return lockBot.lock(param, user, channel, team);
+    }
+    if (command === "/lbtoken") {
+      return lockBot.lbtoken(param, user, channel, team, "https://lockbot.app");
     }
     throw Error("Unhandled command");
   };
@@ -207,48 +214,71 @@ const runAllTests = () => {
       destination: "user",
     });
   });
+
+  test("get access token help", async () => {
+    expect(await execute("/lbtoken")).toEqual({
+      message:
+        "How to use `/lbtoken`\n\n" +
+        "To generate a new access token for the Lockbot API use `/lbtoken new`\n\n" +
+        "• The token is scoped to your user `Connor`, this team `our-team` and this channel `general`\n" +
+        "• Make a note of your token as it won't be displayed again\n" +
+        "• If you generate a new token in this channel it will invalidate the existing token for this channel\n\n" +
+        "The API is secured using basic access authentication. To authenticate with the API you must set a header:\n" +
+        "```Authorization: Basic <credentials>```\n" +
+        "where `<credentials>` is `user:token` base64 encoded\n\n" +
+        "Explore the Lockbot API with OpenAPI 3 and Swagger UI: https://lockbot.app/api-docs",
+      destination: "user",
+    });
+  });
+
+  test("get new access token", async () => {
+    const { message, destination } = await execute("/lbtoken new");
+    expect(destination).toBe("user");
+    expect(message).toContain("Here is your new access token");
+    expect(message).toContain("> Fetch all locks 📜\n");
+    expect(message).toContain(
+      "curl --request GET 'https://lockbot.app/api/teams/our-team/channels/general/locks'"
+    );
+    expect(message).toContain("> Fetch lock `dev` 👀\n");
+    expect(message).toContain(
+      "curl --request GET 'https://lockbot.app/api/teams/our-team/channels/general/locks/dev'"
+    );
+    expect(message).toContain("> Create lock `dev` 🔒\n");
+    expect(message).toContain(
+      "curl --request POST 'https://lockbot.app/api/teams/our-team/channels/general/locks'"
+    );
+    expect(message).toContain("> Delete lock `dev` 🔓\n");
+    expect(message).toContain(
+      "curl --request DELETE 'https://lockbot.app/api/teams/our-team/channels/general/locks/dev'"
+    );
+  });
 };
 
 describe("in memory lock repo", () => {
   beforeEach(() => {
-    lockBot = new LockBot(new InMemoryLockRepo());
+    lockBot = new LockBot(
+      new InMemoryLockRepo(),
+      new TokenAuthorizer(new InMemoryAccessTokenRepo())
+    );
   });
   runAllTests();
 });
 
 describe("dynamodb lock repo", () => {
-  const resourcesTableName = "lockbot-resources";
+  const resourcesTableName = "lock-bot-tests-resources";
+  const accessTokenTableName = "lock-bot-tests-tokens";
   beforeEach(async () => {
-    const options = {
+    await recreateResourcesTable(resourcesTableName);
+    await recreateAccessTokenTable(accessTokenTableName);
+    const documentClient = new DocumentClient({
       region: "localhost",
       endpoint: "http://localhost:8000",
-    };
-    const db = new DynamoDB(options);
-    try {
-      await db.deleteTable({ TableName: resourcesTableName }).promise();
-    } catch (error) {
-      // No problem if the table doesn't exist
-    } finally {
-      await db
-        .createTable({
-          TableName: resourcesTableName,
-          AttributeDefinitions: [
-            { AttributeName: "Resource", AttributeType: "S" },
-            { AttributeName: "Group", AttributeType: "S" },
-          ],
-          KeySchema: [
-            { AttributeName: "Group", KeyType: "HASH" },
-            { AttributeName: "Resource", KeyType: "RANGE" },
-          ],
-          ProvisionedThroughput: {
-            ReadCapacityUnits: 5,
-            WriteCapacityUnits: 5,
-          },
-        })
-        .promise();
-    }
+    });
     lockBot = new LockBot(
-      new DynamoDBLockRepo(new DocumentClient(options), resourcesTableName)
+      new DynamoDBLockRepo(documentClient, resourcesTableName),
+      new TokenAuthorizer(
+        new DynamoDBAccessTokenRepo(documentClient, accessTokenTableName)
+      )
     );
   });
   runAllTests();

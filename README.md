@@ -26,7 +26,7 @@ Your team must agree to use Lockbot whenever they start or stop using a shared r
 
 ## How to use Lockbot
 
-Lockbot has three commands:
+Lockbot has three main commands:
 
 - `/locks` Get locked resources list 📜
 - `/lock [resource-name]` Lock a resource 🔒
@@ -35,6 +35,19 @@ Lockbot has three commands:
 Each Slack channel has its own list of resources.
 
 When someone successfully locks or unlocks a resource, the channel is notified.
+
+## Lockbot API
+
+It is possible to view, create and delete locks via the Lockbot HTTP API.
+
+To explore the API take a look at the [OpenAPI spec](src/handlers/swagger/openapi.json).
+
+The API is secured using basic access authentication.
+
+- `/lbtoken` Learn about Lockbot API access tokens 💡
+- `/lbtoken new` Generate a new Lockbot API access token 🎫
+
+Each access token is scoped to the Slack `team` and `channel` they were created in and to the `user` who created them.
 
 ## Contributing
 
