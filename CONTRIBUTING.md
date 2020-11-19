@@ -32,6 +32,12 @@ The automated tests run against a local DynamoDB instance
 
 `yarn db:start`
 
+### Start Serverless Offline
+
+The API tests run HTTP calls against emulated AWS λ and API Gateway
+
+`yarn dev`
+
 ### Run tests
 
 `yarn test`
