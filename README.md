@@ -30,7 +30,8 @@ Lockbot has three main commands:
 
 - `/locks` Get locked resources list 📜
 - `/lock [resource-name]` Lock a resource 🔒
-- `/unlock [resource-name]` Unlock a resource 🔓
+- `/unlock [resource-name] [options]` Unlock a resource 🔓
+  - Set `[options]` to `force` if you need to unlock when someone is away on holiday ⛱
 
 Each Slack channel has its own list of resources.
 

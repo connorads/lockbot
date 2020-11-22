@@ -6,6 +6,7 @@ import TokenAuthorizer from "../src/token-authorizer";
 import InMemoryAccessTokenRepo from "../src/storage/in-memory-token-repo";
 import DynamoDBAccessTokenRepo from "../src/storage/dynamodb-token-repo";
 import { recreateResourcesTable, recreateAccessTokenTable } from "./utils";
+import { parseUnlock } from "../src/handlers/slack/lib";
 
 let lockBot: LockBot;
 const runAllTests = () => {
@@ -15,7 +16,7 @@ const runAllTests = () => {
   ): Promise<Response> => {
     const tokens = input.split(" ");
     const command = tokens[0];
-    const param = tokens[1];
+    const commandText = tokens.slice(1).join(" ");
     const user = params?.user ?? "Connor";
     const channel = params?.channel ?? "general";
     const team = params?.team ?? "our-team";
@@ -23,13 +24,22 @@ const runAllTests = () => {
       return lockBot.locks(channel, team);
     }
     if (command === "/unlock") {
-      return lockBot.unlock(param, user, channel, team);
+      const { resource, force } = parseUnlock(commandText);
+      return lockBot.unlock(resource, user, channel, team, { force });
     }
     if (command === "/lock") {
-      return lockBot.lock(param, user, channel, team);
+      const resource = tokens[1];
+      return lockBot.lock(resource, user, channel, team);
     }
     if (command === "/lbtoken") {
-      return lockBot.lbtoken(param, user, channel, team, "https://lockbot.app");
+      const resource = tokens[1];
+      return lockBot.lbtoken(
+        resource,
+        user,
+        channel,
+        team,
+        "https://lockbot.app"
+      );
     }
     throw Error("Unhandled command");
   };
@@ -138,6 +148,21 @@ const runAllTests = () => {
       destination: "user",
     });
   });
+  test("can force unlock someone else's resource (different user and resource)", async () => {
+    await execute("/lock dev", { user: "Dave" });
+    expect(await execute("/unlock dev force")).toEqual({
+      message:
+        "<@Connor> has force unlocked `dev` 🔓 which was locked by <@Dave>",
+      destination: "channel",
+    });
+  });
+  test("can force unlock own resource", async () => {
+    await execute("/lock dev");
+    expect(await execute("/unlock dev force")).toEqual({
+      message: "<@Connor> has unlocked `dev` 🔓",
+      destination: "channel",
+    });
+  });
   test("cannot unlock without providing resource name", async () => {
     expect(await execute("/unlock   ")).toEqual({
       message:
@@ -145,7 +170,8 @@ const runAllTests = () => {
         "To unlock a resource in this channel called `thingy`, use `/unlock thingy`\n\n" +
         "_Example:_\n" +
         `> *<@Connor>*: \`/unlock dev\`\n` +
-        `> *Lockbot*: <@Connor> has unlocked \`dev\` 🔓`,
+        `> *Lockbot*: <@Connor> has unlocked \`dev\` 🔓\n\n` +
+        "To force unlock a resource locked by someone else, use `/unlock thingy force`",
       destination: "user",
     });
   });
@@ -156,7 +182,8 @@ const runAllTests = () => {
         "To unlock a resource in this channel called `thingy`, use `/unlock thingy`\n\n" +
         "_Example:_\n" +
         `> *<@Connor>*: \`/unlock dev\`\n` +
-        `> *Lockbot*: <@Connor> has unlocked \`dev\` 🔓`,
+        `> *Lockbot*: <@Connor> has unlocked \`dev\` 🔓\n\n` +
+        "To force unlock a resource locked by someone else, use `/unlock thingy force`",
       destination: "user",
     });
   });
