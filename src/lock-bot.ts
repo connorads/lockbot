@@ -71,7 +71,7 @@ export default class LockBot {
     user: string,
     channel: string,
     team: string,
-    options: { force: boolean } = { force: false }
+    options: { force: boolean }
   ): Promise<Response> => {
     if (!resource || resource === "help") {
       return {
