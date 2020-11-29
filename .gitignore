@@ -6,6 +6,8 @@ node_modules
 
 coverage
 
+.env*
+
 ### Code ###
 .vscode/*
 !.vscode/settings.json
