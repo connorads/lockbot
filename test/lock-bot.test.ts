@@ -6,7 +6,10 @@ import TokenAuthorizer from "../src/token-authorizer";
 import InMemoryAccessTokenRepo from "../src/storage/in-memory-token-repo";
 import DynamoDBAccessTokenRepo from "../src/storage/dynamodb-token-repo";
 import { recreateResourcesTable, recreateAccessTokenTable } from "./utils";
-import { parseUnlock } from "../src/handlers/slack/lib";
+import {
+  parseUnlock,
+  getFirstParam,
+} from "../src/handlers/slack/command-parsers";
 
 let lockBot: LockBot;
 const runAllTests = () => {
@@ -28,11 +31,11 @@ const runAllTests = () => {
       return lockBot.unlock(resource, user, channel, team, { force });
     }
     if (command === "/lock") {
-      const resource = tokens[1];
+      const resource = getFirstParam(commandText);
       return lockBot.lock(resource, user, channel, team);
     }
     if (command === "/lbtoken") {
-      const resource = tokens[1];
+      const resource = getFirstParam(commandText);
       return lockBot.lbtoken(
         resource,
         user,

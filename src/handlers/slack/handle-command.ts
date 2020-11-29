@@ -46,7 +46,7 @@ const handleResponse = async (
   }
 };
 
-export const handleCommand = (
+const handleCommand = (
   getResponse: (command: SlashCommand) => Promise<Response>
 ) => {
   return async ({
@@ -67,11 +67,4 @@ export const handleCommand = (
   };
 };
 
-export const parseUnlock = (
-  commandText: string
-): { resource: string; force: boolean } => {
-  const [resource, options] = commandText.split(" ");
-  return { resource, force: options === "force" };
-};
-
-export const getFirstParam = (commandText: string) => commandText.split(" ")[0];
+export default handleCommand;

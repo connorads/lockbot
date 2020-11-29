@@ -1,7 +1,8 @@
 import { APIGatewayProxyEvent, Context } from "aws-lambda";
 import * as awsServerlessExpress from "aws-serverless-express";
 import { app, expressReceiver, lockBot, prefix, url } from "./infra";
-import { handleCommand, getFirstParam, parseUnlock } from "./lib";
+import handleCommand from "./handle-command";
+import { getFirstParam, parseUnlock } from "./command-parsers";
 
 app.command(
   `/${prefix}locks`,
@@ -31,7 +32,6 @@ app.command(
     );
   })
 );
-
 app.command(
   `/${prefix}lbtoken`,
   handleCommand((command) =>
