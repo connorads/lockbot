@@ -70,7 +70,8 @@ export default class LockBot {
     resource: string,
     user: string,
     channel: string,
-    team: string
+    team: string,
+    options: { force: boolean }
   ): Promise<Response> => {
     if (!resource || resource === "help") {
       return {
@@ -79,7 +80,9 @@ export default class LockBot {
           "To unlock a resource in this channel called `thingy`, " +
           "use `/unlock thingy`\n\n_Example:_\n" +
           `> *<@${user}>*: \`/unlock dev\`\n` +
-          `> *Lockbot*: <@${user}> has unlocked \`dev\` 🔓`,
+          `> *Lockbot*: <@${user}> has unlocked \`dev\` 🔓\n\n` +
+          "To force unlock a resource locked by someone else, " +
+          "use `/unlock thingy force`",
         destination: "user",
       };
     }
@@ -95,6 +98,15 @@ export default class LockBot {
       await this.lockRepo.delete(resource, channel, team);
       return {
         message: `<@${user}> has unlocked \`${resource}\` 🔓`,
+        destination: "channel",
+      };
+    }
+    if (user !== lockOwner && options.force) {
+      await this.lockRepo.delete(resource, channel, team);
+      return {
+        message:
+          `<@${user}> has force unlocked \`${resource}\` 🔓 ` +
+          `which was locked by <@${lockOwner}>`,
         destination: "channel",
       };
     }

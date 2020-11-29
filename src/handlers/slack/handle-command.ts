@@ -46,7 +46,7 @@ const handleResponse = async (
   }
 };
 
-export const handleCommand = (
+const handleCommand = (
   getResponse: (command: SlashCommand) => Promise<Response>
 ) => {
   return async ({
@@ -67,4 +67,4 @@ export const handleCommand = (
   };
 };
 
-export const getFirstParam = (commandText: string) => commandText.split(" ")[0];
+export default handleCommand;
