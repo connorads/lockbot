@@ -140,6 +140,18 @@ Set the state secret environment variable to be a [random 32 character alphanume
 
 - `STATE_SECRET`
 
+##### dotenv
+
+You can use `dotenv` to set environment variables
+
+```bash
+# .env.dev
+SLACK_SIGNING_SECRET = 'insertslacksigningsecrethere'
+SLACK_CLIENT_ID = '1234567890.1234567890'
+SLACK_CLIENT_SECRET = 'insertslackclientsecrethere'
+STATE_SECRET = 'insertstatesecretehere'
+```
+
 #### "Final" deploy
 
 `yarn deploy`
