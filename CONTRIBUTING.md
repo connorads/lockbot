@@ -79,7 +79,10 @@ Now that your local machine is set up with your AWS account let's see if you can
 
 **Note**: _You will get warning about missing environment variables, this is fine for now._
 
-`yarn deploy`
+`yarn deploy --region eu-west-1 --stage dev`
+
+- `region` is your preferred AWS region _(default: `us-east-1`)_
+- `stage` is the name you wish to give to your deployment's stage/environment _(default: `dev`)_
 
 If everything has worked correctly then your AWS resources have been created and Lockbot has been deployed 🥳 But it won't work yet, we still need to setup the Slack App for some of the environment variables.
 
@@ -106,7 +109,7 @@ _(Optional)_ Update your app icon in **Settings > Basic Information > Display In
 
 #### Configure Slash Commands
 
-We must configure our Slack App's slash commands `/lock`, `/unlock` and `/locks` to point to the `events` endpoint URL we got from our Serverless Framework `endpoints` terminal output. The same `events` endpoint can handle all of the different slash commands.
+We must configure our Slack App's slash commands `/lock`, `/unlock`, `/locks` and `/lbtoken` to point to the `events` endpoint URL we got from our Serverless Framework `endpoints` terminal output. The same `events` endpoint can handle all of the different slash commands.
 
 `https://blahblahblah.amazonaws.com/dev/slack/events`
 
@@ -142,7 +145,7 @@ Set the state secret environment variable to be a [random 32 character alphanume
 
 ##### dotenv
 
-You can use `dotenv` to set environment variables
+You can use `dotenv` to set environment variables. See [documentation](https://github.com/serverless/serverless/blob/master/docs/environment-variables.md) for more info.
 
 ```bash
 # .env.dev
@@ -154,7 +157,9 @@ STATE_SECRET = 'insertstatesecretehere'
 
 #### "Final" deploy
 
-`yarn deploy`
+Now that we've setup our Slack config let's deploy again.
+
+`yarn deploy --region eu-west-1 --stage dev`
 
 ## Install Lockbot
 
@@ -186,4 +191,4 @@ If **Slackbot** responds with an error, take a look in your **AWS Console > Lamb
 
 Now that everything has been configured in Slack and AWS you can make changes to Lockbot code and deploy it easily with one command.
 
-`yarn deploy`
+`yarn deploy --region eu-west-1 --stage dev`
