@@ -50,7 +50,8 @@ export default class DynamoDBLockRepo implements LockRepo {
     resource: string,
     owner: string,
     channel: string,
-    team: string
+    team: string,
+    metadata?: Record<string, string>
   ): Promise<void> {
     await this.documentClient
       .put({
@@ -60,6 +61,7 @@ export default class DynamoDBLockRepo implements LockRepo {
           Group: `${team}#${channel}`,
           Owner: owner,
           Created: new Date().toISOString(),
+          Metadata: metadata,
         },
       })
       .promise();

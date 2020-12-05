@@ -12,7 +12,8 @@ export interface LockRepo {
     resource: string,
     owner: string,
     channel: string,
-    team: string
+    team: string,
+    metadata?: Record<string, string>
   ): Promise<void>;
 }
 
@@ -33,7 +34,8 @@ export default class LockBot {
     resource: string,
     user: string,
     channel: string,
-    team: string
+    team: string,
+    metadata?: Record<string, string>
   ): Promise<Response> => {
     if (!resource || resource === "help") {
       return {
@@ -59,7 +61,7 @@ export default class LockBot {
         destination: "user",
       };
     }
-    await this.lockRepo.setOwner(resource, user, channel, team);
+    await this.lockRepo.setOwner(resource, user, channel, team, metadata);
     return {
       message: `<@${user}> has locked \`${resource}\` 🔒`,
       destination: "channel",
