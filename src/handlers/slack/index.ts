@@ -15,7 +15,12 @@ app.command(
       getFirstParam(command.text),
       command.user_id,
       command.channel_id,
-      command.team_id
+      command.team_id,
+      {
+        User: command.user_name,
+        Channel: command.channel_name,
+        Team: command.team_domain,
+      }
     )
   )
 );
