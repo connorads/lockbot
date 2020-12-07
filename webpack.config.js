@@ -1,5 +1,6 @@
 const path = require("path");
 const slsw = require("serverless-webpack");
+const { ESBuildPlugin } = require("esbuild-loader");
 
 module.exports = {
   mode: slsw.lib.webpack.isLocal ? "development" : "production",
@@ -17,13 +18,21 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
-        loader: "ts-loader",
+        test: /\.ts/,
+        loader: "esbuild-loader",
+        options: {
+          loader: "ts",
+          target: "es2017",
+        },
       },
       {
-        test: /\.html$/i,
-        loader: "html-loader",
+        test: /\.html/,
+        loader: "esbuild-loader",
+        options: {
+          loader: "text",
+        },
       },
     ],
   },
+  plugins: [new ESBuildPlugin()],
 };
