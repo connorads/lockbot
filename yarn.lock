@@ -1020,6 +1020,11 @@
     ramda "^0.26.1"
     traverse "^0.6.6"
 
+"@serverless/typescript@^2.16.1":
+  version "2.16.1"
+  resolved "https://registry.yarnpkg.com/@serverless/typescript/-/typescript-2.16.1.tgz#3f9d22b25eb75bb4f015417e5860b21a56c6240b"
+  integrity sha512-IJIxmtO8c/69Uq/VJnCMCWrGFpQlgjljCwNWbI2+1saca88HzmBk6KXr9YotU9sFyu9q3EZdV9E2qFE6YGeiZw==
+
 "@serverless/utils-china@^1.0.11":
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/@serverless/utils-china/-/utils-china-1.0.11.tgz#368003260ccd1df55f7477da50d0b606f157e58b"
