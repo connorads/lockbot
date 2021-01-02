@@ -1,5 +1,7 @@
 /* eslint-disable no-template-curly-in-string */
 import type { AWS } from "@serverless/typescript";
+import resourcesTable from "./serverless/resources-table";
+import accessTokensTable from "./serverless/access-tokens-table";
 
 const serverlessConfiguration: AWS = {
   service: "lockbot",
@@ -137,36 +139,7 @@ const serverlessConfiguration: AWS = {
   },
   resources: {
     Resources: {
-      resourcesTable: {
-        Type: "AWS::DynamoDB::Table",
-        Properties: {
-          TableName: "${self:custom.resourcesTableName}",
-          AttributeDefinitions: [
-            {
-              AttributeName: "Resource",
-              AttributeType: "S",
-            },
-            {
-              AttributeName: "Group",
-              AttributeType: "S",
-            },
-          ],
-          KeySchema: [
-            {
-              AttributeName: "Group",
-              KeyType: "HASH",
-            },
-            {
-              AttributeName: "Resource",
-              KeyType: "RANGE",
-            },
-          ],
-          ProvisionedThroughput: {
-            ReadCapacityUnits: 4,
-            WriteCapacityUnits: 4,
-          },
-        },
-      },
+      resourcesTable,
       installationsTable: {
         Type: "AWS::DynamoDB::Table",
         Properties: {
@@ -189,28 +162,7 @@ const serverlessConfiguration: AWS = {
           },
         },
       },
-      accessTokensTable: {
-        Type: "AWS::DynamoDB::Table",
-        Properties: {
-          TableName: "${self:custom.accessTokensTableName}",
-          AttributeDefinitions: [
-            {
-              AttributeName: "Scope",
-              AttributeType: "S",
-            },
-          ],
-          KeySchema: [
-            {
-              AttributeName: "Scope",
-              KeyType: "HASH",
-            },
-          ],
-          ProvisionedThroughput: {
-            ReadCapacityUnits: 4,
-            WriteCapacityUnits: 2,
-          },
-        },
-      },
+      accessTokensTable,
     },
   },
   custom: {
