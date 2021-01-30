@@ -35,4 +35,10 @@ module.exports = {
     ],
   },
   plugins: [new ESBuildPlugin()],
+  ignoreWarnings: [
+    {
+      module: /node_modules\/express\/lib\/view\.js/,
+      message: /the request of a dependency is an expression/,
+    },
+  ],
 };
