@@ -12,7 +12,7 @@ Lockbot is written with local development in mind and you can create and test mo
 
 ### Pre-requisites
 
-- [Node 12](http://nodejs.org/)
+- [Node 14](http://nodejs.org/)
 - [Yarn](https://yarnpkg.com/en/docs/install)
 - [Java Runtime Environment](http://www.oracle.com/technetwork/java/javase/downloads/index.html) (for local DynamoDB offline)
 
