@@ -46,6 +46,16 @@ const runAllTests = () => {
     }
     throw Error("Unhandled command");
   };
+
+  beforeAll(() => {
+    jest.useFakeTimers("modern");
+    jest.setSystemTime(new Date("2020-11-23T17:37:14.135Z").getTime());
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
   test("can lock resource", async () => {
     expect(await execute("/lock dev")).toEqual({
       message: "<@Connor> has locked `dev` 🔒",
@@ -133,7 +143,7 @@ const runAllTests = () => {
     await execute("/unlock dev", { channel: "random" });
     expect(await execute("/locks")).toEqual({
       message:
-        "Active locks in this channel:\n> `dev` is locked by <@Connor> 🔒",
+        "Active locks in this channel:\n> `dev` is locked by <@Connor> 🔒 `2020-11-23T17:37:14Z`",
       destination: "user",
     });
   });
@@ -208,14 +218,17 @@ const runAllTests = () => {
     await execute("/lock dev");
     expect(await execute("/locks")).toEqual({
       message:
-        "Active locks in this channel:\n> `dev` is locked by <@Connor> 🔒",
+        "Active locks in this channel:\n" +
+        "> `dev` is locked by <@Connor> 🔒 `2020-11-23T17:37:14Z`",
       destination: "user",
     });
   });
   test("can list locks one lock exists different user", async () => {
     await execute("/lock dev", { user: "Dave" });
     expect(await execute("/locks")).toEqual({
-      message: "Active locks in this channel:\n> `dev` is locked by <@Dave> 🔒",
+      message:
+        "Active locks in this channel:\n" +
+        "> `dev` is locked by <@Dave> 🔒 `2020-11-23T17:37:14Z`",
       destination: "user",
     });
   });
@@ -224,7 +237,9 @@ const runAllTests = () => {
     await execute("/lock test", { user: "Dave" });
     expect(await execute("/locks")).toEqual({
       message:
-        "Active locks in this channel:\n> `dev` is locked by <@Connor> 🔒\n> `test` is locked by <@Dave> 🔒",
+        "Active locks in this channel:\n" +
+        "> `dev` is locked by <@Connor> 🔒 `2020-11-23T17:37:14Z`\n" +
+        "> `test` is locked by <@Dave> 🔒 `2020-11-23T17:37:14Z`",
       destination: "user",
     });
   });

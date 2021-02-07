@@ -16,7 +16,10 @@ export default class DynamoDBLockRepo implements LockRepo {
       .promise();
   }
 
-  async getAll(channel: string, team: string): Promise<Map<string, string>> {
+  async getAll(
+    channel: string,
+    team: string
+  ): Promise<Map<string, { owner: string; created: Date }>> {
     const result = await this.documentClient
       .query({
         TableName: this.resourcesTableName,
@@ -25,9 +28,11 @@ export default class DynamoDBLockRepo implements LockRepo {
         ExpressionAttributeNames: { "#group": "Group" },
       })
       .promise();
-    const map = new Map<string, string>();
+    const map = new Map<string, { owner: string; created: Date }>();
     if (result.Items) {
-      result.Items.forEach((i) => map.set(i.Resource, i.Owner));
+      result.Items.forEach((i) =>
+        map.set(i.Resource, { owner: i.Owner, created: new Date(i.Created) })
+      );
     }
     return map;
   }
