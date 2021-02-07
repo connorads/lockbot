@@ -131,10 +131,7 @@ export default class LockBot {
     }
     let locksMessage = "Active locks in this channel:\n";
     locks.forEach(({ owner: lockOwner, created: lockDate }, lockedResource) => {
-      locksMessage += `> \`${lockedResource}\` is locked by <@${lockOwner}> 🔒 \`${lockDate
-        .toISOString()
-        .slice(0, 19)
-        .concat("Z")}\`\n`;
+      locksMessage += `> \`${lockedResource}\` is locked by <@${lockOwner}> 🔒 _${lockDate.toUTCString()}_\n`;
     });
     return { message: locksMessage.trimRight(), destination: "user" };
   };
