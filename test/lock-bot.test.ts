@@ -144,7 +144,7 @@ const runAllTests = () => {
     expect(await execute("/locks")).toEqual({
       message:
         "Active locks in this channel:\n> `dev` is locked by <@Connor> 🔒" +
-        " _Mon, 23 Nov 2020 17:37:14 GMT_",
+        " _<!date^1606153034^{date_pretty} {time}|Mon, 23 Nov 2020 17:37:14 GMT>_",
       destination: "user",
     });
   });
@@ -220,7 +220,8 @@ const runAllTests = () => {
     expect(await execute("/locks")).toEqual({
       message:
         "Active locks in this channel:\n" +
-        "> `dev` is locked by <@Connor> 🔒 _Mon, 23 Nov 2020 17:37:14 GMT_",
+        "> `dev` is locked by <@Connor> 🔒" +
+        " _<!date^1606153034^{date_pretty} {time}|Mon, 23 Nov 2020 17:37:14 GMT>_",
       destination: "user",
     });
   });
@@ -229,7 +230,8 @@ const runAllTests = () => {
     expect(await execute("/locks")).toEqual({
       message:
         "Active locks in this channel:\n" +
-        "> `dev` is locked by <@Dave> 🔒 _Mon, 23 Nov 2020 17:37:14 GMT_",
+        "> `dev` is locked by <@Dave> 🔒" +
+        " _<!date^1606153034^{date_pretty} {time}|Mon, 23 Nov 2020 17:37:14 GMT>_",
       destination: "user",
     });
   });
@@ -239,8 +241,10 @@ const runAllTests = () => {
     expect(await execute("/locks")).toEqual({
       message:
         "Active locks in this channel:\n" +
-        "> `dev` is locked by <@Connor> 🔒 _Mon, 23 Nov 2020 17:37:14 GMT_\n" +
-        "> `test` is locked by <@Dave> 🔒 _Mon, 23 Nov 2020 17:37:14 GMT_",
+        "> `dev` is locked by <@Connor> 🔒" +
+        " _<!date^1606153034^{date_pretty} {time}|Mon, 23 Nov 2020 17:37:14 GMT>_\n" +
+        "> `test` is locked by <@Dave> 🔒" +
+        " _<!date^1606153034^{date_pretty} {time}|Mon, 23 Nov 2020 17:37:14 GMT>_",
       destination: "user",
     });
   });
