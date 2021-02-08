@@ -24,7 +24,7 @@ app.get(
     const { team, channel } = req.params;
     const locksMap = await lockRepo.getAll(channel, team);
     const locks: Lock[] = [];
-    locksMap.forEach((v, k) => locks.push({ name: k, owner: v } as Lock));
+    locksMap.forEach((v, k) => locks.push({ name: k, owner: v.owner } as Lock));
     console.log("Retrieved locks", { locks });
     res.status(200).json(locks);
   }

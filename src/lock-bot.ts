@@ -2,7 +2,10 @@ import TokenAuthorizer from "./token-authorizer";
 
 export interface LockRepo {
   delete(resource: string, channel: string, team: string): Promise<void>;
-  getAll(channel: string, team: string): Promise<Map<string, string>>;
+  getAll(
+    channel: string,
+    team: string
+  ): Promise<Map<string, { owner: string; created: Date }>>;
   getOwner(
     resource: string,
     channel: string,
@@ -127,8 +130,12 @@ export default class LockBot {
       };
     }
     let locksMessage = "Active locks in this channel:\n";
-    locks.forEach((lockOwner, lockedResource) => {
-      locksMessage += `> \`${lockedResource}\` is locked by <@${lockOwner}> 🔒\n`;
+    locks.forEach(({ owner: lockOwner, created: lockDate }, lockedResource) => {
+      locksMessage +=
+        `> \`${lockedResource}\` is locked by <@${lockOwner}> 🔒` +
+        ` _<!date^${Math.floor(
+          lockDate.valueOf() / 1000
+        )}^{date_pretty} {time}|${lockDate.toUTCString()}>_\n`;
     });
     return { message: locksMessage.trimRight(), destination: "user" };
   };

@@ -1,7 +1,10 @@
 import { LockRepo } from "../lock-bot";
 
 export default class InMemoryLockRepo implements LockRepo {
-  private readonly lockMap: Map<string, string> = new Map();
+  private readonly lockMap: Map<
+    string,
+    { owner: string; created: Date }
+  > = new Map();
 
   private static readonly separator = "🎱🈂️💟🍐🍚🕕😽🎉⛎4️⃣";
 
@@ -21,8 +24,11 @@ export default class InMemoryLockRepo implements LockRepo {
     this.lockMap.delete(InMemoryLockRepo.toKey(resource, channel, team));
   }
 
-  async getAll(channel: string, team: string): Promise<Map<string, string>> {
-    const all: Map<string, string> = new Map();
+  async getAll(
+    channel: string,
+    team: string
+  ): Promise<Map<string, { owner: string; created: Date }>> {
+    const all = new Map<string, { owner: string; created: Date }>();
     this.lockMap.forEach((value, key) => {
       const {
         resource,
@@ -41,7 +47,8 @@ export default class InMemoryLockRepo implements LockRepo {
     channel: string,
     team: string
   ): Promise<string | undefined> {
-    return this.lockMap.get(InMemoryLockRepo.toKey(resource, channel, team));
+    return this.lockMap.get(InMemoryLockRepo.toKey(resource, channel, team))
+      ?.owner;
   }
 
   async setOwner(
@@ -50,6 +57,9 @@ export default class InMemoryLockRepo implements LockRepo {
     channel: string,
     team: string
   ): Promise<void> {
-    this.lockMap.set(InMemoryLockRepo.toKey(resource, channel, team), owner);
+    this.lockMap.set(InMemoryLockRepo.toKey(resource, channel, team), {
+      owner,
+      created: new Date(),
+    });
   }
 }
