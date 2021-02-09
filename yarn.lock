@@ -3763,10 +3763,10 @@ enquirer@^2.3.5, enquirer@^2.3.6:
   dependencies:
     ansi-colors "^4.1.1"
 
-env-var@^6.1.1:
-  version "6.1.1"
-  resolved "https://registry.yarnpkg.com/env-var/-/env-var-6.1.1.tgz#8c2963ebc221ca8cd9ad86c81844c0ad6fa1a792"
-  integrity sha512-cuNYps3wIJKz4D01KAeYtuU0gqwKp59Fs5pPwRdAo9e/brL5XBCBDr7+Q474tYcP28c02QR/BNmQkygOxJcZ4g==
+env-var@^6.3.0:
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/env-var/-/env-var-6.3.0.tgz#b4ace5bcd1d293629a2c509ae7b46f8add2f8892"
+  integrity sha512-gaNzDZuVaJQJlP2SigAZLu/FieZN5MzdN7lgHNehESwlRanHwGQ/WUtJ7q//dhrj3aGBZM45yEaKOuvSJaf4mA==
 
 env-variable@0.0.x:
   version "0.0.6"
