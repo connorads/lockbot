@@ -19,7 +19,7 @@ export const expressReceiver = new ExpressReceiver({
   clientId: env.get("SLACK_CLIENT_ID").required().asString(),
   clientSecret: env.get("SLACK_CLIENT_SECRET").required().asString(),
   stateSecret: env.get("STATE_SECRET").required().asString(),
-  scopes: ["commands"],
+  scopes: ["channels:history", "chat:write", "commands"],
   processBeforeResponse: true,
   installationStore: {
     storeInstallation: async (installation, logger) => {
@@ -65,14 +65,14 @@ export const app = new App({
 export const lockBot = new LockBot(
   new DynamoDBLockRepo(
     documentClient,
-    env.get("RESOURCES_TABLE_NAME").required().asString()
+    env.get("RESOURCES_TABLE_NAME").required().asString(),
   ),
   new TokenAuthorizer(
     new DynamoDBAccessTokenRepo(
       documentClient,
-      env.get("ACCESS_TOKENS_TABLE_NAME").required().asString()
-    )
-  )
+      env.get("ACCESS_TOKENS_TABLE_NAME").required().asString(),
+    ),
+  ),
 );
 
 const stage = env.get("SERVERLESS_STAGE").required().asString();

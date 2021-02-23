@@ -1,4 +1,4 @@
-service: lockbot
+service: languagebot
 
 useDotenv: true
 
@@ -68,19 +68,6 @@ functions:
       - http:
           method: delete
           path: /api/teams/{team}/channels/{channel}/locks/{lock}
-  swagger:
-    handler: src/handlers/swagger/index.handler
-    events:
-      - http:
-          method: get
-          path: /api-docs
-      - http:
-          method: get
-          path: /openapi.json
-      - http:
-          method: get
-          path: /api-docs/openapi.json
-
 
 resources:
   Resources:
@@ -131,9 +118,9 @@ resources:
 custom:
   stage: ${opt:stage, self:provider.stage}
   region: ${opt:region, self:provider.region}
-  resourcesTableName: ${self:custom.stage}-lockbot-resources
-  installationsTableName: ${self:custom.stage}-lockbot-installations
-  accessTokensTableName: ${self:custom.stage}-lockbot-tokens
+  resourcesTableName: ${self:custom.stage}-languagebot-resources
+  installationsTableName: ${self:custom.stage}-languagebot-installations
+  accessTokensTableName: ${self:custom.stage}-languagebot-tokens
   dynamodb:
     stages:
       - dev # https://bit.ly/35WR0TT

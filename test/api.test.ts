@@ -7,8 +7,8 @@ import { recreateAccessTokenTable, recreateResourcesTable } from "./utils";
 let credentials1: string;
 let credentials2: string;
 describe("dynamodb token repo", () => {
-  const accessTokenTableName = "dev-lockbot-tokens";
-  const resourcesTableName = "dev-lockbot-resources";
+  const accessTokenTableName = "dev-languagebot-tokens";
+  const resourcesTableName = "dev-languagebot-resources";
   beforeEach(async () => {
     await recreateAccessTokenTable(accessTokenTableName);
     await recreateResourcesTable(resourcesTableName);
@@ -18,8 +18,8 @@ describe("dynamodb token repo", () => {
           region: "localhost",
           endpoint: "http://localhost:8000",
         }),
-        accessTokenTableName
-      )
+        accessTokenTableName,
+      ),
     );
     const createToken = (user: string) =>
       tokenAuthorizer.createAccessToken(user, "C012345ABCD", "T012345WXYZ");
@@ -50,12 +50,12 @@ describe("dynamodb token repo", () => {
     [server.delete("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks/yo")],
   ])("Invalid credentials (%#)", async (apiCall) => {
     const invalidCredentials = `${Buffer.from(`h4ck3r:b4dt0k3n`).toString(
-      "base64"
+      "base64",
     )}`;
 
     const res = await apiCall.set(
       "Authorization",
-      `Basic ${invalidCredentials}`
+      `Basic ${invalidCredentials}`,
     );
 
     expect(res.status).toBe(401);
@@ -99,7 +99,7 @@ describe("dynamodb token repo", () => {
 
     expect(res.status).toBe(201);
     expect(res.text).toBe(
-      JSON.stringify({ name: "dev", owner: "U012345MNOP" })
+      JSON.stringify({ name: "dev", owner: "U012345MNOP" }),
     );
   });
 
@@ -115,7 +115,7 @@ describe("dynamodb token repo", () => {
 
     expect(res.status).toBe(200);
     expect(res.text).toBe(
-      JSON.stringify({ name: "dev", owner: "U012345MNOP" })
+      JSON.stringify({ name: "dev", owner: "U012345MNOP" }),
     );
   });
 
@@ -137,7 +137,7 @@ describe("dynamodb token repo", () => {
       JSON.stringify([
         { name: "dev", owner: "U012345MNOP" },
         { name: "test", owner: "U012345MNOP" },
-      ])
+      ]),
     );
   });
 
@@ -149,7 +149,7 @@ describe("dynamodb token repo", () => {
 
     expect(res.status).toBe(400);
     expect(res.text).toBe(
-      JSON.stringify({ message: "Unexpected token / in JSON at position 0" })
+      JSON.stringify({ message: "Unexpected token / in JSON at position 0" }),
     );
   });
 
@@ -238,7 +238,7 @@ describe("dynamodb token repo", () => {
 
       expect(res.status).toBe(400);
       expect(res.text).toBe(JSON.stringify(expectedResponseBody));
-    }
+    },
   );
 
   test("Cannot create lock for someone else", async () => {
@@ -251,7 +251,7 @@ describe("dynamodb token repo", () => {
     expect(res.text).toBe(
       JSON.stringify({
         message: "U012345MNOP cannot lock for another user U012345QRST",
-      })
+      }),
     );
   });
 
@@ -267,7 +267,7 @@ describe("dynamodb token repo", () => {
 
     expect(res.status).toBe(200);
     expect(res.text).toBe(
-      JSON.stringify({ name: "dev", owner: "U012345MNOP" })
+      JSON.stringify({ name: "dev", owner: "U012345MNOP" }),
     );
   });
 
@@ -283,7 +283,7 @@ describe("dynamodb token repo", () => {
 
     expect(res.status).toBe(403);
     expect(res.text).toBe(
-      JSON.stringify({ message: "dev is already locked by U012345QRST" })
+      JSON.stringify({ message: "dev is already locked by U012345QRST" }),
     );
   });
 
@@ -316,7 +316,7 @@ describe("dynamodb token repo", () => {
         message:
           'required property "lock"\n' +
           '└─ cannot decode "dev 1", should be NonEmptyWhitespaceFreeString',
-      })
+      }),
     );
   });
 
@@ -340,7 +340,7 @@ describe("dynamodb token repo", () => {
 
     expect(res.status).toBe(403);
     expect(res.text).toBe(
-      JSON.stringify({ message: "Cannot unlock dev, locked by U012345QRST" })
+      JSON.stringify({ message: "Cannot unlock dev, locked by U012345QRST" }),
     );
   });
 });

@@ -15,7 +15,7 @@ let lockBot: LockBot;
 const runAllTests = () => {
   const execute = async (
     input: string,
-    params?: { user?: string; channel?: string; team?: string }
+    params?: { user?: string; channel?: string; team?: string },
   ): Promise<Response> => {
     const tokens = input.split(" ");
     const command = tokens[0];
@@ -41,7 +41,7 @@ const runAllTests = () => {
         user,
         channel,
         team,
-        "https://lockbot.app"
+        "https://lockbot.app",
       );
     }
     throw Error("Unhandled command");
@@ -275,8 +275,7 @@ const runAllTests = () => {
         "• If you generate a new token in this channel it will invalidate the existing token for this channel\n\n" +
         "The API is secured using basic access authentication. To authenticate with the API you must set a header:\n" +
         "```Authorization: Basic <credentials>```\n" +
-        "where `<credentials>` is `user:token` base64 encoded\n\n" +
-        "Explore the Lockbot API with OpenAPI 3 and Swagger UI: https://lockbot.app/api-docs",
+        "where `<credentials>` is `user:token` base64 encoded\n\n",
       destination: "user",
     });
   });
@@ -287,19 +286,19 @@ const runAllTests = () => {
     expect(message).toContain("Here is your new access token");
     expect(message).toContain("> Fetch all locks 📜\n");
     expect(message).toContain(
-      "curl --request GET 'https://lockbot.app/api/teams/our-team/channels/general/locks'"
+      "curl --request GET 'https://lockbot.app/api/teams/our-team/channels/general/locks'",
     );
     expect(message).toContain("> Fetch lock `dev` 👀\n");
     expect(message).toContain(
-      "curl --request GET 'https://lockbot.app/api/teams/our-team/channels/general/locks/dev'"
+      "curl --request GET 'https://lockbot.app/api/teams/our-team/channels/general/locks/dev'",
     );
     expect(message).toContain("> Create lock `dev` 🔒\n");
     expect(message).toContain(
-      "curl --request POST 'https://lockbot.app/api/teams/our-team/channels/general/locks'"
+      "curl --request POST 'https://lockbot.app/api/teams/our-team/channels/general/locks'",
     );
     expect(message).toContain("> Delete lock `dev` 🔓\n");
     expect(message).toContain(
-      "curl --request DELETE 'https://lockbot.app/api/teams/our-team/channels/general/locks/dev'"
+      "curl --request DELETE 'https://lockbot.app/api/teams/our-team/channels/general/locks/dev'",
     );
   });
 };
@@ -308,15 +307,15 @@ describe("in memory lock repo", () => {
   beforeEach(() => {
     lockBot = new LockBot(
       new InMemoryLockRepo(),
-      new TokenAuthorizer(new InMemoryAccessTokenRepo())
+      new TokenAuthorizer(new InMemoryAccessTokenRepo()),
     );
   });
   runAllTests();
 });
 
 describe("dynamodb lock repo", () => {
-  const resourcesTableName = "lock-bot-tests-resources";
-  const accessTokenTableName = "lock-bot-tests-tokens";
+  const resourcesTableName = "language-bot-tests-resources";
+  const accessTokenTableName = "language-bot-tests-tokens";
   beforeEach(async () => {
     await recreateResourcesTable(resourcesTableName);
     await recreateAccessTokenTable(accessTokenTableName);
@@ -327,8 +326,8 @@ describe("dynamodb lock repo", () => {
     lockBot = new LockBot(
       new DynamoDBLockRepo(documentClient, resourcesTableName),
       new TokenAuthorizer(
-        new DynamoDBAccessTokenRepo(documentClient, accessTokenTableName)
-      )
+        new DynamoDBAccessTokenRepo(documentClient, accessTokenTableName),
+      ),
     );
   });
   runAllTests();

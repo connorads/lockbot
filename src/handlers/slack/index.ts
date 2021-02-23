@@ -6,7 +6,9 @@ import { getFirstParam, parseUnlock } from "./command-parsers";
 
 app.command(
   `/${prefix}locks`,
-  handleCommand((command) => lockBot.locks(command.channel_id, command.team_id))
+  handleCommand((command) =>
+    lockBot.locks(command.channel_id, command.team_id),
+  ),
 );
 app.command(
   `/${prefix}lock`,
@@ -20,9 +22,9 @@ app.command(
         User: command.user_name,
         Channel: command.channel_name,
         Team: command.team_domain,
-      }
-    )
-  )
+      },
+    ),
+  ),
 );
 app.command(
   `/${prefix}unlock`,
@@ -33,9 +35,9 @@ app.command(
       command.user_id,
       command.channel_id,
       command.team_id,
-      { force }
+      { force },
     );
-  })
+  }),
 );
 app.command(
   `/${prefix}lbtoken`,
@@ -45,9 +47,9 @@ app.command(
       command.user_id,
       command.channel_id,
       command.team_id,
-      url
-    )
-  )
+      url,
+    ),
+  ),
 );
 
 const server = awsServerlessExpress.createServer(expressReceiver.app);

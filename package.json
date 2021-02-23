@@ -1,9 +1,7 @@
 {
-  "name": "lockbot",
+  "name": "languagebot",
   "version": "1.0.0",
-  "description": "Coordinate use of your team's shared resources, in Slack 🤝",
-  "repository": "https://github.com/connorads/lockbot",
-  "author": "Connor Adams",
+  "description": "A slack bot to automatically flag non-inclusive words and phrases and make alternate suggestions.",
   "license": "MIT",
   "scripts": {
     "lint": "npm-run-all -p -c lint:*",

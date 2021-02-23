@@ -4,19 +4,19 @@ export interface LockRepo {
   delete(resource: string, channel: string, team: string): Promise<void>;
   getAll(
     channel: string,
-    team: string
+    team: string,
   ): Promise<Map<string, { owner: string; created: Date }>>;
   getOwner(
     resource: string,
     channel: string,
-    team: string
+    team: string,
   ): Promise<string | undefined>;
   setOwner(
     resource: string,
     owner: string,
     channel: string,
     team: string,
-    metadata?: Record<string, string>
+    metadata?: Record<string, string>,
   ): Promise<void>;
 }
 
@@ -30,7 +30,7 @@ export interface Response {
 export default class LockBot {
   constructor(
     private readonly lockRepo: LockRepo,
-    private readonly tokenAuthorizer: TokenAuthorizer
+    private readonly tokenAuthorizer: TokenAuthorizer,
   ) {}
 
   lock = async (
@@ -38,7 +38,7 @@ export default class LockBot {
     user: string,
     channel: string,
     team: string,
-    metadata?: Record<string, string>
+    metadata?: Record<string, string>,
   ): Promise<Response> => {
     if (!resource || resource === "help") {
       return {
@@ -76,7 +76,7 @@ export default class LockBot {
     user: string,
     channel: string,
     team: string,
-    options: { force: boolean }
+    options: { force: boolean },
   ): Promise<Response> => {
     if (!resource || resource === "help") {
       return {
@@ -134,7 +134,7 @@ export default class LockBot {
       locksMessage +=
         `> \`${lockedResource}\` is locked by <@${lockOwner}> 🔒` +
         ` _<!date^${Math.floor(
-          lockDate.valueOf() / 1000
+          lockDate.valueOf() / 1000,
         )}^{date_pretty} {time}|${lockDate.toUTCString()}>_\n`;
     });
     return { message: locksMessage.trimRight(), destination: "user" };
@@ -145,7 +145,7 @@ export default class LockBot {
     user: string,
     channel: string,
     team: string,
-    url: string
+    url: string,
   ): Promise<Response> => {
     if (param !== "new") {
       return {
@@ -161,19 +161,17 @@ export default class LockBot {
           "The API is secured using basic access authentication. " +
           "To authenticate with the API you must set a header:\n" +
           "```Authorization: Basic <credentials>```\n" +
-          "where `<credentials>` is `user:token` base64 encoded\n\n" +
-          `Explore the Lockbot API with OpenAPI 3 ` +
-          `and Swagger UI: ${url}/api-docs`,
+          "where `<credentials>` is `user:token` base64 encoded\n\n",
         destination: "user",
       };
     }
     const accessToken = await this.tokenAuthorizer.createAccessToken(
       user,
       channel,
-      team
+      team,
     );
     const credentials = `${Buffer.from(`${user}:${accessToken}`).toString(
-      "base64"
+      "base64",
     )}`;
     const auth = `--header 'Authorization: Basic ${credentials}'`;
     const baseUrl = `${url}/api/teams/${team}/channels/${channel}/locks`;
