@@ -40,7 +40,7 @@
     "serverless": "^2.13.0",
     "serverless-api-gateway-throttling": "^1.1.0",
     "serverless-dynamodb-local": "^0.2.39",
-    "serverless-offline": "^6.8.0",
+    "serverless-offline": "^6.9.0",
     "serverless-webpack": "^5.3.5",
     "supertest": "^4.0.2",
     "ts-jest": "26.5.0",
