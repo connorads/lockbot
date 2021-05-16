@@ -47,22 +47,22 @@ jobs:
           STATE_SECRET: ${{ secrets.STATE_SECRET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  # deploy-prod:
-  #   needs: [deploy-dev]
-  #   runs-on: ubuntu-20.04
-  #   environment: prod
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: actions/setup-node@v2
-  #       with:
-  #         node-version: "14"
-  #     - run: yarn install --frozen-lockfile
-  #     - name: Serverless Deploy
-  #       run: yarn deploy --region eu-west-1 --stage prod
-  #       env:
-  #         SLACK_SIGNING_SECRET: ${{ secrets.SLACK_SIGNING_SECRET }}
-  #         SLACK_CLIENT_ID: ${{ secrets.SLACK_CLIENT_ID }}
-  #         SLACK_CLIENT_SECRET: ${{ secrets.SLACK_CLIENT_SECRET }}
-  #         STATE_SECRET: ${{ secrets.STATE_SECRET }}
-  #         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  deploy-prod:
+    needs: [deploy-dev]
+    runs-on: ubuntu-20.04
+    environment: prod
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+      - run: yarn install --frozen-lockfile
+      - name: Serverless Deploy
+        run: yarn deploy --region eu-west-1 --stage prod
+        env:
+          SLACK_SIGNING_SECRET: ${{ secrets.SLACK_SIGNING_SECRET }}
+          SLACK_CLIENT_ID: ${{ secrets.SLACK_CLIENT_ID }}
+          SLACK_CLIENT_SECRET: ${{ secrets.SLACK_CLIENT_SECRET }}
+          STATE_SECRET: ${{ secrets.STATE_SECRET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
