@@ -8,6 +8,7 @@ on:
 
 jobs:
   deploy-dev:
+    name: Deploy to dev
     runs-on: ubuntu-20.04
     environment: dev
     steps:
@@ -27,6 +28,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   deploy-prod:
+    name: Deploy to prod
     runs-on: ubuntu-20.04
     environment: prod
     steps:
