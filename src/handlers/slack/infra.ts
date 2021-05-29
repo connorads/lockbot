@@ -44,11 +44,10 @@ export const expressReceiver = new ExpressReceiver({
         })
         .promise();
 
-      const { user, bot } = installation;
       logger?.info(`${label} installation stored.`, {
         teamOrEnterprise,
-        userId: user.id,
-        botScopes: bot?.scopes,
+        userId: installation.user.id,
+        botScopes: installation.bot?.scopes,
       });
     },
     fetchInstallation: async (installQuery, logger) => {
