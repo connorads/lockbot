@@ -1,5 +1,4 @@
 import { App, ExpressReceiver } from "@slack/bolt";
-import { Installation } from "@slack/oauth";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import * as env from "env-var";
 import LockBot from "../../lock-bot";
@@ -23,30 +22,62 @@ export const expressReceiver = new ExpressReceiver({
   processBeforeResponse: true,
   installationStore: {
     storeInstallation: async (installation, logger) => {
-      await documentClient
-        .put({
-          TableName: installationsTableName,
-          Item: {
-            Team: installation.team.id,
-            Installation: installation,
-          },
-        })
-        .promise();
-      const { team, user, bot } = installation;
-      logger?.info("Installation stored.", {
-        team,
-        userId: user.id,
-        botScopes: bot?.scopes,
-      });
+      if (installation.isEnterpriseInstall && installation.enterprise) {
+        await documentClient
+          .put({
+            TableName: installationsTableName,
+            Item: {
+              Team: installation.enterprise.id,
+              Installation: installation,
+            },
+          })
+          .promise();
+        const { enterprise, user, bot } = installation;
+        logger?.info("Enterprise installation stored.", {
+          enterprise,
+          userId: user.id,
+          botScopes: bot?.scopes,
+        });
+      } else if (installation.team) {
+        await documentClient
+          .put({
+            TableName: installationsTableName,
+            Item: {
+              Team: installation.team.id,
+              Installation: installation,
+            },
+          })
+          .promise();
+        const { team, user, bot } = installation;
+        logger?.info("Team installation stored.", {
+          team,
+          userId: user.id,
+          botScopes: bot?.scopes,
+        });
+      } else {
+        throw new Error("Failed to store installation");
+      }
     },
     fetchInstallation: async (installQuery, logger) => {
+      let id: string;
+      if (
+        installQuery.isEnterpriseInstall &&
+        installQuery.enterpriseId !== undefined
+      ) {
+        id = installQuery.enterpriseId;
+      } else if (installQuery.teamId !== undefined) {
+        id = installQuery.teamId;
+      } else {
+        throw new Error("Failed to fetch installation");
+      }
+
       const result = await documentClient
         .get({
           TableName: installationsTableName,
-          Key: { Team: installQuery.teamId },
+          Key: { Team: id },
         })
         .promise();
-      const installation = result.Item?.Installation as Installation;
+      const installation = result.Item?.Installation;
       const { team, user, bot } = installation;
       logger?.info("Installation fetched.", {
         team,
