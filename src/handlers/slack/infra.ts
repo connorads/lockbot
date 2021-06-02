@@ -23,21 +23,8 @@ export const expressReceiver = new ExpressReceiver({
   installationStore: {
     storeInstallation: async (installation, logger) => {
       if (installation.isEnterpriseInstall && installation.enterprise) {
-        await documentClient
-          .put({
-            TableName: installationsTableName,
-            Item: {
-              Team: installation.enterprise.id,
-              Installation: installation,
-            },
-          })
-          .promise();
-        const { enterprise, user, bot } = installation;
-        logger?.info("Enterprise installation stored.", {
-          enterprise,
-          userId: user.id,
-          botScopes: bot?.scopes,
-        });
+        logger?.error("Enterprise storeInstallation attempt failed.");
+        throw new Error("Enterprise installation not supported");
       } else if (installation.team) {
         await documentClient
           .put({
@@ -49,7 +36,7 @@ export const expressReceiver = new ExpressReceiver({
           })
           .promise();
         const { team, user, bot } = installation;
-        logger?.info("Team installation stored.", {
+        logger?.info("Installation stored.", {
           team,
           userId: user.id,
           botScopes: bot?.scopes,
@@ -59,32 +46,30 @@ export const expressReceiver = new ExpressReceiver({
       }
     },
     fetchInstallation: async (installQuery, logger) => {
-      let id: string;
       if (
         installQuery.isEnterpriseInstall &&
         installQuery.enterpriseId !== undefined
       ) {
-        id = installQuery.enterpriseId;
+        logger?.error("Enterprise fetchInstallation attempt failed.");
+        throw new Error("Enterprise installation not supported");
       } else if (installQuery.teamId !== undefined) {
-        id = installQuery.teamId;
+        const result = await documentClient
+          .get({
+            TableName: installationsTableName,
+            Key: { Team: installQuery.teamId },
+          })
+          .promise();
+        const installation = result.Item?.Installation;
+        const { team, user, bot } = installation;
+        logger?.info("Installation fetched.", {
+          team,
+          userId: user.id,
+          botScopes: bot?.scopes,
+        });
+        return Promise.resolve(installation);
       } else {
         throw new Error("Failed to fetch installation");
       }
-
-      const result = await documentClient
-        .get({
-          TableName: installationsTableName,
-          Key: { Team: id },
-        })
-        .promise();
-      const installation = result.Item?.Installation;
-      const { team, user, bot } = installation;
-      logger?.info("Installation fetched.", {
-        team,
-        userId: user.id,
-        botScopes: bot?.scopes,
-      });
-      return Promise.resolve(installation);
     },
   },
 });
