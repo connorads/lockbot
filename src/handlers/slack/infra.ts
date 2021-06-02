@@ -22,47 +22,51 @@ export const expressReceiver = new ExpressReceiver({
   processBeforeResponse: true,
   installationStore: {
     storeInstallation: async (installation, logger) => {
-      let teamOrEnterprise: { id: string };
-      let label: "Enterprise" | "Team" | undefined;
       if (installation.isEnterpriseInstall && installation.enterprise) {
-        teamOrEnterprise = installation.enterprise;
-        label = "Enterprise";
+        await documentClient
+          .put({
+            TableName: installationsTableName,
+            Item: {
+              Team: installation.enterprise.id,
+              Installation: installation,
+            },
+          })
+          .promise();
+        const { enterprise, user, bot } = installation;
+        logger?.info("Enterprise installation stored.", {
+          enterprise,
+          userId: user.id,
+          botScopes: bot?.scopes,
+        });
       } else if (installation.team) {
-        teamOrEnterprise = installation.team;
-        label = "Team";
+        await documentClient
+          .put({
+            TableName: installationsTableName,
+            Item: {
+              Team: installation.team.id,
+              Installation: installation,
+            },
+          })
+          .promise();
+        const { team, user, bot } = installation;
+        logger?.info("Team installation stored.", {
+          team,
+          userId: user.id,
+          botScopes: bot?.scopes,
+        });
       } else {
         throw new Error("Failed to store installation");
       }
-
-      await documentClient
-        .put({
-          TableName: installationsTableName,
-          Item: {
-            Team: teamOrEnterprise.id,
-            Installation: installation,
-          },
-        })
-        .promise();
-
-      const { user, bot } = installation;
-      logger?.info(`${label} installation stored.`, {
-        teamOrEnterprise,
-        userId: user.id,
-        botScopes: bot?.scopes,
-      });
     },
     fetchInstallation: async (installQuery, logger) => {
       let id: string;
-      let label: "Enterprise" | "Team" | undefined;
       if (
         installQuery.isEnterpriseInstall &&
         installQuery.enterpriseId !== undefined
       ) {
         id = installQuery.enterpriseId;
-        label = "Enterprise";
       } else if (installQuery.teamId !== undefined) {
         id = installQuery.teamId;
-        label = "Team";
       } else {
         throw new Error("Failed to fetch installation");
       }
@@ -73,10 +77,9 @@ export const expressReceiver = new ExpressReceiver({
           Key: { Team: id },
         })
         .promise();
-
       const installation = result.Item?.Installation;
       const { team, user, bot } = installation;
-      logger?.info(`${label} installation stored.`, {
+      logger?.info("Installation fetched.", {
         team,
         userId: user.id,
         botScopes: bot?.scopes,
