@@ -53,4 +53,5 @@ app.command(
 const server = awsServerlessExpress.createServer(expressReceiver.app);
 const handler = (event: APIGatewayProxyEvent, context: Context) =>
   awsServerlessExpress.proxy(server, event, context);
+
 exports.handler = handler;

@@ -29,7 +29,6 @@ const handleResponse = async (
     const respondArguments = {
       text: message,
       response_type: getResponseType(destination),
-      as_user: true,
     };
     logger.info("Sending response.", respondArguments);
     await respond(respondArguments);
@@ -41,7 +40,6 @@ const handleResponse = async (
         "❌ Oops, something went wrong!\n" +
         "Contact support@lockbot.app if this issue persists.",
       response_type: "ephemeral",
-      as_user: true,
     });
   }
 };
