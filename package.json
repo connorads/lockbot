@@ -61,7 +61,7 @@
     "aws-serverless-express": "^3.4.0",
     "basic-auth": "^2.0.1",
     "bcryptjs": "^2.4.3",
-    "env-var": "^7.0.0",
+    "env-var": "^7.0.1",
     "express": "^4.17.1",
     "fp-ts": "^2.10.5",
     "io-ts": "^2.2.16"
