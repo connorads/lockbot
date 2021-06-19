@@ -1173,16 +1173,16 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@slack/bolt@^3.3.0":
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/@slack/bolt/-/bolt-3.3.0.tgz#9bfb9252091f845ab20cac20d6801edae794a169"
-  integrity sha512-rG9OHszzbJB8ZQHUl8v/IR22OodOhx+jGUGm0ZEb0kKmISUNuOGY7FLbPav4soafQg+fKfj4sWtDNfXesZrDag==
+"@slack/bolt@^3.4.0":
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/@slack/bolt/-/bolt-3.4.0.tgz#466cb6b8caff632303f992f89ef2568aa4487d8b"
+  integrity sha512-mIcJO63zgGdJUINB/VWAfgGn0IUSaZe5At6v8kZ7TjLJpAxo89A89cJWvftCXJ4kqIZkmI5aW+HGLp/miBoYCA==
   dependencies:
     "@slack/logger" "^3.0.0"
     "@slack/oauth" "^2.0.0"
-    "@slack/socket-mode" "^1.0.0"
+    "@slack/socket-mode" "^1.1.0"
     "@slack/types" "^2.0.0"
-    "@slack/web-api" "^6.0.0"
+    "@slack/web-api" "^6.2.3"
     "@types/express" "^4.16.1"
     "@types/node" ">=12"
     "@types/promise.allsettled" "^1.0.3"
@@ -1220,13 +1220,13 @@
     jsonwebtoken "^8.5.1"
     lodash.isstring "^4.0.1"
 
-"@slack/socket-mode@^1.0.0":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@slack/socket-mode/-/socket-mode-1.0.2.tgz#c805a627aa6528b888ad236872d082b40ba4247a"
-  integrity sha512-Rk5FyfZrSXra5xi8u1ZhnzzqOMUcgCcIxTHP1CqnRPymrrC0j1QqzKh7uhQLw1L4Ah9PKs3ObiJe3rXQJtAd6g==
+"@slack/socket-mode@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@slack/socket-mode/-/socket-mode-1.1.0.tgz#f91ff24a0cf35cb7fb8e411e65fa96553a1c1efc"
+  integrity sha512-Nncad6yRjt23+qXlyKedyihsCvg0oQrJ5SMZN0HeAKxWPI5jHrUtH2q0R+spRqiRpP7YSy6F+na72v8Etz3nog==
   dependencies:
     "@slack/logger" "^3.0.0"
-    "@slack/web-api" "^6.0.0"
+    "@slack/web-api" "^6.2.3"
     "@types/node" ">=12.0.0"
     "@types/p-queue" "^2.3.2"
     "@types/ws" "^7.2.5"
@@ -1262,10 +1262,10 @@
     p-queue "^6.6.1"
     p-retry "^4.0.0"
 
-"@slack/web-api@^6.0.0":
-  version "6.2.3"
-  resolved "https://registry.yarnpkg.com/@slack/web-api/-/web-api-6.2.3.tgz#063ca32987587d1879520badab485796be621e77"
-  integrity sha512-Qt0JUSuT1RKFYRpMfbP0xKkqWoXGzmEa4N+7H5oB9eH228ABn1sM3LDNW7ZQiLs5jpDuzHAp7dSxAZpb+ZfO/w==
+"@slack/web-api@^6.2.3":
+  version "6.2.4"
+  resolved "https://registry.yarnpkg.com/@slack/web-api/-/web-api-6.2.4.tgz#a49d7a83b1a8146247899841a1d4580fff7647f3"
+  integrity sha512-njLXh1Wm6WOzo6UIak9LzynAlXk12jWN/ROs5GEF4loltJwHLDdtM6xZ5ztMuF23Kfw9TIXidsBzQAZLbtduPg==
   dependencies:
     "@slack/logger" "^3.0.0"
     "@slack/types" "^2.0.0"
@@ -1308,10 +1308,10 @@
   resolved "https://registry.yarnpkg.com/@types/aws-lambda/-/aws-lambda-8.10.51.tgz#7ad774507a3cf1d2e949ca305380c23b5af635a0"
   integrity sha512-XK7RerpXj4r+IO0r7qIeNqUSU6L4qhPMwNhISxozJJiUX/jdXj9WYzTShRVisEcUQHXgJ4TTBqTArM8f9Mjb8g==
 
-"@types/aws-lambda@8.10.76":
-  version "8.10.76"
-  resolved "https://registry.yarnpkg.com/@types/aws-lambda/-/aws-lambda-8.10.76.tgz#a20191677f1f5e32fe1f26739b1d6fbbea9cf636"
-  integrity sha512-lCTyeRm3NWqSwDnoji0z82Pl0tsOpr1p+33AiNeidgarloWXh3wdiVRUuxEa+sY9S5YLOYGz5X3N3Zvpibvm5w==
+"@types/aws-lambda@8.10.77":
+  version "8.10.77"
+  resolved "https://registry.yarnpkg.com/@types/aws-lambda/-/aws-lambda-8.10.77.tgz#04c4e3a06ab5552f2fa80816f8adca54b6bb9671"
+  integrity sha512-n0EMFJU/7u3KvHrR83l/zrKOVURXl5pUJPNED/Bzjah89QKCHwCiKCBoVUXRwTGRfCYGIDdinJaAlKDHZdp/Ng==
 
 "@types/aws-serverless-express@^3.3.3":
   version "3.3.3"
@@ -2300,10 +2300,25 @@ aws-lambda@^1.0.6:
     js-yaml "^3.13.1"
     watchpack "^2.0.0-beta.10"
 
-aws-sdk@*, aws-sdk@^2.7.0, aws-sdk@^2.834.0, aws-sdk@^2.875.0, aws-sdk@^2.918.0:
+aws-sdk@*, aws-sdk@^2.7.0, aws-sdk@^2.834.0, aws-sdk@^2.875.0:
   version "2.918.0"
   resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.918.0.tgz"
   integrity sha512-ZjWanOA1Zo664EyWLCnbUlkwCjoRPmSIMx529W4gk1418qo3oCEcvUy1HeibGGIClYnZZ7J4FMQvVDm2+JtHLQ==
+  dependencies:
+    buffer "4.9.2"
+    events "1.1.1"
+    ieee754 "1.1.13"
+    jmespath "0.15.0"
+    querystring "0.2.0"
+    sax "1.2.1"
+    url "0.10.3"
+    uuid "3.3.2"
+    xml2js "0.4.19"
+
+aws-sdk@^2.931.0:
+  version "2.931.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.931.0.tgz#7fdc886fa7697095203fe7de16bc948a8b1c8daa"
+  integrity sha512-Db97/aJq8zYl8mHzY6dNO6m9S89TqN4HEUUc2aCYQCTyMb/eNrjf+uZTnutnQbJkClqHzxFcWc3aqe5VlTac/A==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -10090,10 +10105,10 @@ typedarray-to-buffer@^3.1.5:
   dependencies:
     is-typedarray "^1.0.0"
 
-typescript@^4.3.2:
-  version "4.3.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.3.2.tgz#399ab18aac45802d6f2498de5054fcbbe716a805"
-  integrity sha512-zZ4hShnmnoVnAHpVHWpTcxdv7dWP60S2FsydQLV8V5PbS3FifjWFFRiHSWpDJahly88PRyV5teTSLoq4eG7mKw==
+typescript@^4.3.4:
+  version "4.3.4"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.3.4.tgz#3f85b986945bcf31071decdd96cf8bfa65f9dcbc"
+  integrity sha512-uauPG7XZn9F/mo+7MrsRjyvbxFpzemRjKEZXS4AK83oP2KKOJPvb+9cO/gmnv8arWZvhnjVOXz7B49m1l0e9Ew==
 
 unbox-primitive@^1.0.0:
   version "1.0.1"
