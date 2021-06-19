@@ -1,10 +1,8 @@
 import { LockRepo } from "../lock-bot";
 
 export default class InMemoryLockRepo implements LockRepo {
-  private readonly lockMap: Map<
-    string,
-    { owner: string; created: Date }
-  > = new Map();
+  private readonly lockMap: Map<string, { owner: string; created: Date }> =
+    new Map();
 
   private static readonly separator = "🎱🈂️💟🍐🍚🕕😽🎉⛎4️⃣";
 
