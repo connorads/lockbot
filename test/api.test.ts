@@ -25,10 +25,10 @@ describe("dynamodb token repo", () => {
       tokenAuthorizer.createAccessToken(user, "C012345ABCD", "T012345WXYZ");
 
     const token1 = await createToken("U012345MNOP");
-    credentials1 = `${Buffer.from(`U012345MNOP:${token1}`).toString("base64")}`;
+    credentials1 = Buffer.from(`U012345MNOP:${token1}`).toString("base64");
 
     const token2 = await createToken("U012345QRST");
-    credentials2 = `${Buffer.from(`U012345QRST:${token2}`).toString("base64")}`;
+    credentials2 = Buffer.from(`U012345QRST:${token2}`).toString("base64");
   });
 
   const server = request("http://localhost:3000");
@@ -49,9 +49,8 @@ describe("dynamodb token repo", () => {
     [server.post("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")],
     [server.delete("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks/yo")],
   ])("Invalid credentials (%#)", async (apiCall) => {
-    const invalidCredentials = `${Buffer.from(`h4ck3r:b4dt0k3n`).toString(
-      "base64"
-    )}`;
+    const invalidCredentials =
+      Buffer.from(`h4ck3r:b4dt0k3n`).toString("base64");
 
     const res = await apiCall.set(
       "Authorization",

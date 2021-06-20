@@ -1,6 +1,5 @@
-import awsServerlessExpress from "aws-serverless-express";
 import express from "express";
-import { APIGatewayProxyEvent, Context } from "aws-lambda";
+import serverlessExpress from "@vendia/serverless-express";
 import auth from "basic-auth";
 import {
   authorizer,
@@ -101,7 +100,4 @@ app.delete(
   }
 );
 
-const server = awsServerlessExpress.createServer(app);
-const handler = (event: APIGatewayProxyEvent, context: Context) =>
-  awsServerlessExpress.proxy(server, event, context);
-exports.handler = handler;
+exports.handler = serverlessExpress({ app });

@@ -16,7 +16,7 @@ export const nonEmptyWhitespaceFreeString: D.Decoder<
   )
 );
 
-export const lock = D.type({
+export const lock = D.struct({
   name: nonEmptyWhitespaceFreeString,
   owner: nonEmptyWhitespaceFreeString,
 });

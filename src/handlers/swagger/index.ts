@@ -1,7 +1,6 @@
-import awsServerlessExpress from "aws-serverless-express";
 import express from "express";
-import { APIGatewayProxyEvent, Context } from "aws-lambda";
 import * as env from "env-var";
+import serverlessExpress from "@vendia/serverless-express";
 
 const swaggerHtml = require("./swagger.html");
 const openApiJson = require("./openapi.json");
@@ -21,7 +20,4 @@ app.get(["/openapi.json", "/api-docs/openapi.json"], async (req, res) => {
   res.send(openApiJson);
 });
 
-const server = awsServerlessExpress.createServer(app);
-const handler = (event: APIGatewayProxyEvent, context: Context) =>
-  awsServerlessExpress.proxy(server, event, context);
-exports.handler = handler;
+exports.handler = serverlessExpress({ app });

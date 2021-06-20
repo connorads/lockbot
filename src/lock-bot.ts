@@ -172,9 +172,9 @@ export default class LockBot {
       channel,
       team
     );
-    const credentials = `${Buffer.from(`${user}:${accessToken}`).toString(
+    const credentials = Buffer.from(`${user}:${accessToken}`).toString(
       "base64"
-    )}`;
+    );
     const auth = `--header 'Authorization: Basic ${credentials}'`;
     const baseUrl = `${url}/api/teams/${team}/channels/${channel}/locks`;
     const get = "--request GET";

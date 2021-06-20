@@ -1,5 +1,4 @@
-import { APIGatewayProxyEvent, Context } from "aws-lambda";
-import * as awsServerlessExpress from "aws-serverless-express";
+import serverlessExpress from "@vendia/serverless-express";
 import { app, expressReceiver, lockBot, prefix, url } from "./infra";
 import handleCommand from "./handle-command";
 import { getFirstParam, parseUnlock } from "./command-parsers";
@@ -50,8 +49,4 @@ app.command(
   )
 );
 
-const server = awsServerlessExpress.createServer(expressReceiver.app);
-const handler = (event: APIGatewayProxyEvent, context: Context) =>
-  awsServerlessExpress.proxy(server, event, context);
-
-exports.handler = handler;
+exports.handler = serverlessExpress({ app: expressReceiver.app });
