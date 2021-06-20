@@ -3,7 +3,7 @@ import express, { Request, Response, NextFunction } from "express";
 import { isLeft } from "fp-ts/lib/Either";
 import * as D from "io-ts/lib/Decoder";
 import { tokenAuthorizer } from "./infra";
-import { ExpressError, Lock, NonEmptyWhitespaceFreeString } from "./types";
+import { ExpressError, lock, nonEmptyWhitespaceFreeString } from "./types";
 
 export const parseAllContentAsJson = express.json({
   type: "*/*",
@@ -54,7 +54,7 @@ export const bodyValidator = async (
   res: Response,
   next: NextFunction
 ) => {
-  const decoded = Lock.decode(req.body);
+  const decoded = lock.decode(req.body);
   if (isLeft(decoded)) {
     const error = D.draw(decoded.left);
     console.log("Invalid request body", { body: req.body, error });
@@ -70,7 +70,7 @@ export const paramsValidator = async (
   next: NextFunction
 ) => {
   const Params = D.type({
-    lock: NonEmptyWhitespaceFreeString,
+    lock: nonEmptyWhitespaceFreeString,
   });
   const decoded = Params.decode(req.params);
   if (isLeft(decoded)) {

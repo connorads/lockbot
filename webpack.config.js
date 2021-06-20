@@ -1,6 +1,5 @@
 const path = require("path");
 const slsw = require("serverless-webpack");
-const { ESBuildPlugin } = require("esbuild-loader");
 
 module.exports = {
   mode: slsw.lib.webpack.isLocal ? "development" : "production",
@@ -34,7 +33,6 @@ module.exports = {
       },
     ],
   },
-  plugins: [new ESBuildPlugin()],
   ignoreWarnings: [
     {
       module: /node_modules\/express\/lib\/view\.js/,

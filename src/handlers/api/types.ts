@@ -5,7 +5,7 @@ interface NonEmptyWhitespaceFreeStringBrand {
   readonly NonEmptyWhitespaceFreeString: unique symbol;
 }
 type NonEmptyWhitespaceFreeString = string & NonEmptyWhitespaceFreeStringBrand;
-export const NonEmptyWhitespaceFreeString: D.Decoder<
+export const nonEmptyWhitespaceFreeString: D.Decoder<
   unknown,
   NonEmptyWhitespaceFreeString
 > = pipe(
@@ -16,11 +16,11 @@ export const NonEmptyWhitespaceFreeString: D.Decoder<
   )
 );
 
-export const Lock = D.type({
-  name: NonEmptyWhitespaceFreeString,
-  owner: NonEmptyWhitespaceFreeString,
+export const lock = D.type({
+  name: nonEmptyWhitespaceFreeString,
+  owner: nonEmptyWhitespaceFreeString,
 });
-export interface Lock extends D.TypeOf<typeof Lock> {}
+export interface Lock extends D.TypeOf<typeof lock> {}
 
 export interface ExpressError extends Error {
   statusCode?: number;
