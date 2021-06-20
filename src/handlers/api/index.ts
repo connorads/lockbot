@@ -64,7 +64,7 @@ app.post(
       if (!lockOwner) {
         await lockRepo.setOwner(lock.name, lock.owner, channel, team);
         console.log("Added lock", { lock });
-        slack.client.chat.postMessage({ text: "hi", channel });
+        await slack.client.chat.postMessage({ text: "hi", channel });
         res.status(201).json(lock);
       } else if (lockOwner === lock.owner) {
         console.log("Lock exists", { lock });
