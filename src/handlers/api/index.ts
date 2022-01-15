@@ -61,7 +61,9 @@ app.post(
     } else {
       const lockOwner = await lockRepo.getOwner(lock.name, channel, team);
       if (!lockOwner) {
-        await lockRepo.setOwner(lock.name, lock.owner, channel, team);
+        await lockRepo.setOwner(lock.name, lock.owner, channel, team, {
+          message: lock.message,
+        });
         console.log("Added lock", { lock });
         res.status(201).json(lock);
       } else if (lockOwner === lock.owner) {
