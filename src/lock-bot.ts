@@ -25,6 +25,7 @@ export type Destination = "user" | "channel";
 export interface Response {
   message: string;
   destination: Destination;
+  metaData?: Record<string, string>;
 }
 
 export default class LockBot {
@@ -68,6 +69,7 @@ export default class LockBot {
     return {
       message: `<@${user}> has locked \`${resource}\` 🔒`,
       destination: "channel",
+      metaData: metadata,
     };
   };
 

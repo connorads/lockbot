@@ -25,11 +25,18 @@ const handleResponse = async (
   logger: Logger
 ): Promise<void> => {
   try {
-    const { message, destination } = await response;
+    const { message, destination, metaData } = await response;
     const respondArguments = {
       text: message,
       response_type: getResponseType(destination),
     };
+    if (metaData && metaData.message) {
+      respondArguments.attachments = [
+        {
+          text: metaData.message,
+        },
+      ];
+    }
     logger.info("Sending response.", respondArguments);
     await respond(respondArguments);
     logger.info("Response sent.");
