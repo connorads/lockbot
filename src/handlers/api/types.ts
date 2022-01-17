@@ -4,7 +4,6 @@ import * as D from "io-ts/lib/Decoder";
 interface NonEmptyWhitespaceFreeStringBrand {
   readonly NonEmptyWhitespaceFreeString: unique symbol;
 }
-type NonEmptyWhitespaceFreeStringOptional = string & NonEmptyWhitespaceFreeStringBrand;
 type NonEmptyWhitespaceFreeString = string & NonEmptyWhitespaceFreeStringBrand;
 export const nonEmptyWhitespaceFreeString: D.Decoder<
   unknown,
