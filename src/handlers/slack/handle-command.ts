@@ -30,10 +30,10 @@ const handleResponse = async (
       text: message,
       response_type: getResponseType(destination),
     };
-    if (metaData && metaData.message) {
+    if (metaData && metaData.Message) {
       respondArguments.attachments = [
         {
-          text: metaData.message,
+          text: metaData.Message,
         },
       ];
     }
