@@ -9,6 +9,7 @@ import { recreateResourcesTable, recreateAccessTokenTable } from "./utils";
 import {
   parseUnlock,
   getFirstParam,
+  getSecondParam,
 } from "../src/handlers/slack/command-parsers";
 
 let lockBot: LockBot;
@@ -32,7 +33,18 @@ const runAllTests = () => {
     }
     if (command === "/lock") {
       const resource = getFirstParam(commandText);
-      return lockBot.lock(resource, user, channel, team);
+      const descriptionMessage = getSecondParam(commandText);
+      return lockBot.lock(
+        resource,
+        user,
+        channel,
+        team,
+        descriptionMessage !== ""
+          ? {
+              Message: descriptionMessage,
+            }
+          : undefined
+      );
     }
     if (command === "/lbtoken") {
       const resource = getFirstParam(commandText);
@@ -264,6 +276,27 @@ const runAllTests = () => {
       destination: "user",
     });
   });
+
+  test("can lock resource with message (single word, i.e no space)", async () => {
+    expect(await execute("/lock dev blahblah")).toEqual({
+      message: "<@Connor> has locked `dev` 🔒",
+      destination: "channel",
+      metaData: {
+        Message: "blahblah",
+      },
+    });
+  });
+
+  test("can lock resource with message (multi word, i.e no space)", async () => {
+    expect(await execute("/lock dev blahblah test")).toEqual({
+      message: "<@Connor> has locked `dev` 🔒",
+      destination: "channel",
+      metaData: {
+        Message: "blahblah test",
+      },
+    });
+  });
+
 
   test("get access token help", async () => {
     expect(await execute("/lbtoken")).toEqual({
