@@ -45,10 +45,11 @@ export default class LockBot {
       return {
         message:
           "How to use `/lock`\n\n" +
-          "To lock a resource in this channel called `thingy`, use `/lock thingy`\n\n" +
+          "To lock a resource in this channel called `thingy` with optional message, use `/lock thingy locking thingy for xyz use`\n\n" +
           "_Example:_\n" +
-          `> *<@${user}>*: \`/lock dev\`\n` +
-          `> *Lockbot*: <@${user}> has locked \`dev\` 🔒`,
+          `> *<@${user}>*: \`/lock dev locking dev for feature testing\`\n` +
+          `> *Lockbot*: <@${user}> has locked \`dev\` 🔒 \n` +
+          "> locking dev for feature testing",
         destination: "user",
       };
     }
