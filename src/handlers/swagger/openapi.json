@@ -304,6 +304,9 @@
           },
           "owner": {
             "type": "string"
+          },
+          "message": {
+            "type": "string"
           }
         },
         "example": { "name": "dev", "owner": "U012345MNOP" }
