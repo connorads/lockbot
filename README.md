@@ -29,7 +29,7 @@ Your team must agree to use Lockbot whenever they start or stop using a shared r
 Lockbot has three main commands:
 
 - `/locks` Get locked resources list 📜
-- `/lock [resource-name]` Lock a resource 🔒
+- `/lock [resource-name] [message]` Lock a resource with optional description message🔒
 - `/unlock [resource-name] [options]` Unlock a resource 🔓
   - Set `[options]` to `force` if you need to unlock when someone is away on holiday ⛱
 
