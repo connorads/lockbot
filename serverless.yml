@@ -7,10 +7,10 @@ plugins:
   - serverless-dynamodb-local
   - serverless-offline
   - serverless-api-gateway-throttling
-
 provider:
   name: aws
   runtime: nodejs14.x
+  lambdaHashingVersion: 20201221
   environment:
     SLACK_SIGNING_SECRET: ${env:SLACK_SIGNING_SECRET}
     SLACK_CLIENT_ID: ${env:SLACK_CLIENT_ID}
@@ -81,7 +81,6 @@ functions:
           method: get
           path: /api-docs/openapi.json
 
-
 resources:
   Resources:
     resourcesTable:
@@ -129,8 +128,8 @@ resources:
           WriteCapacityUnits: 2
 
 custom:
-  stage: ${opt:stage, self:provider.stage}
-  region: ${opt:region, self:provider.region}
+  stage: ${sls:stage}
+  region: ${opt:region, self:provider.region, "eu-west-1"}.
   resourcesTableName: ${self:custom.stage}-lockbot-resources
   installationsTableName: ${self:custom.stage}-lockbot-installations
   accessTokensTableName: ${self:custom.stage}-lockbot-tokens
