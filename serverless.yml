@@ -81,7 +81,6 @@ functions:
           method: get
           path: /api-docs/openapi.json
 
-
 resources:
   Resources:
     resourcesTable:
@@ -129,8 +128,8 @@ resources:
           WriteCapacityUnits: 2
 
 custom:
-  stage: ${opt:stage, self:provider.stage}
-  region: ${opt:region, self:provider.region}
+  stage: ${sls:stage}
+  region: ${opt:region, self:provider.region, "eu-west-1"}.
   resourcesTableName: ${self:custom.stage}-lockbot-resources
   installationsTableName: ${self:custom.stage}-lockbot-installations
   accessTokensTableName: ${self:custom.stage}-lockbot-tokens
