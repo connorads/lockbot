@@ -7,7 +7,6 @@ plugins:
   - serverless-dynamodb-local
   - serverless-offline
   - serverless-api-gateway-throttling
-
 provider:
   name: aws
   runtime: nodejs14.x
