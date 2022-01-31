@@ -129,7 +129,7 @@ resources:
 
 custom:
   stage: ${sls:stage}
-  region: ${opt:region, self:provider.region, "eu-west-1"}.
+  region: ${opt:region, self:provider.region, "eu-west-1"}
   resourcesTableName: ${self:custom.stage}-lockbot-resources
   installationsTableName: ${self:custom.stage}-lockbot-installations
   accessTokensTableName: ${self:custom.stage}-lockbot-tokens
