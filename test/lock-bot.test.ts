@@ -112,10 +112,11 @@ const runAllTests = () => {
     expect(await execute("/lock   ")).toEqual({
       message:
         "How to use `/lock`\n\n" +
-        "To lock a resource in this channel called `thingy`, use `/lock thingy`\n\n" +
+        "To lock a resource in this channel called `thingy` with optional message, use `/lock thingy locking thingy for xyz use`\n\n" +
         "_Example:_\n" +
-        `> *<@Connor>*: \`/lock dev\`\n` +
-        `> *Lockbot*: <@Connor> has locked \`dev\` 🔒`,
+        `> *<@Connor>*: \`/lock dev locking dev for feature testing\`\n` +
+        `> *Lockbot*: <@Connor> has locked \`dev\` 🔒 \n` +
+        "> locking dev for feature testing",
       destination: "user",
     });
   });
@@ -123,10 +124,11 @@ const runAllTests = () => {
     expect(await execute("/lock help")).toEqual({
       message:
         "How to use `/lock`\n\n" +
-        "To lock a resource in this channel called `thingy`, use `/lock thingy`\n\n" +
+        "To lock a resource in this channel called `thingy` with optional message, use `/lock thingy locking thingy for xyz use`\n\n" +
         "_Example:_\n" +
-        `> *<@Connor>*: \`/lock dev\`\n` +
-        `> *Lockbot*: <@Connor> has locked \`dev\` 🔒`,
+        `> *<@Connor>*: \`/lock dev locking dev for feature testing\`\n` +
+        `> *Lockbot*: <@Connor> has locked \`dev\` 🔒 \n` +
+        "> locking dev for feature testing",
       destination: "user",
     });
   });
