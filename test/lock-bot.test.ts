@@ -297,7 +297,6 @@ const runAllTests = () => {
     });
   });
 
-
   test("get access token help", async () => {
     expect(await execute("/lbtoken")).toEqual({
       message:

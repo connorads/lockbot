@@ -1,7 +1,7 @@
 import serverlessExpress from "@vendia/serverless-express";
 import { app, expressReceiver, lockBot, prefix, url } from "./infra";
 import handleCommand from "./handle-command";
-import {getFirstParam, getSecondParam, parseUnlock} from "./command-parsers";
+import { getFirstParam, getSecondParam, parseUnlock } from "./command-parsers";
 
 app.command(
   `/${prefix}locks`,
