@@ -1,0 +1,15 @@
+apiDefinitions:
+  petstore: ./src/handlers/swagger/openapi.json
+
+lint:
+  extends:
+    - recommended
+  rules:
+    # Servers added at Swagger UI runtime
+    no-empty-servers:
+      severity: off
+    # Ignore warnings
+    operation-operationId:
+      severity: off
+    info-license:
+      severity: off

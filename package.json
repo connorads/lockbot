@@ -9,6 +9,7 @@
     "lint": "npm-run-all -p -c lint:*",
     "lint:tsc": "tsc --noEmit",
     "lint:eslint": "eslint \"**/*.{js,ts}\"",
+    "lint:openapi": "openapi lint",
     "db:install": "serverless plugin install --name serverless-dynamodb-local && serverless dynamodb install",
     "db:start": "serverless dynamodb start",
     "dev": "serverless offline",
@@ -22,6 +23,7 @@
     "deploy": "serverless deploy"
   },
   "devDependencies": {
+    "@redocly/openapi-cli": "^1.0.0-beta.81",
     "@types/aws-lambda": "^8.10.76",
     "@types/jest": "26.0.23",
     "@types/node": "^15.6.1",
