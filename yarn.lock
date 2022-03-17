@@ -2069,10 +2069,10 @@
     "@typescript-eslint/types" "4.27.0"
     eslint-visitor-keys "^2.0.0"
 
-"@vendia/serverless-express@^4.5.3":
-  version "4.5.3"
-  resolved "https://registry.yarnpkg.com/@vendia/serverless-express/-/serverless-express-4.5.3.tgz#3c1631ebccea74ff9c14a37e2bdf14277d8d9a1e"
-  integrity sha512-EBBW1kt1A62FaSeQGh7jwzbii+3HVYDvKgMPpV76LCqJbgqMnyaRrgFQ26nSZ54iV4bh50eUmuSpSmJIZ6zq4w==
+"@vendia/serverless-express@^4.5.4":
+  version "4.5.4"
+  resolved "https://registry.yarnpkg.com/@vendia/serverless-express/-/serverless-express-4.5.4.tgz#1a9528342b476eb273209bc794b534d855c92bd4"
+  integrity sha512-Ptrp8toFPv5Py3VNXRgiJp4XO7KTK992bM1ZrHjjfKJ8ThjJr87Hqs3UpeKHW12ABZ4e062NbDmgmY9NxsYR2w==
 
 "@webassemblyjs/ast@1.11.0":
   version "1.11.0"
