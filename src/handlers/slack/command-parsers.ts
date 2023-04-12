@@ -6,3 +6,5 @@ export const parseUnlock = (
 };
 
 export const getFirstParam = (commandText: string) => commandText.split(" ")[0];
+export const getSecondParam = (commandText: string) =>
+  commandText.split(" ").slice(1).join(" ");

@@ -1,7 +1,7 @@
 import serverlessExpress from "@vendia/serverless-express";
 import { app, expressReceiver, lockBot, prefix, url } from "./infra";
 import handleCommand from "./handle-command";
-import { getFirstParam, parseUnlock } from "./command-parsers";
+import { getFirstParam, getSecondParam, parseUnlock } from "./command-parsers";
 
 app.command(
   `/${prefix}locks`,
@@ -9,9 +9,11 @@ app.command(
 );
 app.command(
   `/${prefix}lock`,
-  handleCommand((command) =>
-    lockBot.lock(
-      getFirstParam(command.text),
+  handleCommand((command) => {
+    const resourceName = getFirstParam(command.text);
+    const descriptionMessage = getSecondParam(command.text);
+    return lockBot.lock(
+      resourceName,
       command.user_id,
       command.channel_id,
       command.team_id,
@@ -19,9 +21,10 @@ app.command(
         User: command.user_name,
         Channel: command.channel_name,
         Team: command.team_domain,
+        Message: descriptionMessage,
       }
-    )
-  )
+    );
+  })
 );
 app.command(
   `/${prefix}unlock`,

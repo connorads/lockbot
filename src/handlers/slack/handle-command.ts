@@ -1,5 +1,6 @@
 import {
   Logger,
+  RespondArguments,
   RespondFn,
   SlackCommandMiddlewareArgs,
   SlashCommand,
@@ -25,11 +26,18 @@ const handleResponse = async (
   logger: Logger
 ): Promise<void> => {
   try {
-    const { message, destination } = await response;
-    const respondArguments = {
+    const { message, destination, metaData } = await response;
+    const respondArguments: RespondArguments = {
       text: message,
       response_type: getResponseType(destination),
     };
+    if (metaData && metaData.Message) {
+      respondArguments.attachments = [
+        {
+          text: metaData.Message,
+        },
+      ];
+    }
     logger.info("Sending response.", respondArguments);
     await respond(respondArguments);
     logger.info("Response sent.");

@@ -16,10 +16,19 @@ export const nonEmptyWhitespaceFreeString: D.Decoder<
   )
 );
 
-export const lock = D.struct({
-  name: nonEmptyWhitespaceFreeString,
-  owner: nonEmptyWhitespaceFreeString,
-});
+export const lock = pipe(
+  D.struct({
+    name: nonEmptyWhitespaceFreeString,
+    owner: nonEmptyWhitespaceFreeString,
+  }),
+  // Making message field optional for backward compatibility
+  D.intersect(
+    D.partial({
+      message: D.string,
+    })
+  )
+);
+
 export interface Lock extends D.TypeOf<typeof lock> {}
 
 export interface ExpressError extends Error {

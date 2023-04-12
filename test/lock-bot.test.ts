@@ -9,6 +9,7 @@ import { recreateResourcesTable, recreateAccessTokenTable } from "./utils";
 import {
   parseUnlock,
   getFirstParam,
+  getSecondParam,
 } from "../src/handlers/slack/command-parsers";
 
 let lockBot: LockBot;
@@ -32,7 +33,18 @@ const runAllTests = () => {
     }
     if (command === "/lock") {
       const resource = getFirstParam(commandText);
-      return lockBot.lock(resource, user, channel, team);
+      const descriptionMessage = getSecondParam(commandText);
+      return lockBot.lock(
+        resource,
+        user,
+        channel,
+        team,
+        descriptionMessage !== ""
+          ? {
+              Message: descriptionMessage,
+            }
+          : undefined
+      );
     }
     if (command === "/lbtoken") {
       const resource = getFirstParam(commandText);
@@ -100,10 +112,11 @@ const runAllTests = () => {
     expect(await execute("/lock   ")).toEqual({
       message:
         "How to use `/lock`\n\n" +
-        "To lock a resource in this channel called `thingy`, use `/lock thingy`\n\n" +
+        "To lock a resource in this channel called `thingy` with optional message, use `/lock thingy locking thingy for xyz use`\n\n" +
         "_Example:_\n" +
-        `> *<@Connor>*: \`/lock dev\`\n` +
-        `> *Lockbot*: <@Connor> has locked \`dev\` 🔒`,
+        `> *<@Connor>*: \`/lock dev locking dev for feature testing\`\n` +
+        `> *Lockbot*: <@Connor> has locked \`dev\` 🔒 \n` +
+        "> locking dev for feature testing",
       destination: "user",
     });
   });
@@ -111,10 +124,11 @@ const runAllTests = () => {
     expect(await execute("/lock help")).toEqual({
       message:
         "How to use `/lock`\n\n" +
-        "To lock a resource in this channel called `thingy`, use `/lock thingy`\n\n" +
+        "To lock a resource in this channel called `thingy` with optional message, use `/lock thingy locking thingy for xyz use`\n\n" +
         "_Example:_\n" +
-        `> *<@Connor>*: \`/lock dev\`\n` +
-        `> *Lockbot*: <@Connor> has locked \`dev\` 🔒`,
+        `> *<@Connor>*: \`/lock dev locking dev for feature testing\`\n` +
+        `> *Lockbot*: <@Connor> has locked \`dev\` 🔒 \n` +
+        "> locking dev for feature testing",
       destination: "user",
     });
   });
@@ -262,6 +276,26 @@ const runAllTests = () => {
     expect(await execute("/locks", { team: "another-team" })).toEqual({
       message: "No active locks in this channel 🔓",
       destination: "user",
+    });
+  });
+
+  test("can lock resource with message (single word, i.e no space)", async () => {
+    expect(await execute("/lock dev blahblah")).toEqual({
+      message: "<@Connor> has locked `dev` 🔒",
+      destination: "channel",
+      metaData: {
+        Message: "blahblah",
+      },
+    });
+  });
+
+  test("can lock resource with message (multi word, i.e no space)", async () => {
+    expect(await execute("/lock dev blahblah test")).toEqual({
+      message: "<@Connor> has locked `dev` 🔒",
+      destination: "channel",
+      metaData: {
+        Message: "blahblah test",
+      },
     });
   });
 

@@ -90,7 +90,7 @@ describe("dynamodb token repo", () => {
     expect(res.text).toBe(JSON.stringify({ message: "dev not found" }));
   });
 
-  test("Create lock", async () => {
+  test("Create lock without message", async () => {
     const res = await server
       .post("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
       .set("Authorization", `Basic ${credentials1}`)
@@ -340,6 +340,36 @@ describe("dynamodb token repo", () => {
     expect(res.status).toBe(403);
     expect(res.text).toBe(
       JSON.stringify({ message: "Cannot unlock dev, locked by U012345QRST" })
+    );
+  });
+
+  test("Create lock with message (single word, i.e no space)", async () => {
+    const res = await server
+      .post("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
+      .set("Authorization", `Basic ${credentials1}`)
+      .send('{ "name": "dev", "owner": "U012345MNOP", "message": "blahblah" }');
+
+    expect(res.status).toBe(201);
+    expect(res.text).toBe(
+      JSON.stringify({ name: "dev", owner: "U012345MNOP", message: "blahblah" })
+    );
+  });
+
+  test("Create lock with message (multi word i.e with space)", async () => {
+    const res = await server
+      .post("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
+      .set("Authorization", `Basic ${credentials1}`)
+      .send(
+        '{ "name": "dev", "owner": "U012345MNOP", "message": "For feature testing" }'
+      );
+
+    expect(res.status).toBe(201);
+    expect(res.text).toBe(
+      JSON.stringify({
+        name: "dev",
+        owner: "U012345MNOP",
+        message: "For feature testing",
+      })
     );
   });
 });
