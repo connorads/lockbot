@@ -10,6 +10,7 @@ import {
 } from "./middleware";
 import { Lock } from "./types";
 import { lockRepo } from "./infra";
+import { app as slack } from "../slack/infra";
 
 const app = express();
 
@@ -63,7 +64,11 @@ app.post(
       if (!lockOwner) {
         await lockRepo.setOwner(lock.name, lock.owner, channel, team);
         console.log("Added lock", { lock });
-        res.status(201).json(lock);
+        const chatRes = await slack.client.chat.postMessage({
+          text: "hi",
+          channel,
+        });
+        res.status(201).json({ lock, chatRes });
       } else if (lockOwner === lock.owner) {
         console.log("Lock exists", { lock });
         res.status(200).json(lock);
