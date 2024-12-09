@@ -187,6 +187,16 @@ If **Lockbot** responds then congratulations, it's working!
 
 If **Slackbot** responds with an error, take a look in your **AWS Console > Lambda > Cloudwatch Logs**
 
+### (Optional) Configure Lockbot to send reminders
+
+Lockbot can also send users a reminder when they've held a lock for longer than a configured amount of time.
+
+The default reminder threshold is 4 hours, and reminders are sent twice per day (Mon-Fri).
+- The reminder threshold can be configured via the `LOCK_REMINDER_THRESHOLD_MINUTES` environment variable.
+- The reminder schedule can be configured via the `self:custom.lockReminderScheduleExpression` serverless variable.
+
+To enable this feature, set the `BOT_OAUTH_TOKEN` environment variable to the value of your Bot User OAuth Token (see **Settings > Features > OAuth & Permissions**).
+
 ### Finished
 
 Now that everything has been configured in Slack and AWS you can make changes to Lockbot code and deploy it easily with one command.

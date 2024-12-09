@@ -1,5 +1,5 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { LockRepo } from "../lock-bot";
+import { Lock, LockRepo } from "../lock-bot";
 
 export default class DynamoDBLockRepo implements LockRepo {
   constructor(
@@ -14,6 +14,31 @@ export default class DynamoDBLockRepo implements LockRepo {
         Key: { Resource: resource, Group: `${team}#${channel}` },
       })
       .promise();
+  }
+
+  async getAllGlobal(): Promise<Lock[]> {
+    const locks: Lock[] = [];
+    const params: DocumentClient.ScanInput = {
+      TableName: this.resourcesTableName,
+      ExclusiveStartKey: undefined,
+    };
+    let results;
+    do {
+      // eslint-disable-next-line no-await-in-loop
+      results = await this.documentClient.scan(params).promise();
+      results.Items?.forEach((item) => {
+        const [team, channel] = item.Group.split("#");
+        locks.push({
+          channel,
+          team,
+          name: item.Resource,
+          owner: item.Owner,
+          created: new Date(item.Created),
+        });
+      });
+      params.ExclusiveStartKey = results.LastEvaluatedKey;
+    } while (results.LastEvaluatedKey);
+    return locks;
   }
 
   async getAll(

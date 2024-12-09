@@ -1,4 +1,4 @@
-import { LockRepo } from "../lock-bot";
+import { Lock, LockRepo } from "../lock-bot";
 
 export default class InMemoryLockRepo implements LockRepo {
   private readonly lockMap: Map<string, { owner: string; created: Date }> =
@@ -20,6 +20,25 @@ export default class InMemoryLockRepo implements LockRepo {
 
   async delete(resource: string, channel: string, team: string): Promise<void> {
     this.lockMap.delete(InMemoryLockRepo.toKey(resource, channel, team));
+  }
+
+  async getAllGlobal(): Promise<Lock[]> {
+    const locks: Lock[] = [];
+    this.lockMap.forEach((value, key) => {
+      const {
+        resource,
+        channel: resourceChannel,
+        team: resourceTeam,
+      } = InMemoryLockRepo.fromKey(key);
+      locks.push({
+        channel: resourceChannel,
+        team: resourceTeam,
+        name: resource,
+        owner: value.owner,
+        created: new Date(value.created),
+      });
+    });
+    return locks;
   }
 
   async getAll(

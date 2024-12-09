@@ -18,7 +18,7 @@ export const expressReceiver = new ExpressReceiver({
   clientId: env.get("SLACK_CLIENT_ID").required().asString(),
   clientSecret: env.get("SLACK_CLIENT_SECRET").required().asString(),
   stateSecret: env.get("STATE_SECRET").required().asString(),
-  scopes: ["commands"],
+  scopes: ["commands", "chat:write"],
   processBeforeResponse: true,
   installationStore: {
     storeInstallation: async (installation, logger) => {

@@ -1,7 +1,16 @@
 import TokenAuthorizer from "./token-authorizer";
 
+export type Lock = {
+  channel: string;
+  team: string;
+  name: string;
+  owner: string;
+  created: Date;
+};
+
 export interface LockRepo {
   delete(resource: string, channel: string, team: string): Promise<void>;
+  getAllGlobal(): Promise<Lock[]>;
   getAll(
     channel: string,
     team: string
