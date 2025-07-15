@@ -9,23 +9,34 @@ on:
 jobs:
   build:
     name: Build and test
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: "14"
-      - run: yarn install --frozen-lockfile
-      - run: yarn lint
+          node-version: "18"
+          cache: "npm"
+      - run: npm ci
+      - run: npm run lint
       - name: Setup DynamoDB Local
-        uses: rrainn/dynamodb-action@v2.0.0
+        uses: rrainn/dynamodb-action@v2.0.1
       - name: Setup AWS credentials
         run: |
           mkdir ~/.aws
           echo -e "[default]\naws_access_key_id=''\naws_secret_access_key=''" > ~/.aws/credentials
       - name: Setup Serverless Offline & Run Tests
-        run: yarn ci
+        run: npm run ci
+        env:
+          SLACK_SIGNING_SECRET: dummy-signing-secret
+          SLACK_CLIENT_ID: dummy-client-id
+          SLACK_CLIENT_SECRET: dummy-client-secret
+          STATE_SECRET: dummy-state-secret
+          INSTALLATIONS_TABLE_NAME: installations
+          RESOURCES_TABLE_NAME: resources
+          ACCESS_TOKENS_TABLE_NAME: access-tokens
+          SERVERLESS_STAGE: test
+          API_GATEWAY_URL: http://localhost:3000
       - name: Coveralls
-        uses: coverallsapp/github-action@v1.1.1
+        uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}

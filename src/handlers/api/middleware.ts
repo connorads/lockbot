@@ -11,10 +11,10 @@ export const parseAllContentAsJson = express.json({
 
 export const handleErrors = (
   err: ExpressError,
-  req: Request,
+  _req: Request,
   res: Response,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  next: NextFunction
+  _next: NextFunction
 ) => {
   const { statusCode, message, stack } = err;
   if (statusCode && statusCode >= 400 && statusCode < 500) {
