@@ -12,13 +12,12 @@ Lockbot is written with local development in mind and you can create and test mo
 
 ### Pre-requisites
 
-- [Node 14](http://nodejs.org/)
-- [Yarn](https://yarnpkg.com/en/docs/install)
+- [Node 18+](http://nodejs.org/)
 - [Java Runtime Environment](http://www.oracle.com/technetwork/java/javase/downloads/index.html) (for local DynamoDB offline)
 
 ### Install dependencies
 
-`yarn install`
+`npm install`
 
 ### Setup local DynamoDB
 
@@ -26,25 +25,25 @@ The automated tests run against a local DynamoDB instance
 
 #### One-time install
 
-`yarn db:install`
+`npm run db:install`
 
 #### Start local DynamoDB
 
-`yarn db:start`
+`npm run db:start`
 
 ### Start Serverless Offline
 
 The API tests run HTTP calls against emulated AWS λ and API Gateway
 
-`yarn dev`
+`npm run dev`
 
 ### Run tests
 
-`yarn test`
+`npm test`
 
 ### Lint
 
-`yarn lint`
+`npm run lint`
 
 ## Deploy to AWS and Slack
 

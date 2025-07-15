@@ -7,16 +7,17 @@ on:
 jobs:
   deploy-dev:
     name: Deploy to dev
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     environment: dev
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: "14"
-      - run: yarn install --frozen-lockfile
+          node-version: "18"
+          cache: "npm"
+      - run: npm ci
       - name: Serverless Deploy
-        run: yarn deploy --region eu-west-1 --stage dev
+        run: npm run deploy -- --region eu-west-1 --stage dev
         env:
           SLACK_SIGNING_SECRET: ${{ secrets.SLACK_SIGNING_SECRET }}
           SLACK_CLIENT_ID: ${{ secrets.SLACK_CLIENT_ID }}
@@ -26,16 +27,17 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   deploy-prod:
     name: Deploy to prod
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     environment: prod
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: "14"
-      - run: yarn install --frozen-lockfile
+          node-version: "18"
+          cache: "npm"
+      - run: npm ci
       - name: Serverless Deploy
-        run: yarn deploy --region eu-west-1 --stage prod
+        run: npm run deploy -- --region eu-west-1 --stage prod
         env:
           SLACK_SIGNING_SECRET: ${{ secrets.SLACK_SIGNING_SECRET }}
           SLACK_CLIENT_ID: ${{ secrets.SLACK_CLIENT_ID }}

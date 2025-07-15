@@ -9,23 +9,24 @@ on:
 jobs:
   build:
     name: Build and test
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: "14"
-      - run: yarn install --frozen-lockfile
-      - run: yarn lint
+          node-version: "18"
+          cache: "npm"
+      - run: npm ci
+      - run: npm run lint
       - name: Setup DynamoDB Local
-        uses: rrainn/dynamodb-action@v2.0.0
+        uses: rrainn/dynamodb-action@v2.0.1
       - name: Setup AWS credentials
         run: |
           mkdir ~/.aws
           echo -e "[default]\naws_access_key_id=''\naws_secret_access_key=''" > ~/.aws/credentials
       - name: Setup Serverless Offline & Run Tests
-        run: yarn ci
+        run: npm run ci
       - name: Coveralls
-        uses: coverallsapp/github-action@v1.1.1
+        uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
