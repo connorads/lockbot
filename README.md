@@ -26,16 +26,48 @@ Your team must agree to use Lockbot whenever they start or stop using a shared r
 
 ## How to use Lockbot
 
-Lockbot has three main commands:
+### Basic Commands
 
 - `/locks` Get locked resources list 📜
 - `/lock [resource-name]` Lock a resource 🔒
+- `/lock [resource-name] --expiry [duration]` Lock with auto-expiry ⏰
 - `/unlock [resource-name] [options]` Unlock a resource 🔓
   - Set `[options]` to `force` if you need to unlock when someone is away on holiday ⛱
 
 Each Slack channel has its own list of resources.
 
 When someone successfully locks or unlocks a resource, the channel is notified.
+
+### Lock Expiry
+
+Locks can be set to automatically expire after a specified duration:
+
+- `/lock staging --expiry 2h` Lock for 2 hours
+- `/lock dev --expiry 30m` Lock for 30 minutes
+- `/lock prod --expiry 1d` Lock for 1 day
+
+Supported duration formats: `30m` (minutes), `2h` (hours), `1d` (days), `1w` (weeks)
+
+When a lock expires, Lockbot automatically unlocks it and notifies the channel.
+
+### Resource Management
+
+Optionally define a set of allowed resources per channel:
+
+- `/add-resources [names...]` Add predefined resources to the channel
+- `/remove-resources [names...]` Remove resources from the channel
+- `/list-resources` View resources and channel configuration
+
+Example: `/add-resources dev staging prod`
+
+### Channel Configuration
+
+- `/set-lock-mode [strict|flexible]` Control which resources can be locked
+  - `strict` - Only predefined resources can be locked
+  - `flexible` - Any resource can be locked (default)
+- `/set-lock-expiry [duration]` Set default expiry for all new locks
+  - Example: `/set-lock-expiry 4h` - All locks expire after 4 hours by default
+  - Use `/set-lock-expiry 0` to disable default expiry
 
 ## Lockbot API
 

@@ -14,7 +14,7 @@ export const handleErrors = (
   req: Request,
   res: Response,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const { statusCode, message, stack } = err;
   if (statusCode && statusCode >= 400 && statusCode < 500) {
@@ -31,7 +31,7 @@ export const handleErrors = (
 export const authorizer = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const { channel, team } = req.params;
   const user = auth(req);
@@ -52,7 +52,7 @@ export const authorizer = async (
 export const bodyValidator = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const decoded = lock.decode(req.body);
   if (isLeft(decoded)) {
@@ -67,7 +67,7 @@ export const bodyValidator = async (
 export const paramsValidator = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const Params = D.type({
     lock: nonEmptyWhitespaceFreeString,

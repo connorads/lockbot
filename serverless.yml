@@ -4,13 +4,12 @@ useDotenv: true
 
 plugins:
   - serverless-webpack
-  - serverless-dynamodb-local
+  - serverless-dynamodb
   - serverless-offline
   - serverless-api-gateway-throttling
 provider:
   name: aws
-  runtime: nodejs14.x
-  lambdaHashingVersion: 20201221
+  runtime: nodejs20.x
   environment:
     SLACK_SIGNING_SECRET: ${env:SLACK_SIGNING_SECRET}
     SLACK_CLIENT_ID: ${env:SLACK_CLIENT_ID}
@@ -19,6 +18,7 @@ provider:
     RESOURCES_TABLE_NAME: ${self:custom.resourcesTableName}
     INSTALLATIONS_TABLE_NAME: ${self:custom.installationsTableName}
     ACCESS_TOKENS_TABLE_NAME: ${self:custom.accessTokensTableName}
+    CHANNEL_CONFIG_TABLE_NAME: ${self:custom.channelConfigTableName}
     SERVERLESS_STAGE: ${self:custom.stage}
     API_GATEWAY_URL:
       Fn::Join:
@@ -39,6 +39,7 @@ provider:
         - "Fn::GetAtt": [resourcesTable, Arn]
         - "Fn::GetAtt": [installationsTable, Arn]
         - "Fn::GetAtt": [accessTokensTable, Arn]
+        - "Fn::GetAtt": [channelConfigTable, Arn]
 
 functions:
   slack-handler:
@@ -80,6 +81,13 @@ functions:
       - http:
           method: get
           path: /api-docs/openapi.json
+  expiry-handler:
+    handler: src/handlers/expiry/index.handler
+    timeout: 60
+    events:
+      - schedule:
+          rate: rate(1 minute)
+          enabled: true
 
 resources:
   Resources:
@@ -126,6 +134,19 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 4
           WriteCapacityUnits: 2
+    channelConfigTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.channelConfigTableName}
+        AttributeDefinitions:
+          - AttributeName: Group
+            AttributeType: S
+        KeySchema:
+          - AttributeName: Group
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 4
+          WriteCapacityUnits: 2
 
 custom:
   stage: ${sls:stage}
@@ -133,6 +154,7 @@ custom:
   resourcesTableName: ${self:custom.stage}-lockbot-resources
   installationsTableName: ${self:custom.stage}-lockbot-installations
   accessTokensTableName: ${self:custom.stage}-lockbot-tokens
+  channelConfigTableName: ${self:custom.stage}-lockbot-channel-config
   dynamodb:
     stages:
       - dev # https://bit.ly/35WR0TT

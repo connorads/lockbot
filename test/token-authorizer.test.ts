@@ -1,4 +1,5 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import TokenAuthorizer from "../src/token-authorizer";
 import InMemoryAccessTokenRepo from "../src/storage/in-memory-token-repo";
 import DynamoDBAccessTokenRepo from "../src/storage/dynamodb-token-repo";
@@ -9,7 +10,7 @@ const runAllTests = () => {
   test("Valid new token", async () => {
     const token = await ta.createAccessToken("Connor", "general", "our-team");
     expect(await ta.isAuthorized(token, "Connor", "general", "our-team")).toBe(
-      true
+      true,
     );
   });
 
@@ -17,20 +18,20 @@ const runAllTests = () => {
     await ta.createAccessToken("Connor", "general", "our-team");
     const token = await ta.createAccessToken("Connor", "general", "our-team");
     expect(await ta.isAuthorized(token, "Connor", "general", "our-team")).toBe(
-      true
+      true,
     );
   });
 
   test("Invalid when token not created", async () => {
     expect(
-      await ta.isAuthorized("random-token", "Connor", "general", "our-team")
+      await ta.isAuthorized("random-token", "Connor", "general", "our-team"),
     ).toBe(false);
   });
 
   test("Invalid when token incorrect", async () => {
     await ta.createAccessToken("Connor", "general", "our-team");
     expect(
-      await ta.isAuthorized("incorrect-token", "Connor", "general", "our-team")
+      await ta.isAuthorized("incorrect-token", "Connor", "general", "our-team"),
     ).toBe(false);
   });
 
@@ -38,11 +39,11 @@ const runAllTests = () => {
     const oldToken = await ta.createAccessToken(
       "Connor",
       "general",
-      "our-team"
+      "our-team",
     );
     await ta.createAccessToken("Connor", "general", "our-team");
     expect(
-      await ta.isAuthorized(oldToken, "Connor", "general", "our-team")
+      await ta.isAuthorized(oldToken, "Connor", "general", "our-team"),
     ).toBe(false);
   });
 };
@@ -58,14 +59,17 @@ describe("dynamodb token repo", () => {
   const accessTokenTableName = "token-authorizer-tests-tokens";
   beforeEach(async () => {
     await recreateAccessTokenTable(accessTokenTableName);
+    const client = new DynamoDBClient({
+      region: "localhost",
+      endpoint: "http://localhost:8000",
+      credentials: {
+        accessKeyId: "dummy",
+        secretAccessKey: "dummy",
+      },
+    });
+    const documentClient = DynamoDBDocumentClient.from(client);
     ta = new TokenAuthorizer(
-      new DynamoDBAccessTokenRepo(
-        new DocumentClient({
-          region: "localhost",
-          endpoint: "http://localhost:8000",
-        }),
-        accessTokenTableName
-      )
+      new DynamoDBAccessTokenRepo(documentClient, accessTokenTableName),
     );
   });
   runAllTests();

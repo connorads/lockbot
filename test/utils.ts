@@ -1,56 +1,64 @@
-import DynamoDB from "aws-sdk/clients/dynamodb";
+import {
+  DynamoDBClient,
+  CreateTableCommand,
+  DeleteTableCommand,
+} from "@aws-sdk/client-dynamodb";
 
-const options = {
+const client = new DynamoDBClient({
   region: "localhost",
   endpoint: "http://localhost:8000",
-};
+  credentials: {
+    accessKeyId: "dummy",
+    secretAccessKey: "dummy",
+  },
+});
 
 export const recreateResourcesTable = async (resourcesTableName: string) => {
-  const db = new DynamoDB(options);
   try {
-    await db.deleteTable({ TableName: resourcesTableName }).promise();
-  } catch (error) {
+    await client.send(
+      new DeleteTableCommand({ TableName: resourcesTableName }),
+    );
+  } catch {
     // No problem if the table doesn't exist
-  } finally {
-    await db
-      .createTable({
-        TableName: resourcesTableName,
-        AttributeDefinitions: [
-          { AttributeName: "Resource", AttributeType: "S" },
-          { AttributeName: "Group", AttributeType: "S" },
-        ],
-        KeySchema: [
-          { AttributeName: "Group", KeyType: "HASH" },
-          { AttributeName: "Resource", KeyType: "RANGE" },
-        ],
-        ProvisionedThroughput: {
-          ReadCapacityUnits: 4,
-          WriteCapacityUnits: 4,
-        },
-      })
-      .promise();
   }
+  await client.send(
+    new CreateTableCommand({
+      TableName: resourcesTableName,
+      AttributeDefinitions: [
+        { AttributeName: "Resource", AttributeType: "S" },
+        { AttributeName: "Group", AttributeType: "S" },
+      ],
+      KeySchema: [
+        { AttributeName: "Group", KeyType: "HASH" },
+        { AttributeName: "Resource", KeyType: "RANGE" },
+      ],
+      ProvisionedThroughput: {
+        ReadCapacityUnits: 4,
+        WriteCapacityUnits: 4,
+      },
+    }),
+  );
 };
 
 export const recreateAccessTokenTable = async (
-  accessTokenTableName: string
+  accessTokenTableName: string,
 ) => {
-  const db = new DynamoDB(options);
   try {
-    await db.deleteTable({ TableName: accessTokenTableName }).promise();
-  } catch (error) {
+    await client.send(
+      new DeleteTableCommand({ TableName: accessTokenTableName }),
+    );
+  } catch {
     // No problem if the table doesn't exist
-  } finally {
-    await db
-      .createTable({
-        TableName: accessTokenTableName,
-        AttributeDefinitions: [{ AttributeName: "Scope", AttributeType: "S" }],
-        KeySchema: [{ AttributeName: "Scope", KeyType: "HASH" }],
-        ProvisionedThroughput: {
-          ReadCapacityUnits: 4,
-          WriteCapacityUnits: 2,
-        },
-      })
-      .promise();
   }
+  await client.send(
+    new CreateTableCommand({
+      TableName: accessTokenTableName,
+      AttributeDefinitions: [{ AttributeName: "Scope", AttributeType: "S" }],
+      KeySchema: [{ AttributeName: "Scope", KeyType: "HASH" }],
+      ProvisionedThroughput: {
+        ReadCapacityUnits: 4,
+        WriteCapacityUnits: 2,
+      },
+    }),
+  );
 };

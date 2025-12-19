@@ -26,7 +26,7 @@ app.get(
     locksMap.forEach((v, k) => locks.push({ name: k, owner: v.owner } as Lock));
     console.log("Retrieved locks", { locks });
     res.status(200).json(locks);
-  }
+  },
 );
 
 app.get(
@@ -43,7 +43,7 @@ app.get(
       console.log("Lock not found", { lockName });
       res.status(404).json({ message: `${lockName} not found` });
     }
-  }
+  },
 );
 
 app.post(
@@ -73,7 +73,7 @@ app.post(
         res.status(403).json({ message: error });
       }
     }
-  }
+  },
 );
 
 app.delete(
@@ -97,7 +97,8 @@ app.delete(
       console.log("Cannot unlock", { lock, error });
       res.status(403).json({ message: error });
     }
-  }
+  },
 );
 
-exports.handler = serverlessExpress({ app });
+// eslint-disable-next-line import/prefer-default-export
+export const handler = serverlessExpress({ app });

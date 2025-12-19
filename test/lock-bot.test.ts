@@ -1,4 +1,5 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import LockBot, { Response } from "../src/lock-bot";
 import InMemoryLockRepo from "../src/storage/in-memory-lock-repo";
 import DynamoDBLockRepo from "../src/storage/dynamodb-lock-repo";
@@ -15,7 +16,7 @@ let lockBot: LockBot;
 const runAllTests = () => {
   const execute = async (
     input: string,
-    params?: { user?: string; channel?: string; team?: string }
+    params?: { user?: string; channel?: string; team?: string },
   ): Promise<Response> => {
     const tokens = input.split(" ");
     const command = tokens[0];
@@ -41,14 +42,14 @@ const runAllTests = () => {
         user,
         channel,
         team,
-        "https://lockbot.app"
+        "https://lockbot.app",
       );
     }
     throw Error("Unhandled command");
   };
 
   beforeAll(() => {
-    jest.useFakeTimers("modern");
+    jest.useFakeTimers();
     jest.setSystemTime(new Date("2020-11-23T17:37:14.135Z").getTime());
   });
 
@@ -101,6 +102,7 @@ const runAllTests = () => {
       message:
         "How to use `/lock`\n\n" +
         "To lock a resource in this channel called `thingy`, use `/lock thingy`\n\n" +
+        "To lock with an expiry, use `/lock thingy --expiry 2h`\n\n" +
         "_Example:_\n" +
         `> *<@Connor>*: \`/lock dev\`\n` +
         `> *Lockbot*: <@Connor> has locked \`dev\` 🔒`,
@@ -112,6 +114,7 @@ const runAllTests = () => {
       message:
         "How to use `/lock`\n\n" +
         "To lock a resource in this channel called `thingy`, use `/lock thingy`\n\n" +
+        "To lock with an expiry, use `/lock thingy --expiry 2h`\n\n" +
         "_Example:_\n" +
         `> *<@Connor>*: \`/lock dev\`\n` +
         `> *Lockbot*: <@Connor> has locked \`dev\` 🔒`,
@@ -287,19 +290,19 @@ const runAllTests = () => {
     expect(message).toContain("Here is your new access token");
     expect(message).toContain("> Fetch all locks 📜\n");
     expect(message).toContain(
-      "curl --request GET 'https://lockbot.app/api/teams/our-team/channels/general/locks'"
+      "curl --request GET 'https://lockbot.app/api/teams/our-team/channels/general/locks'",
     );
     expect(message).toContain("> Fetch lock `dev` 👀\n");
     expect(message).toContain(
-      "curl --request GET 'https://lockbot.app/api/teams/our-team/channels/general/locks/dev'"
+      "curl --request GET 'https://lockbot.app/api/teams/our-team/channels/general/locks/dev'",
     );
     expect(message).toContain("> Create lock `dev` 🔒\n");
     expect(message).toContain(
-      "curl --request POST 'https://lockbot.app/api/teams/our-team/channels/general/locks'"
+      "curl --request POST 'https://lockbot.app/api/teams/our-team/channels/general/locks'",
     );
     expect(message).toContain("> Delete lock `dev` 🔓\n");
     expect(message).toContain(
-      "curl --request DELETE 'https://lockbot.app/api/teams/our-team/channels/general/locks/dev'"
+      "curl --request DELETE 'https://lockbot.app/api/teams/our-team/channels/general/locks/dev'",
     );
   });
 };
@@ -308,7 +311,7 @@ describe("in memory lock repo", () => {
   beforeEach(() => {
     lockBot = new LockBot(
       new InMemoryLockRepo(),
-      new TokenAuthorizer(new InMemoryAccessTokenRepo())
+      new TokenAuthorizer(new InMemoryAccessTokenRepo()),
     );
   });
   runAllTests();
@@ -320,15 +323,20 @@ describe("dynamodb lock repo", () => {
   beforeEach(async () => {
     await recreateResourcesTable(resourcesTableName);
     await recreateAccessTokenTable(accessTokenTableName);
-    const documentClient = new DocumentClient({
+    const client = new DynamoDBClient({
       region: "localhost",
       endpoint: "http://localhost:8000",
+      credentials: {
+        accessKeyId: "dummy",
+        secretAccessKey: "dummy",
+      },
     });
+    const documentClient = DynamoDBDocumentClient.from(client);
     lockBot = new LockBot(
       new DynamoDBLockRepo(documentClient, resourcesTableName),
       new TokenAuthorizer(
-        new DynamoDBAccessTokenRepo(documentClient, accessTokenTableName)
-      )
+        new DynamoDBAccessTokenRepo(documentClient, accessTokenTableName),
+      ),
     );
   });
   runAllTests();

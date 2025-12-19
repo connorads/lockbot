@@ -13,21 +13,21 @@ class InMemoryAccessTokenRepo implements AccessTokenRepo {
     accessToken: string,
     user: string,
     channel: string,
-    team: string
+    team: string,
   ): Promise<void> {
     this.tokenMap.set(
       InMemoryAccessTokenRepo.toKey(user, channel, team),
-      accessToken
+      accessToken,
     );
   }
 
   async getAccessToken(
     user: string,
     channel: string,
-    team: string
+    team: string,
   ): Promise<string | undefined> {
     return this.tokenMap.get(
-      InMemoryAccessTokenRepo.toKey(user, channel, team)
+      InMemoryAccessTokenRepo.toKey(user, channel, team),
     );
   }
 }

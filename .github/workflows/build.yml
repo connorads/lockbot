@@ -9,16 +9,16 @@ on:
 jobs:
   build:
     name: Build and test
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: "14"
+          node-version: "20"
       - run: yarn install --frozen-lockfile
       - run: yarn lint
       - name: Setup DynamoDB Local
-        uses: rrainn/dynamodb-action@v2.0.0
+        uses: rrainn/dynamodb-action@v4.0.0
       - name: Setup AWS credentials
         run: |
           mkdir ~/.aws
@@ -26,6 +26,6 @@ jobs:
       - name: Setup Serverless Offline & Run Tests
         run: yarn ci
       - name: Coveralls
-        uses: coverallsapp/github-action@v1.1.1
+        uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}

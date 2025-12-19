@@ -20,4 +20,5 @@ app.get(["/openapi.json", "/api-docs/openapi.json"], async (req, res) => {
   res.send(openApiJson);
 });
 
-exports.handler = serverlessExpress({ app });
+// eslint-disable-next-line import/prefer-default-export
+export const handler = serverlessExpress({ app });

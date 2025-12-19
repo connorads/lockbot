@@ -1,12 +1,19 @@
-import { App, ExpressReceiver } from "@slack/bolt";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { App, ExpressReceiver, Installation } from "@slack/bolt";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import {
+  DynamoDBDocumentClient,
+  GetCommand,
+  PutCommand,
+} from "@aws-sdk/lib-dynamodb";
 import * as env from "env-var";
 import LockBot from "../../lock-bot";
 import DynamoDBLockRepo from "../../storage/dynamodb-lock-repo";
+import DynamoDBChannelConfigRepo from "../../storage/dynamodb-channel-config-repo";
 import TokenAuthorizer from "../../token-authorizer";
 import DynamoDBAccessTokenRepo from "../../storage/dynamodb-token-repo";
 
-const documentClient = new DocumentClient();
+const client = new DynamoDBClient({});
+const documentClient = DynamoDBDocumentClient.from(client);
 
 const installationsTableName = env
   .get("INSTALLATIONS_TABLE_NAME")
@@ -18,7 +25,7 @@ export const expressReceiver = new ExpressReceiver({
   clientId: env.get("SLACK_CLIENT_ID").required().asString(),
   clientSecret: env.get("SLACK_CLIENT_SECRET").required().asString(),
   stateSecret: env.get("STATE_SECRET").required().asString(),
-  scopes: ["commands"],
+  scopes: ["commands", "chat:write"],
   processBeforeResponse: true,
   installationStore: {
     storeInstallation: async (installation, logger) => {
@@ -26,15 +33,15 @@ export const expressReceiver = new ExpressReceiver({
         logger?.error("Enterprise storeInstallation attempt failed.");
         throw new Error("Enterprise installation not supported");
       } else if (installation.team) {
-        await documentClient
-          .put({
+        await documentClient.send(
+          new PutCommand({
             TableName: installationsTableName,
             Item: {
               Team: installation.team.id,
               Installation: installation,
             },
-          })
-          .promise();
+          }),
+        );
         const { team, user, bot } = installation;
         logger?.info("Installation stored.", {
           team,
@@ -53,20 +60,20 @@ export const expressReceiver = new ExpressReceiver({
         logger?.error("Enterprise fetchInstallation attempt failed.");
         throw new Error("Enterprise installation not supported");
       } else if (installQuery.teamId !== undefined) {
-        const result = await documentClient
-          .get({
+        const result = await documentClient.send(
+          new GetCommand({
             TableName: installationsTableName,
             Key: { Team: installQuery.teamId },
-          })
-          .promise();
-        const installation = result.Item?.Installation;
+          }),
+        );
+        const installation = result.Item?.Installation as Installation;
         const { team, user, bot } = installation;
         logger?.info("Installation fetched.", {
           team,
           userId: user.id,
           botScopes: bot?.scopes,
         });
-        return Promise.resolve(installation);
+        return installation;
       } else {
         throw new Error("Failed to fetch installation");
       }
@@ -81,14 +88,18 @@ export const app = new App({
 export const lockBot = new LockBot(
   new DynamoDBLockRepo(
     documentClient,
-    env.get("RESOURCES_TABLE_NAME").required().asString()
+    env.get("RESOURCES_TABLE_NAME").required().asString(),
   ),
   new TokenAuthorizer(
     new DynamoDBAccessTokenRepo(
       documentClient,
-      env.get("ACCESS_TOKENS_TABLE_NAME").required().asString()
-    )
-  )
+      env.get("ACCESS_TOKENS_TABLE_NAME").required().asString(),
+    ),
+  ),
+  new DynamoDBChannelConfigRepo(
+    documentClient,
+    env.get("CHANNEL_CONFIG_TABLE_NAME").required().asString(),
+  ),
 );
 
 const stage = env.get("SERVERLESS_STAGE").required().asString();

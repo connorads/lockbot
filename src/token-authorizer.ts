@@ -13,12 +13,12 @@ export interface AccessTokenRepo {
     accessToken: string,
     user: string,
     channel: string,
-    team: string
+    team: string,
   ): Promise<void>;
   getAccessToken(
     user: string,
     channel: string,
-    team: string
+    team: string,
   ): Promise<string | undefined>;
 }
 
@@ -36,12 +36,12 @@ class TokenAuthorizer {
     accessToken: string,
     user: string,
     channel: string,
-    team: string
+    team: string,
   ) => {
     const hashedToken = await this.tokenRepo.getAccessToken(
       user,
       channel,
-      team
+      team,
     );
 
     return hashedToken ? bcryptjs.compare(accessToken, hashedToken) : false;

@@ -21,7 +21,7 @@ module.exports = {
         loader: "esbuild-loader",
         options: {
           loader: "ts",
-          target: "es2019",
+          target: "es2022",
         },
       },
       {
