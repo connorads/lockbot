@@ -44,7 +44,7 @@
     "prettier": "^3.4.2",
     "serverless": "^3.39.0",
     "serverless-api-gateway-throttling": "^2.0.2",
-    "serverless-dynamodb": "^0.2.54",
+    "serverless-dynamodb": "^0.2.56",
     "serverless-offline": "^14.4.0",
     "serverless-webpack": "^5.14.2",
     "supertest": "^7.0.0",

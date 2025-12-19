@@ -6,10 +6,12 @@ import DynamoDBLockRepo from "../src/storage/dynamodb-lock-repo";
 import TokenAuthorizer from "../src/token-authorizer";
 import InMemoryAccessTokenRepo from "../src/storage/in-memory-token-repo";
 import DynamoDBAccessTokenRepo from "../src/storage/dynamodb-token-repo";
+import InMemoryChannelConfigRepo from "../src/storage/in-memory-channel-config-repo";
 import { recreateResourcesTable, recreateAccessTokenTable } from "./utils";
 import {
   parseUnlock,
   getFirstParam,
+  parseLock,
 } from "../src/handlers/slack/command-parsers";
 
 let lockBot: LockBot;
@@ -32,8 +34,8 @@ const runAllTests = () => {
       return lockBot.unlock(resource, user, channel, team, { force });
     }
     if (command === "/lock") {
-      const resource = getFirstParam(commandText);
-      return lockBot.lock(resource, user, channel, team);
+      const { resource, expiry } = parseLock(commandText);
+      return lockBot.lock(resource, user, channel, team, undefined, expiry);
     }
     if (command === "/lbtoken") {
       const resource = getFirstParam(commandText);
@@ -340,4 +342,346 @@ describe("dynamodb lock repo", () => {
     );
   });
   runAllTests();
+});
+
+describe("lock expiry", () => {
+  beforeAll(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2020-11-23T17:37:14.135Z").getTime());
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
+  beforeEach(() => {
+    lockBot = new LockBot(
+      new InMemoryLockRepo(),
+      new TokenAuthorizer(new InMemoryAccessTokenRepo()),
+      new InMemoryChannelConfigRepo(),
+    );
+  });
+
+  test("can lock with expiry", async () => {
+    const result = await lockBot.lock(
+      "dev",
+      "Connor",
+      "general",
+      "our-team",
+      undefined,
+      "2h",
+    );
+    expect(result.destination).toBe("channel");
+    expect(result.message).toContain("<@Connor> has locked `dev`");
+    expect(result.message).toContain("expires");
+  });
+
+  test("lock with expiry shows expiry time in message", async () => {
+    const result = await lockBot.lock(
+      "dev",
+      "Connor",
+      "general",
+      "our-team",
+      undefined,
+      "30m",
+    );
+    expect(result.message).toMatch(/expires.*<!date\^/);
+  });
+
+  test("invalid expiry duration returns error", async () => {
+    const result = await lockBot.lock(
+      "dev",
+      "Connor",
+      "general",
+      "our-team",
+      undefined,
+      "invalid",
+    );
+    expect(result).toEqual({
+      message:
+        "Invalid expiry duration: `invalid`. Use formats like `30m`, `2h`, `1d`.",
+      destination: "user",
+    });
+  });
+
+  test("locks list shows expiry", async () => {
+    await lockBot.lock("dev", "Connor", "general", "our-team", undefined, "2h");
+    const result = await lockBot.locks("general", "our-team");
+    expect(result.message).toContain("expires");
+  });
+
+  test("default expiry is applied when set", async () => {
+    await lockBot.setLockExpiry("1h", "general", "our-team");
+    const result = await lockBot.lock("dev", "Connor", "general", "our-team");
+    expect(result.message).toContain("expires");
+  });
+
+  test("per-lock expiry overrides default", async () => {
+    await lockBot.setLockExpiry("1h", "general", "our-team");
+    const result = await lockBot.lock(
+      "dev",
+      "Connor",
+      "general",
+      "our-team",
+      undefined,
+      "30m",
+    );
+    expect(result.message).toContain("expires");
+  });
+});
+
+describe("resource management", () => {
+  beforeEach(() => {
+    lockBot = new LockBot(
+      new InMemoryLockRepo(),
+      new TokenAuthorizer(new InMemoryAccessTokenRepo()),
+      new InMemoryChannelConfigRepo(),
+    );
+  });
+
+  test("add resources shows help when no resources provided", async () => {
+    const result = await lockBot.addResources([], "general", "our-team");
+    expect(result.destination).toBe("user");
+    expect(result.message).toContain("How to use `/add-resources`");
+  });
+
+  test("can add resources", async () => {
+    const result = await lockBot.addResources(
+      ["dev", "staging", "prod"],
+      "general",
+      "our-team",
+    );
+    expect(result).toEqual({
+      message: "Added resources: `dev`, `staging`, `prod`",
+      destination: "channel",
+    });
+  });
+
+  test("remove resources shows help when no resources provided", async () => {
+    const result = await lockBot.removeResources([], "general", "our-team");
+    expect(result.destination).toBe("user");
+    expect(result.message).toContain("How to use `/remove-resources`");
+  });
+
+  test("can remove resources", async () => {
+    await lockBot.addResources(["dev", "staging"], "general", "our-team");
+    const result = await lockBot.removeResources(
+      ["dev"],
+      "general",
+      "our-team",
+    );
+    expect(result).toEqual({
+      message: "Removed resources: `dev`",
+      destination: "channel",
+    });
+  });
+
+  test("list resources shows message when no resources", async () => {
+    const result = await lockBot.listResources("general", "our-team");
+    expect(result.destination).toBe("user");
+    expect(result.message).toContain("No predefined resources");
+  });
+
+  test("can list resources", async () => {
+    await lockBot.addResources(["dev", "staging"], "general", "our-team");
+    const result = await lockBot.listResources("general", "our-team");
+    expect(result.destination).toBe("user");
+    expect(result.message).toContain("dev");
+    expect(result.message).toContain("staging");
+    expect(result.message).toContain("Lock Mode");
+  });
+
+  test("resources are scoped per channel", async () => {
+    await lockBot.addResources(["dev"], "general", "our-team");
+    const result = await lockBot.listResources("random", "our-team");
+    expect(result.message).toContain("No predefined resources");
+  });
+});
+
+describe("channel configuration", () => {
+  beforeEach(() => {
+    lockBot = new LockBot(
+      new InMemoryLockRepo(),
+      new TokenAuthorizer(new InMemoryAccessTokenRepo()),
+      new InMemoryChannelConfigRepo(),
+    );
+  });
+
+  describe("lock mode", () => {
+    test("set lock mode shows help for invalid mode", async () => {
+      const result = await lockBot.setLockMode(
+        "invalid",
+        "general",
+        "our-team",
+      );
+      expect(result.destination).toBe("user");
+      expect(result.message).toContain("How to use `/set-lock-mode`");
+    });
+
+    test("can set strict mode", async () => {
+      const result = await lockBot.setLockMode("strict", "general", "our-team");
+      expect(result).toEqual({
+        message:
+          "Lock mode set to *strict*. Only predefined resources can be locked.",
+        destination: "channel",
+      });
+    });
+
+    test("can set flexible mode", async () => {
+      const result = await lockBot.setLockMode(
+        "flexible",
+        "general",
+        "our-team",
+      );
+      expect(result).toEqual({
+        message: "Lock mode set to *flexible*. Any resource can be locked.",
+        destination: "channel",
+      });
+    });
+
+    test("strict mode blocks non-predefined resources", async () => {
+      await lockBot.addResources(["dev"], "general", "our-team");
+      await lockBot.setLockMode("strict", "general", "our-team");
+      const result = await lockBot.lock(
+        "staging",
+        "Connor",
+        "general",
+        "our-team",
+      );
+      expect(result.destination).toBe("user");
+      expect(result.message).toContain("not in the predefined list");
+      expect(result.message).toContain("dev");
+    });
+
+    test("strict mode allows predefined resources", async () => {
+      await lockBot.addResources(["dev"], "general", "our-team");
+      await lockBot.setLockMode("strict", "general", "our-team");
+      const result = await lockBot.lock("dev", "Connor", "general", "our-team");
+      expect(result.destination).toBe("channel");
+      expect(result.message).toContain("has locked `dev`");
+    });
+
+    test("flexible mode allows any resource", async () => {
+      await lockBot.addResources(["dev"], "general", "our-team");
+      await lockBot.setLockMode("flexible", "general", "our-team");
+      const result = await lockBot.lock(
+        "staging",
+        "Connor",
+        "general",
+        "our-team",
+      );
+      expect(result.destination).toBe("channel");
+      expect(result.message).toContain("has locked `staging`");
+    });
+  });
+
+  describe("default expiry", () => {
+    beforeAll(() => {
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date("2020-11-23T17:37:14.135Z").getTime());
+    });
+
+    afterAll(() => {
+      jest.useRealTimers();
+    });
+
+    test("set lock expiry shows help when no duration", async () => {
+      const result = await lockBot.setLockExpiry("", "general", "our-team");
+      expect(result.destination).toBe("user");
+      expect(result.message).toContain("How to use `/set-lock-expiry`");
+    });
+
+    test("can set default expiry", async () => {
+      const result = await lockBot.setLockExpiry("2h", "general", "our-team");
+      expect(result.destination).toBe("channel");
+      expect(result.message).toContain("Default lock expiry set to");
+      expect(result.message).toContain("2 hours");
+    });
+
+    test("can disable default expiry", async () => {
+      await lockBot.setLockExpiry("2h", "general", "our-team");
+      const result = await lockBot.setLockExpiry("0", "general", "our-team");
+      expect(result).toEqual({
+        message: "Default lock expiry disabled. Locks will not auto-expire.",
+        destination: "channel",
+      });
+    });
+
+    test("can disable default expiry with none", async () => {
+      await lockBot.setLockExpiry("2h", "general", "our-team");
+      const result = await lockBot.setLockExpiry("none", "general", "our-team");
+      expect(result.message).toContain("disabled");
+    });
+
+    test("invalid duration returns error", async () => {
+      const result = await lockBot.setLockExpiry(
+        "invalid",
+        "general",
+        "our-team",
+      );
+      expect(result.destination).toBe("user");
+      expect(result.message).toContain("Invalid duration");
+    });
+
+    test("list resources shows default expiry", async () => {
+      await lockBot.addResources(["dev"], "general", "our-team");
+      await lockBot.setLockExpiry("4h", "general", "our-team");
+      const result = await lockBot.listResources("general", "our-team");
+      expect(result.message).toContain("4 hours");
+    });
+  });
+});
+
+describe("no channel config repo", () => {
+  beforeEach(() => {
+    lockBot = new LockBot(
+      new InMemoryLockRepo(),
+      new TokenAuthorizer(new InMemoryAccessTokenRepo()),
+      // No channel config repo
+    );
+  });
+
+  test("add resources returns not configured message", async () => {
+    const result = await lockBot.addResources(["dev"], "general", "our-team");
+    expect(result).toEqual({
+      message: "Resource management is not configured.",
+      destination: "user",
+    });
+  });
+
+  test("remove resources returns not configured message", async () => {
+    const result = await lockBot.removeResources(
+      ["dev"],
+      "general",
+      "our-team",
+    );
+    expect(result).toEqual({
+      message: "Resource management is not configured.",
+      destination: "user",
+    });
+  });
+
+  test("list resources returns not configured message", async () => {
+    const result = await lockBot.listResources("general", "our-team");
+    expect(result).toEqual({
+      message: "Resource management is not configured.",
+      destination: "user",
+    });
+  });
+
+  test("set lock mode returns not configured message", async () => {
+    const result = await lockBot.setLockMode("strict", "general", "our-team");
+    expect(result).toEqual({
+      message: "Resource management is not configured.",
+      destination: "user",
+    });
+  });
+
+  test("set lock expiry returns not configured message", async () => {
+    const result = await lockBot.setLockExpiry("2h", "general", "our-team");
+    expect(result).toEqual({
+      message: "Resource management is not configured.",
+      destination: "user",
+    });
+  });
 });

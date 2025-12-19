@@ -10092,7 +10092,7 @@ serverless-api-gateway-throttling@^2.0.2:
     lodash.get "^4.4.2"
     lodash.isempty "^4.4.0"
 
-serverless-dynamodb@^0.2.54:
+serverless-dynamodb@^0.2.56:
   version "0.2.56"
   resolved "https://registry.yarnpkg.com/serverless-dynamodb/-/serverless-dynamodb-0.2.56.tgz#71b65880706ab6fb73bd36f4cce3ee97242bfe71"
   integrity sha512-b378F7yUMrT+atFZteHquSg2TlnnGug7jTsOdGQ+6eApAP/CpW+5HsO+CYXGDgVBl2UqTqt6/HeQqr7vN8g9tg==

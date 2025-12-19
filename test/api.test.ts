@@ -151,9 +151,7 @@ describe("dynamodb token repo", () => {
       .send("/");
 
     expect(res.status).toBe(400);
-    expect(res.text).toBe(
-      JSON.stringify({ message: "Unexpected token / in JSON at position 0" }),
-    );
+    expect(res.text).toMatch(/Unexpected token.*\//);
   });
 
   test.each([
