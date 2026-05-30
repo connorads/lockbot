@@ -54,3 +54,26 @@ export const recreateAccessTokenTable = async (
       .promise();
   }
 };
+
+export const recreateInstallationsTable = async (
+  installationsTableName: string
+) => {
+  const db = new DynamoDB(options);
+  try {
+    await db.deleteTable({ TableName: installationsTableName }).promise();
+  } catch (error) {
+    // No problem if the table doesn't exist
+  } finally {
+    await db
+      .createTable({
+        TableName: installationsTableName,
+        AttributeDefinitions: [{ AttributeName: "Team", AttributeType: "S" }],
+        KeySchema: [{ AttributeName: "Team", KeyType: "HASH" }],
+        ProvisionedThroughput: {
+          ReadCapacityUnits: 4,
+          WriteCapacityUnits: 2,
+        },
+      })
+      .promise();
+  }
+};
