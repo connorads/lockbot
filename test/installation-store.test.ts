@@ -72,9 +72,8 @@ describe("DynamoDB installation store", () => {
       enterpriseId: undefined,
       isEnterpriseInstall: false,
     };
-    // Current behaviour: fetchInstallation destructures the (undefined) result,
-    // so an unknown team throws rather than returning undefined. Pinned here so
-    // the AWS SDK v3 migration has to consciously decide whether to keep it.
+    // fetchInstallation destructures the (undefined) result, so an unknown team
+    // throws rather than returning undefined.
     await expect(store.fetchInstallation(query)).rejects.toThrow();
   });
 });

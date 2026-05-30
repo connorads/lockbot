@@ -1,10 +1,5 @@
 import express from "express";
 
-// Extracted from index.ts so the routes can be exercised in-process with
-// supertest, without webpack's html text-loader or the SERVERLESS_STAGE env
-// read. index.ts still owns requiring swagger.html / openapi.json and reading
-// the stage, then hands them in here. The stage-aware `servers` field is now
-// applied to a copy rather than mutating the caller's document.
 const createSwaggerApp = (
   stage: string,
   swaggerHtml: string,

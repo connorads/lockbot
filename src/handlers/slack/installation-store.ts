@@ -1,9 +1,6 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { InstallationStore } from "@slack/bolt";
 
-// Extracted verbatim from infra.ts so the store can be exercised against
-// DynamoDB Local without booting the whole Slack receiver (which requires every
-// Slack env var and a live AWS client). Behaviour is unchanged.
 const createInstallationStore = (
   documentClient: DocumentClient,
   installationsTableName: string

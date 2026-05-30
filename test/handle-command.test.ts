@@ -27,9 +27,7 @@ const aSlashCommand = (
 
 // Drives handle-command with in-memory fakes (no mocks) that record what the
 // adapter does with the bot's Response: how it acknowledges, what it sends back,
-// and what it logs. This is the seam every Bolt / serverless-express migration
-// touches, so locking it down first lets later upgrades prove they're behaviour
-// preserving.
+// and what it logs.
 const setup = (getResponse: (command: SlashCommand) => Promise<Response>) => {
   const order: string[] = [];
   const responded: unknown[] = [];
