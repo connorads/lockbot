@@ -22,7 +22,9 @@ jobs:
       - name: Setup AWS credentials
         run: |
           mkdir ~/.aws
-          echo -e "[default]\naws_access_key_id=''\naws_secret_access_key=''" > ~/.aws/credentials
+          # DynamoDB Local now validates credentials and rejects empty/invalid
+          # ones with UnrecognizedClientException, so use non-empty placeholders.
+          echo -e "[default]\naws_access_key_id=fakeMyKeyId\naws_secret_access_key=fakeSecretAccessKey" > ~/.aws/credentials
       - name: Setup Serverless Offline & Run Tests
         run: yarn ci
       - name: Coveralls
