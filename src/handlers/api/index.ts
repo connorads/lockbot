@@ -29,7 +29,9 @@ app.get<ChannelParams>(
     const { team, channel } = req.params;
     const locksMap = await lockRepo.getAll(channel, team);
     const locks: Lock[] = [];
-    locksMap.forEach((v, k) => locks.push({ name: k, owner: v.owner } as Lock));
+    locksMap.forEach((v, k) => {
+      locks.push({ name: k, owner: v.owner } as Lock);
+    });
     console.log("Retrieved locks", { locks });
     res.status(200).json(locks);
   }
@@ -57,7 +59,8 @@ app.post<ChannelParams>(
   authorizer,
   bodyValidator,
   async (req, res) => {
-    const username = auth(req)!.name;
+    // authorizer has already rejected requests without valid basic auth
+    const username = auth(req)?.name;
     const { channel, team } = req.params;
     const lock = req.body as Lock;
     if (lock.owner !== username) {
@@ -92,7 +95,7 @@ app.delete<LockParams>(
     if (!lockOwner) {
       console.log("No lock to delete", { lockName });
       res.status(204).end();
-    } else if (lockOwner === auth(req)!.name) {
+    } else if (lockOwner === auth(req)?.name) {
       const lock = { name: lockName, owner: lockOwner } as Lock;
       await lockRepo.delete(lockName, channel, team);
       console.log("Lock deleted", { lock });
