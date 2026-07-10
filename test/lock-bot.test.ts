@@ -48,7 +48,7 @@ const runAllTests = () => {
   };
 
   beforeAll(() => {
-    jest.useFakeTimers("modern");
+    jest.useFakeTimers();
     jest.setSystemTime(new Date("2020-11-23T17:37:14.135Z").getTime());
   });
 
