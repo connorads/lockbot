@@ -1,15 +1,13 @@
-apiDefinitions:
-  petstore: ./src/handlers/swagger/openapi.json
+apis:
+  lockbot@v1:
+    root: ./src/handlers/swagger/openapi.json
 
-lint:
-  extends:
-    - recommended
-  rules:
-    # Servers added at Swagger UI runtime
-    no-empty-servers:
-      severity: off
-    # Ignore warnings
-    operation-operationId:
-      severity: off
-    info-license:
-      severity: off
+extends:
+  - recommended
+
+rules:
+  # Servers added at Swagger UI runtime
+  no-empty-servers: off
+  # Ignore warnings
+  operation-operationId: off
+  info-license: off
