@@ -14,6 +14,9 @@ importers:
       '@aws-sdk/lib-dynamodb':
         specifier: ^3.1079.0
         version: 3.1079.0(@aws-sdk/client-dynamodb@3.1079.0)
+      '@codegenie/serverless-express':
+        specifier: ^5.0.0
+        version: 5.0.0
       '@slack/bolt':
         specifier: ^3.9.0
         version: 3.9.0
@@ -23,9 +26,6 @@ importers:
       '@types/bcryptjs':
         specifier: ^2.4.2
         version: 2.4.2
-      '@vendia/serverless-express':
-        specifier: ^4.5.3
-        version: 4.5.3
       basic-auth:
         specifier: ^2.0.1
         version: 2.0.1
@@ -401,11 +401,6 @@ packages:
     resolution: {integrity: sha512-qf9u2WFWVV0MppaL877j2dBtQIDgmidgjGk5VIMw3OadXvYaXn66U1BFlH2t4+t3i+8PhedppRv+i40ABzd+gg==}
     engines: {node: '>=6.9.0'}
 
-  '@babel/parser@7.14.6':
-    resolution: {integrity: sha512-oG0ej7efjEXxb4UgE+klVx+3j4MVo+A2vCzm7OUN4CLo6WhQ+vSOD2yJ8m7B+DghObxtLxt3EfgMWpq+AsWehQ==}
-    engines: {node: '>=6.0.0'}
-    hasBin: true
-
   '@babel/parser@7.29.7':
     resolution: {integrity: sha512-hnORnjP/1P/zFEndoeX+n+t1RwWRJiJpM/jO7FW32Kn9r5+sJB2JWOdYo4L6k78j15eCwY3Gm/7364B1EMwtNg==}
     engines: {node: '>=6.0.0'}
@@ -506,6 +501,10 @@ packages:
       enzyme: ^3.11.0
       react: '>=18'
       react-dom: '>=18'
+
+  '@codegenie/serverless-express@5.0.0':
+    resolution: {integrity: sha512-7+PvSBj4KmPC8PVFDoXZp2cwTr13YIgFsZT55uJhpt7Ml1hJ3IK1Xnw36hr6GYVzLDrEW26oBZt50jamfu6kkw==}
+    engines: {node: '>=24'}
 
   '@effect/platform-node-shared@0.15.5':
     resolution: {integrity: sha512-PXFdIHMNzv19+aaKBo99KVsqJ65il8j7ejze/srkzOkNu4WK/GGpQuYF32NZLirFgXJe/4aYMRgwD+uJ4mCyuw==}
@@ -1253,10 +1252,6 @@ packages:
   '@typescript-eslint/visitor-keys@4.27.0':
     resolution: {integrity: sha512-es0GRYNZp0ieckZ938cEANfEhsfHrzuLrePukLKtY3/KPXcq1Xd555Mno9/GOgXhKzn0QfkDLVgqWO3dGY80bg==}
     engines: {node: ^8.10.0 || ^10.13.0 || >=11.10.1}
-
-  '@vendia/serverless-express@4.5.3':
-    resolution: {integrity: sha512-EBBW1kt1A62FaSeQGh7jwzbii+3HVYDvKgMPpV76LCqJbgqMnyaRrgFQ26nSZ54iV4bh50eUmuSpSmJIZ6zq4w==}
-    engines: {node: '>=12'}
 
   abab@2.0.5:
     resolution: {integrity: sha512-9IK9EadsbHo6jLWIpxpR6pL0sazTXV6+SQv25ZB+F7Bj9mJNaOc4nCRabwd5M/JwmUa8idz6Eci6eKfJryPs6Q==}
@@ -5504,10 +5499,10 @@ snapshots:
       '@babel/helper-compilation-targets': 7.14.5(@babel/core@7.14.6)
       '@babel/helper-module-transforms': 7.14.5
       '@babel/helpers': 7.14.6
-      '@babel/parser': 7.14.6
+      '@babel/parser': 7.29.7
       '@babel/template': 7.14.5
       '@babel/traverse': 7.14.5
-      '@babel/types': 7.14.5
+      '@babel/types': 7.29.7
       convert-source-map: 1.7.0
       debug: 4.4.3
       gensync: 1.0.0-beta.2
@@ -5519,7 +5514,7 @@ snapshots:
 
   '@babel/generator@7.14.5':
     dependencies:
-      '@babel/types': 7.14.5
+      '@babel/types': 7.29.7
       jsesc: 2.5.2
       source-map: 0.5.7
 
@@ -5535,23 +5530,23 @@ snapshots:
     dependencies:
       '@babel/helper-get-function-arity': 7.14.5
       '@babel/template': 7.14.5
-      '@babel/types': 7.14.5
+      '@babel/types': 7.29.7
 
   '@babel/helper-get-function-arity@7.14.5':
     dependencies:
-      '@babel/types': 7.14.5
+      '@babel/types': 7.29.7
 
   '@babel/helper-hoist-variables@7.14.5':
     dependencies:
-      '@babel/types': 7.14.5
+      '@babel/types': 7.29.7
 
   '@babel/helper-member-expression-to-functions@7.14.5':
     dependencies:
-      '@babel/types': 7.14.5
+      '@babel/types': 7.29.7
 
   '@babel/helper-module-imports@7.14.5':
     dependencies:
-      '@babel/types': 7.14.5
+      '@babel/types': 7.29.7
 
   '@babel/helper-module-transforms@7.14.5':
     dependencies:
@@ -5559,16 +5554,16 @@ snapshots:
       '@babel/helper-replace-supers': 7.14.5
       '@babel/helper-simple-access': 7.14.5
       '@babel/helper-split-export-declaration': 7.14.5
-      '@babel/helper-validator-identifier': 7.14.5
+      '@babel/helper-validator-identifier': 7.29.7
       '@babel/template': 7.14.5
       '@babel/traverse': 7.14.5
-      '@babel/types': 7.14.5
+      '@babel/types': 7.29.7
     transitivePeerDependencies:
       - supports-color
 
   '@babel/helper-optimise-call-expression@7.14.5':
     dependencies:
-      '@babel/types': 7.14.5
+      '@babel/types': 7.29.7
 
   '@babel/helper-plugin-utils@7.14.5': {}
 
@@ -5577,17 +5572,17 @@ snapshots:
       '@babel/helper-member-expression-to-functions': 7.14.5
       '@babel/helper-optimise-call-expression': 7.14.5
       '@babel/traverse': 7.14.5
-      '@babel/types': 7.14.5
+      '@babel/types': 7.29.7
     transitivePeerDependencies:
       - supports-color
 
   '@babel/helper-simple-access@7.14.5':
     dependencies:
-      '@babel/types': 7.14.5
+      '@babel/types': 7.29.7
 
   '@babel/helper-split-export-declaration@7.14.5':
     dependencies:
-      '@babel/types': 7.14.5
+      '@babel/types': 7.29.7
 
   '@babel/helper-string-parser@7.29.7': {}
 
@@ -5601,19 +5596,15 @@ snapshots:
     dependencies:
       '@babel/template': 7.14.5
       '@babel/traverse': 7.14.5
-      '@babel/types': 7.14.5
+      '@babel/types': 7.29.7
     transitivePeerDependencies:
       - supports-color
 
   '@babel/highlight@7.14.5':
     dependencies:
-      '@babel/helper-validator-identifier': 7.14.5
+      '@babel/helper-validator-identifier': 7.29.7
       chalk: 2.4.2
       js-tokens: 4.0.0
-
-  '@babel/parser@7.14.6':
-    dependencies:
-      '@babel/types': 7.14.5
 
   '@babel/parser@7.29.7':
     dependencies:
@@ -5689,8 +5680,8 @@ snapshots:
   '@babel/template@7.14.5':
     dependencies:
       '@babel/code-frame': 7.14.5
-      '@babel/parser': 7.14.6
-      '@babel/types': 7.14.5
+      '@babel/parser': 7.29.7
+      '@babel/types': 7.29.7
 
   '@babel/traverse@7.14.5':
     dependencies:
@@ -5699,8 +5690,8 @@ snapshots:
       '@babel/helper-function-name': 7.14.5
       '@babel/helper-hoist-variables': 7.14.5
       '@babel/helper-split-export-declaration': 7.14.5
-      '@babel/parser': 7.14.6
-      '@babel/types': 7.14.5
+      '@babel/parser': 7.29.7
+      '@babel/types': 7.29.7
       debug: 4.4.3
       globals: 11.12.0
     transitivePeerDependencies:
@@ -5728,6 +5719,8 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
       react-is: 18.3.1
       react-shallow-renderer: 16.15.0(react@18.3.1)
+
+  '@codegenie/serverless-express@5.0.0': {}
 
   '@effect/platform-node-shared@0.15.5(@effect/platform@0.65.5(@effect/schema@0.73.4(effect@3.21.4))(effect@3.21.4))(effect@3.21.4)':
     dependencies:
@@ -6492,24 +6485,24 @@ snapshots:
 
   '@types/babel__core@7.1.14':
     dependencies:
-      '@babel/parser': 7.14.6
-      '@babel/types': 7.14.5
+      '@babel/parser': 7.29.7
+      '@babel/types': 7.29.7
       '@types/babel__generator': 7.6.1
       '@types/babel__template': 7.0.2
       '@types/babel__traverse': 7.11.1
 
   '@types/babel__generator@7.6.1':
     dependencies:
-      '@babel/types': 7.14.5
+      '@babel/types': 7.29.7
 
   '@types/babel__template@7.0.2':
     dependencies:
-      '@babel/parser': 7.14.6
-      '@babel/types': 7.14.5
+      '@babel/parser': 7.29.7
+      '@babel/types': 7.29.7
 
   '@types/babel__traverse@7.11.1':
     dependencies:
-      '@babel/types': 7.14.5
+      '@babel/types': 7.29.7
 
   '@types/basic-auth@1.1.3':
     dependencies:
@@ -6701,8 +6694,6 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 4.27.0
       eslint-visitor-keys: 2.1.0
-
-  '@vendia/serverless-express@4.5.3': {}
 
   abab@2.0.5: {}
 
@@ -6990,7 +6981,7 @@ snapshots:
   babel-plugin-jest-hoist@27.5.1:
     dependencies:
       '@babel/template': 7.14.5
-      '@babel/types': 7.14.5
+      '@babel/types': 7.29.7
       '@types/babel__core': 7.1.14
       '@types/babel__traverse': 7.11.1
 

@@ -1,5 +1,5 @@
 import express from "express";
-import serverlessExpress from "@vendia/serverless-express";
+import serverlessExpress from "@codegenie/serverless-express";
 import auth from "basic-auth";
 import {
   authorizer,

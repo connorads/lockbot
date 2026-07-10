@@ -1,6 +1,6 @@
 import express from "express";
 import * as env from "env-var";
-import serverlessExpress from "@vendia/serverless-express";
+import serverlessExpress from "@codegenie/serverless-express";
 
 const swaggerHtml = require("./swagger.html");
 const openApiJson = require("./openapi.json");

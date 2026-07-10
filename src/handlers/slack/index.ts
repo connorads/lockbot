@@ -1,4 +1,4 @@
-import serverlessExpress from "@vendia/serverless-express";
+import serverlessExpress from "@codegenie/serverless-express";
 import { app, expressReceiver, lockBot, prefix, url } from "./infra";
 import handleCommand from "./handle-command";
 import { getFirstParam, parseUnlock } from "./command-parsers";
