@@ -137,8 +137,8 @@ custom:
     minify: false
     sourcemap: true
     target: node22
-    # aws-sdk v2 is not provided by the nodejs22.x runtime; keep it bundled
-    # (serverless-esbuild excludes it by default)
+    # bundle @aws-sdk/* rather than relying on the runtime-provided copy,
+    # per AWS guidance (pinned version, faster cold start)
     exclude: []
     loader:
       ".html": text
