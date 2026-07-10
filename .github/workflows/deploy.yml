@@ -3,15 +3,18 @@ name: Deploy
 on:
   pull_request:
     branches: [master]
+  push:
+    branches: [master]
 
 jobs:
   deploy-dev:
     name: Deploy to dev
-    runs-on: ubuntu-20.04
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
     environment: dev
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: "14"
       - run: yarn install --frozen-lockfile
@@ -26,11 +29,12 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   deploy-prod:
     name: Deploy to prod
-    runs-on: ubuntu-20.04
+    if: github.event_name == 'push'
+    runs-on: ubuntu-24.04
     environment: prod
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: "14"
       - run: yarn install --frozen-lockfile
