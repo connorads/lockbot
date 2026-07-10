@@ -1,6 +1,9 @@
 # Node matches the deployed Lambda runtime (nodejs22.x).
 # Java runs DynamoDB Local for the test suite.
+# hk (+ pkl, its config language) runs the git pre-commit checks.
 [tools]
 node = "22"
 pnpm = "11"
 java = "temurin-21"
+hk = "1"
+pkl = "0.31"

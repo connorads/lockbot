@@ -50,6 +50,16 @@ The API tests run HTTP calls against emulated AWS λ and API Gateway
 
 `pnpm lint`
 
+### Format
+
+`pnpm format`
+
+### Git hooks
+
+Pre-commit hooks mirror the CI lint gate (biome, eslint, tsc, redocly):
+
+`hk install`
+
 ## Deploy to AWS and Slack
 
 You can create and deploy to your own Lockbot development _(or Production 🤷‍♂️)_ environment.
