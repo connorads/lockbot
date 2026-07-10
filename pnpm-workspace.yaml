@@ -12,6 +12,7 @@ ignoreScripts: false
 allowBuilds:
   # optional watcher for serverless-esbuild watch mode; chokidar fallback works
   "@parcel/watcher": false
-  # postinstall only prints a funding message
+  # postinstall only prints funding messages
+  core-js: false
   es5-ext: false
   esbuild: true

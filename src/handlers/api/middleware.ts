@@ -29,7 +29,7 @@ export const handleErrors = (
 };
 
 export const authorizer = async (
-  req: Request,
+  req: Request<{ team: string; channel: string }>,
   res: Response,
   next: NextFunction
 ) => {
