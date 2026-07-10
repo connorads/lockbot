@@ -1,33 +1,39 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import {
+  DeleteCommand,
+  DynamoDBDocumentClient,
+  GetCommand,
+  PutCommand,
+  QueryCommand,
+} from "@aws-sdk/lib-dynamodb";
 import { LockRepo } from "../lock-bot";
 
 export default class DynamoDBLockRepo implements LockRepo {
   constructor(
-    private readonly documentClient: DocumentClient,
+    private readonly documentClient: DynamoDBDocumentClient,
     private readonly resourcesTableName: string
   ) {}
 
   async delete(resource: string, channel: string, team: string): Promise<void> {
-    await this.documentClient
-      .delete({
+    await this.documentClient.send(
+      new DeleteCommand({
         TableName: this.resourcesTableName,
         Key: { Resource: resource, Group: `${team}#${channel}` },
       })
-      .promise();
+    );
   }
 
   async getAll(
     channel: string,
     team: string
   ): Promise<Map<string, { owner: string; created: Date }>> {
-    const result = await this.documentClient
-      .query({
+    const result = await this.documentClient.send(
+      new QueryCommand({
         TableName: this.resourcesTableName,
         KeyConditionExpression: "#group = :g",
         ExpressionAttributeValues: { ":g": `${team}#${channel}` },
         ExpressionAttributeNames: { "#group": "Group" },
       })
-      .promise();
+    );
     const map = new Map<string, { owner: string; created: Date }>();
     if (result.Items) {
       result.Items.forEach((i) =>
@@ -42,12 +48,12 @@ export default class DynamoDBLockRepo implements LockRepo {
     channel: string,
     team: string
   ): Promise<string | undefined> {
-    const result = await this.documentClient
-      .get({
+    const result = await this.documentClient.send(
+      new GetCommand({
         TableName: this.resourcesTableName,
         Key: { Resource: resource, Group: `${team}#${channel}` },
       })
-      .promise();
+    );
     return result.Item?.Owner;
   }
 
@@ -58,8 +64,8 @@ export default class DynamoDBLockRepo implements LockRepo {
     team: string,
     metadata?: Record<string, string>
   ): Promise<void> {
-    await this.documentClient
-      .put({
+    await this.documentClient.send(
+      new PutCommand({
         TableName: this.resourcesTableName,
         Item: {
           Resource: resource,
@@ -69,6 +75,6 @@ export default class DynamoDBLockRepo implements LockRepo {
           Metadata: metadata,
         },
       })
-      .promise();
+    );
   }
 }

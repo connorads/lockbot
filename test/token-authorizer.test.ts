@@ -1,8 +1,7 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import TokenAuthorizer from "../src/token-authorizer";
 import InMemoryAccessTokenRepo from "../src/storage/in-memory-token-repo";
 import DynamoDBAccessTokenRepo from "../src/storage/dynamodb-token-repo";
-import { recreateAccessTokenTable } from "./utils";
+import { createDocumentClient, recreateAccessTokenTable } from "./utils";
 
 let ta: TokenAuthorizer;
 const runAllTests = () => {
@@ -59,13 +58,7 @@ describe("dynamodb token repo", () => {
   beforeEach(async () => {
     await recreateAccessTokenTable(accessTokenTableName);
     ta = new TokenAuthorizer(
-      new DynamoDBAccessTokenRepo(
-        new DocumentClient({
-          region: "localhost",
-          endpoint: "http://localhost:8000",
-        }),
-        accessTokenTableName
-      )
+      new DynamoDBAccessTokenRepo(createDocumentClient(), accessTokenTableName)
     );
   });
   runAllTests();

@@ -1,8 +1,11 @@
 import request from "supertest";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import TokenAuthorizer from "../src/token-authorizer";
 import DynamoDBAccessTokenRepo from "../src/storage/dynamodb-token-repo";
-import { recreateAccessTokenTable, recreateResourcesTable } from "./utils";
+import {
+  createDocumentClient,
+  recreateAccessTokenTable,
+  recreateResourcesTable,
+} from "./utils";
 
 let credentials1: string;
 let credentials2: string;
@@ -13,13 +16,7 @@ describe("dynamodb token repo", () => {
     await recreateAccessTokenTable(accessTokenTableName);
     await recreateResourcesTable(resourcesTableName);
     const tokenAuthorizer = new TokenAuthorizer(
-      new DynamoDBAccessTokenRepo(
-        new DocumentClient({
-          region: "localhost",
-          endpoint: "http://localhost:8000",
-        }),
-        accessTokenTableName
-      )
+      new DynamoDBAccessTokenRepo(createDocumentClient(), accessTokenTableName)
     );
     const createToken = (user: string) =>
       tokenAuthorizer.createAccessToken(user, "C012345ABCD", "T012345WXYZ");

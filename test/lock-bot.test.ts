@@ -1,11 +1,14 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import LockBot, { Response } from "../src/lock-bot";
 import InMemoryLockRepo from "../src/storage/in-memory-lock-repo";
 import DynamoDBLockRepo from "../src/storage/dynamodb-lock-repo";
 import TokenAuthorizer from "../src/token-authorizer";
 import InMemoryAccessTokenRepo from "../src/storage/in-memory-token-repo";
 import DynamoDBAccessTokenRepo from "../src/storage/dynamodb-token-repo";
-import { recreateResourcesTable, recreateAccessTokenTable } from "./utils";
+import {
+  createDocumentClient,
+  recreateResourcesTable,
+  recreateAccessTokenTable,
+} from "./utils";
 import {
   parseUnlock,
   getFirstParam,
@@ -320,10 +323,7 @@ describe("dynamodb lock repo", () => {
   beforeEach(async () => {
     await recreateResourcesTable(resourcesTableName);
     await recreateAccessTokenTable(accessTokenTableName);
-    const documentClient = new DocumentClient({
-      region: "localhost",
-      endpoint: "http://localhost:8000",
-    });
+    const documentClient = createDocumentClient();
     lockBot = new LockBot(
       new DynamoDBLockRepo(documentClient, resourcesTableName),
       new TokenAuthorizer(

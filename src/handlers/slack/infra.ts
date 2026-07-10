@@ -1,12 +1,21 @@
 import { App, ExpressReceiver } from "@slack/bolt";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import {
+  DynamoDBDocumentClient,
+  GetCommand,
+  PutCommand,
+} from "@aws-sdk/lib-dynamodb";
 import * as env from "env-var";
 import LockBot from "../../lock-bot";
 import DynamoDBLockRepo from "../../storage/dynamodb-lock-repo";
 import TokenAuthorizer from "../../token-authorizer";
 import DynamoDBAccessTokenRepo from "../../storage/dynamodb-token-repo";
 
-const documentClient = new DocumentClient();
+const documentClient = DynamoDBDocumentClient.from(new DynamoDBClient({}), {
+  // aws-sdk v2 silently dropped undefined values (e.g. optional lock Metadata,
+  // optional fields inside the Slack Installation); v3 throws without this
+  marshallOptions: { removeUndefinedValues: true },
+});
 
 const installationsTableName = env
   .get("INSTALLATIONS_TABLE_NAME")
@@ -26,15 +35,15 @@ export const expressReceiver = new ExpressReceiver({
         logger?.error("Enterprise storeInstallation attempt failed.");
         throw new Error("Enterprise installation not supported");
       } else if (installation.team) {
-        await documentClient
-          .put({
+        await documentClient.send(
+          new PutCommand({
             TableName: installationsTableName,
             Item: {
               Team: installation.team.id,
               Installation: installation,
             },
           })
-          .promise();
+        );
         const { team, user, bot } = installation;
         logger?.info("Installation stored.", {
           team,
@@ -53,12 +62,12 @@ export const expressReceiver = new ExpressReceiver({
         logger?.error("Enterprise fetchInstallation attempt failed.");
         throw new Error("Enterprise installation not supported");
       } else if (installQuery.teamId !== undefined) {
-        const result = await documentClient
-          .get({
+        const result = await documentClient.send(
+          new GetCommand({
             TableName: installationsTableName,
             Key: { Team: installQuery.teamId },
           })
-          .promise();
+        );
         const installation = result.Item?.Installation;
         const { team, user, bot } = installation;
         logger?.info("Installation fetched.", {

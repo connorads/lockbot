@@ -1,9 +1,13 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import {
+  DynamoDBDocumentClient,
+  GetCommand,
+  PutCommand,
+} from "@aws-sdk/lib-dynamodb";
 import { AccessTokenRepo } from "../token-authorizer";
 
 class DynamoDBAccessTokenRepo implements AccessTokenRepo {
   constructor(
-    private readonly documentClient: DocumentClient,
+    private readonly documentClient: DynamoDBDocumentClient,
     private readonly accessTokenTableName: string
   ) {}
 
@@ -13,8 +17,8 @@ class DynamoDBAccessTokenRepo implements AccessTokenRepo {
     channel: string,
     team: string
   ): Promise<void> {
-    await this.documentClient
-      .put({
+    await this.documentClient.send(
+      new PutCommand({
         TableName: this.accessTokenTableName,
         Item: {
           Scope: `${team}#${channel}#${user}`,
@@ -22,7 +26,7 @@ class DynamoDBAccessTokenRepo implements AccessTokenRepo {
           Created: new Date().toISOString(),
         },
       })
-      .promise();
+    );
   }
 
   async getAccessToken(
@@ -30,12 +34,12 @@ class DynamoDBAccessTokenRepo implements AccessTokenRepo {
     channel: string,
     team: string
   ): Promise<string | undefined> {
-    const result = await this.documentClient
-      .get({
+    const result = await this.documentClient.send(
+      new GetCommand({
         TableName: this.accessTokenTableName,
         Key: { Scope: `${team}#${channel}#${user}` },
       })
-      .promise();
+    );
     return result.Item?.AccessToken;
   }
 }
