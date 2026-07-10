@@ -1,0 +1,45 @@
+// Pre-commit checks mirroring the CI lint gate: biome, eslint, tsc.
+// Install the hooks with `hk install`; run manually with `hk run pre-commit`.
+amends "package://github.com/jdx/hk/releases/download/v1.48.0/hk@1.48.0#/Config.pkl"
+
+local lint_steps = new Mapping<String, Step> {
+    ["biome"] {
+        glob = List("*.ts", "*.mjs", "*.json")
+        stage = List("*.ts", "*.mjs", "*.json")
+        check = "pnpm exec biome check {{files}}"
+        fix = "pnpm exec biome check --write {{files}}"
+    }
+
+    // Type-aware rules need the whole project, not just staged files
+    ["eslint"] {
+        glob = List("*.ts", "*.mjs")
+        check = "pnpm exec eslint ."
+    }
+
+    ["tsc"] {
+        glob = List("*.ts", "tsconfig.json")
+        check = "pnpm exec tsc --noEmit"
+    }
+
+    ["openapi"] {
+        glob = List("src/handlers/swagger/openapi.json", "redocly.yaml")
+        check = "pnpm exec redocly lint src/handlers/swagger/openapi.json"
+    }
+}
+
+hooks {
+    ["pre-commit"] {
+        fix = true
+        stash = "git"
+        steps = lint_steps
+    }
+
+    ["fix"] {
+        fix = true
+        steps = lint_steps
+    }
+
+    ["check"] {
+        steps = lint_steps
+    }
+}
