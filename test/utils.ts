@@ -23,7 +23,7 @@ export const recreateResourcesTable = async (resourcesTableName: string) => {
   const db = new DynamoDBClient(options);
   try {
     await db.send(new DeleteTableCommand({ TableName: resourcesTableName }));
-  } catch (error) {
+  } catch {
     // No problem if the table doesn't exist
   } finally {
     await db.send(
@@ -52,7 +52,7 @@ export const recreateAccessTokenTable = async (
   const db = new DynamoDBClient(options);
   try {
     await db.send(new DeleteTableCommand({ TableName: accessTokenTableName }));
-  } catch (error) {
+  } catch {
     // No problem if the table doesn't exist
   } finally {
     await db.send(

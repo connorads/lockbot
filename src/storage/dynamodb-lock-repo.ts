@@ -36,9 +36,9 @@ export default class DynamoDBLockRepo implements LockRepo {
     );
     const map = new Map<string, { owner: string; created: Date }>();
     if (result.Items) {
-      result.Items.forEach((i) =>
-        map.set(i.Resource, { owner: i.Owner, created: new Date(i.Created) })
-      );
+      result.Items.forEach((i) => {
+        map.set(i.Resource, { owner: i.Owner, created: new Date(i.Created) });
+      });
     }
     return map;
   }

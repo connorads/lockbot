@@ -55,7 +55,7 @@ const handleCommand = (
   }: SlackCommandMiddlewareArgs & {
     logger: Logger;
   }) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars, camelcase
+    // token, trigger_id and response_url are secrets; keep them out of logs
     const { token, trigger_id, response_url, ...commandProps } = command;
     logger.info("Command received.", commandProps);
     await ack();
