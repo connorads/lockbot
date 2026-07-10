@@ -12,13 +12,17 @@ Lockbot is written with local development in mind and you can create and test mo
 
 ### Pre-requisites
 
-- [Node 14](http://nodejs.org/)
-- [Yarn](https://yarnpkg.com/en/docs/install)
-- [Java Runtime Environment](http://www.oracle.com/technetwork/java/javase/downloads/index.html) (for local DynamoDB offline)
+- [mise](https://mise.jdx.dev/) - installs the pinned Node, pnpm and Java versions from `mise.toml` with `mise install`
+
+Or install the tools manually:
+
+- [Node](http://nodejs.org/) (version pinned in `mise.toml`)
+- [pnpm](https://pnpm.io/installation)
+- Java Runtime Environment (for local DynamoDB offline)
 
 ### Install dependencies
 
-`yarn install`
+`pnpm install`
 
 ### Setup local DynamoDB
 
@@ -26,25 +30,25 @@ The automated tests run against a local DynamoDB instance
 
 #### One-time install
 
-`yarn db:install`
+`pnpm db:install`
 
 #### Start local DynamoDB
 
-`yarn db:start`
+`pnpm db:start`
 
 ### Start Serverless Offline
 
 The API tests run HTTP calls against emulated AWS λ and API Gateway
 
-`yarn dev`
+`pnpm dev`
 
 ### Run tests
 
-`yarn test`
+`pnpm test`
 
 ### Lint
 
-`yarn lint`
+`pnpm lint`
 
 ## Deploy to AWS and Slack
 
@@ -79,7 +83,7 @@ Now that your local machine is set up with your AWS account let's see if you can
 
 **Note**: _You will get warning about missing environment variables, this is fine for now._
 
-`yarn deploy --region eu-west-1 --stage dev`
+`pnpm run deploy --region eu-west-1 --stage dev`
 
 - `region` is your preferred AWS region _(default: `us-east-1`)_
 - `stage` is the name you wish to give to your deployment's stage/environment _(default: `dev`)_
@@ -159,7 +163,7 @@ STATE_SECRET = 'insertstatesecretehere'
 
 Now that we've setup our Slack config let's deploy again.
 
-`yarn deploy --region eu-west-1 --stage dev`
+`pnpm run deploy --region eu-west-1 --stage dev`
 
 ## Install Lockbot
 
@@ -191,4 +195,4 @@ If **Slackbot** responds with an error, take a look in your **AWS Console > Lamb
 
 Now that everything has been configured in Slack and AWS you can make changes to Lockbot code and deploy it easily with one command.
 
-`yarn deploy --region eu-west-1 --stage dev`
+`pnpm run deploy --region eu-west-1 --stage dev`

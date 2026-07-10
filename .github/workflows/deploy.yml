@@ -14,12 +14,16 @@ jobs:
     environment: dev
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          standalone: true
       - uses: actions/setup-node@v4
         with:
           node-version: "14"
-      - run: yarn install --frozen-lockfile
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
       - name: Serverless Deploy
-        run: yarn deploy --region eu-west-1 --stage dev
+        run: pnpm run deploy --region eu-west-1 --stage dev
         env:
           SLACK_SIGNING_SECRET: ${{ secrets.SLACK_SIGNING_SECRET }}
           SLACK_CLIENT_ID: ${{ secrets.SLACK_CLIENT_ID }}
@@ -34,12 +38,16 @@ jobs:
     environment: prod
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          standalone: true
       - uses: actions/setup-node@v4
         with:
           node-version: "14"
-      - run: yarn install --frozen-lockfile
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
       - name: Serverless Deploy
-        run: yarn deploy --region eu-west-1 --stage prod
+        run: pnpm run deploy --region eu-west-1 --stage prod
         env:
           SLACK_SIGNING_SECRET: ${{ secrets.SLACK_SIGNING_SECRET }}
           SLACK_CLIENT_ID: ${{ secrets.SLACK_CLIENT_ID }}

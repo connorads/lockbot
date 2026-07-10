@@ -5,6 +5,7 @@
   "repository": "https://github.com/connorads/lockbot",
   "author": "Connor Adams",
   "license": "MIT",
+  "packageManager": "pnpm@11.10.0",
   "resolutions": {
     "@redocly/openapi-core": "1.25.15"
   },
