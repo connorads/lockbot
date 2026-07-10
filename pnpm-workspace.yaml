@@ -10,4 +10,8 @@ nodeLinker: hoisted
 # so the narrow allowBuilds approval below can take effect.
 ignoreScripts: false
 allowBuilds:
+  # optional watcher for serverless-esbuild watch mode; chokidar fallback works
+  "@parcel/watcher": false
+  # postinstall only prints a funding message
+  es5-ext: false
   esbuild: true

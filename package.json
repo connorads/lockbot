@@ -6,6 +6,9 @@
   "author": "Connor Adams",
   "license": "MIT",
   "packageManager": "pnpm@11.10.0",
+  "engines": {
+    "node": ">=22"
+  },
   "resolutions": {
     "@redocly/openapi-core": "1.25.15"
   },
@@ -14,9 +17,9 @@
     "lint:tsc": "tsc --noEmit",
     "lint:eslint": "eslint \"**/*.{js,ts}\"",
     "lint:openapi": "redocly lint src/handlers/swagger/openapi.json",
-    "db:install": "serverless plugin install --name serverless-dynamodb-local && serverless dynamodb install",
+    "db:install": "serverless dynamodb install",
     "db:start": "serverless dynamodb start",
-    "dev": "serverless offline",
+    "dev": "SLACK_SIGNING_SECRET=${SLACK_SIGNING_SECRET:-dummy} SLACK_CLIENT_ID=${SLACK_CLIENT_ID:-dummy} SLACK_CLIENT_SECRET=${SLACK_CLIENT_SECRET:-dummy} STATE_SECRET=${STATE_SECRET:-dummydummydummydummydummydummydu} serverless offline",
     "wait": "npm-run-all wait:*",
     "wait:db": "wait-on tcp:8000",
     "wait:dev": "wait-on tcp:3000",
@@ -34,7 +37,7 @@
     "@types/supertest": "^2.0.11",
     "@typescript-eslint/eslint-plugin": "^4.27.0",
     "@typescript-eslint/parser": "^4.27.0",
-    "esbuild-loader": "^2.13.1",
+    "esbuild": "^0.28.1",
     "eslint": "7.29.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-config-prettier": "^8.3.0",
@@ -45,17 +48,15 @@
     "jest": "27.0.4",
     "npm-run-all": "^4.1.5",
     "prettier": "2.3.1",
-    "serverless": "^2.72.2",
+    "serverless": "npm:osls@^4.0.0",
     "serverless-api-gateway-throttling": "^1.2.2",
-    "serverless-dynamodb-local": "^0.2.40",
-    "serverless-offline": "^8.4.0",
-    "serverless-webpack": "^5.6.1",
+    "serverless-dynamodb": "^0.2.58",
+    "serverless-esbuild": "^1.57.2",
+    "serverless-offline": "^14.7.4",
     "supertest": "^6.1.3",
     "ts-jest": "27.0.3",
     "typescript": "^4.3.4",
-    "wait-on": "^5.2.0",
-    "webpack": "^5.39.1",
-    "webpack-cli": "^4.7.2"
+    "wait-on": "^5.2.0"
   },
   "dependencies": {
     "@slack/bolt": "^3.9.0",
