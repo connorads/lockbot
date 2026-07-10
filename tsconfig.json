@@ -5,6 +5,7 @@
     "module": "commonjs",
     "strict": true,
     "skipLibCheck": true,
+    "types": ["node", "vitest/globals"],
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true
   }
