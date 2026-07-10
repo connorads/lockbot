@@ -1,5 +1,6 @@
 import express from "express";
 import serverlessExpress from "@codegenie/serverless-express";
+
 import auth from "basic-auth";
 import {
   authorizer,
@@ -11,12 +12,17 @@ import {
 import { Lock } from "./types";
 import { lockRepo } from "./infra";
 
+// Express 5 types params as string | string[] to cover repeatable segments;
+// these routes only use single :param segments
+type ChannelParams = { team: string; channel: string };
+type LockParams = ChannelParams & { lock: string };
+
 const app = express();
 
 app.use(parseAllContentAsJson);
 app.use(handleErrors);
 
-app.get(
+app.get<ChannelParams>(
   "/api/teams/:team/channels/:channel/locks",
   authorizer,
   async (req, res) => {
@@ -29,7 +35,7 @@ app.get(
   }
 );
 
-app.get(
+app.get<LockParams>(
   "/api/teams/:team/channels/:channel/locks/:lock",
   authorizer,
   async (req, res) => {
@@ -46,7 +52,7 @@ app.get(
   }
 );
 
-app.post(
+app.post<ChannelParams>(
   "/api/teams/:team/channels/:channel/locks",
   authorizer,
   bodyValidator,
@@ -76,7 +82,7 @@ app.post(
   }
 );
 
-app.delete(
+app.delete<LockParams>(
   "/api/teams/:team/channels/:channel/locks/:lock",
   authorizer,
   paramsValidator,
