@@ -1,0 +1,22 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "group:allNonMajor",
+    ":dependencyDashboard"
+  ],
+  "minimumReleaseAge": "4 days",
+  "packageRules": [
+    {
+      "description": "aws-sdk packages release near-daily; group them and slow the cadence",
+      "groupName": "aws-sdk",
+      "matchPackageNames": ["@aws-sdk/**"],
+      "schedule": ["before 6am on monday"]
+    },
+    {
+      "description": "serverless is an alias of osls; keep the serverless toolchain together",
+      "groupName": "serverless",
+      "matchPackageNames": ["serverless", "osls", "serverless-**"]
+    }
+  ]
+}
