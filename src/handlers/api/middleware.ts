@@ -7,11 +7,7 @@ import express, {
 import { isLeft } from "fp-ts/lib/Either";
 import * as D from "io-ts/lib/Decoder";
 import { tokenAuthorizer } from "./infra";
-import {
-  type ExpressError,
-  lock,
-  nonEmptyWhitespaceFreeString,
-} from "./types";
+import { type ExpressError, lock, nonEmptyWhitespaceFreeString } from "./types";
 
 export const parseAllContentAsJson = express.json({
   type: "*/*",
@@ -22,7 +18,7 @@ export const handleErrors = (
   _req: Request,
   res: Response,
   // Express identifies error middleware by arity; the parameter must exist
-  _next: NextFunction
+  _next: NextFunction,
 ) => {
   const { statusCode, message, stack } = err;
   if (statusCode && statusCode >= 400 && statusCode < 500) {
@@ -39,7 +35,7 @@ export const handleErrors = (
 export const authorizer = async (
   req: Request<{ team: string; channel: string }>,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const { channel, team } = req.params;
   const user = auth(req);
@@ -60,7 +56,7 @@ export const authorizer = async (
 export const bodyValidator = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const decoded = lock.decode(req.body);
   if (isLeft(decoded)) {
@@ -75,7 +71,7 @@ export const bodyValidator = async (
 export const paramsValidator = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const Params = D.type({
     lock: nonEmptyWhitespaceFreeString,

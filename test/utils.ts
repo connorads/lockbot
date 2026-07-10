@@ -41,13 +41,13 @@ export const recreateResourcesTable = async (resourcesTableName: string) => {
           ReadCapacityUnits: 4,
           WriteCapacityUnits: 4,
         },
-      })
+      }),
     );
   }
 };
 
 export const recreateAccessTokenTable = async (
-  accessTokenTableName: string
+  accessTokenTableName: string,
 ) => {
   const db = new DynamoDBClient(options);
   try {
@@ -64,7 +64,7 @@ export const recreateAccessTokenTable = async (
           ReadCapacityUnits: 4,
           WriteCapacityUnits: 2,
         },
-      })
+      }),
     );
   }
 };

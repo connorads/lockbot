@@ -1,5 +1,5 @@
 export const parseUnlock = (
-  commandText: string | undefined
+  commandText: string | undefined,
 ): { resource: string; force: boolean } => {
   const [resource = "", options] = (commandText ?? "").split(" ");
   return { resource, force: options === "force" };

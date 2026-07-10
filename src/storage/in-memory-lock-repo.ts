@@ -12,7 +12,7 @@ export default class InMemoryLockRepo implements LockRepo {
 
   private static fromKey = (key: string) => {
     const [channel = "", resource = "", team = ""] = key.split(
-      InMemoryLockRepo.separator
+      InMemoryLockRepo.separator,
     );
     return { resource, channel, team };
   };
@@ -23,7 +23,7 @@ export default class InMemoryLockRepo implements LockRepo {
 
   async getAll(
     channel: string,
-    team: string
+    team: string,
   ): Promise<Map<string, { owner: string; created: Date }>> {
     const all = new Map<string, { owner: string; created: Date }>();
     this.lockMap.forEach((value, key) => {
@@ -42,7 +42,7 @@ export default class InMemoryLockRepo implements LockRepo {
   async getOwner(
     resource: string,
     channel: string,
-    team: string
+    team: string,
   ): Promise<string | undefined> {
     return this.lockMap.get(InMemoryLockRepo.toKey(resource, channel, team))
       ?.owner;
@@ -52,7 +52,7 @@ export default class InMemoryLockRepo implements LockRepo {
     resource: string,
     owner: string,
     channel: string,
-    team: string
+    team: string,
   ): Promise<void> {
     this.lockMap.set(InMemoryLockRepo.toKey(resource, channel, team), {
       owner,

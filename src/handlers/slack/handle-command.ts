@@ -22,7 +22,7 @@ const getResponseType = (destination: Destination) => {
 const handleResponse = async (
   response: Promise<Response>,
   respond: RespondFn,
-  logger: Logger
+  logger: Logger,
 ): Promise<void> => {
   try {
     const { message, destination } = await response;
@@ -45,7 +45,7 @@ const handleResponse = async (
 };
 
 const handleCommand = (
-  getResponse: (command: SlashCommand) => Promise<Response>
+  getResponse: (command: SlashCommand) => Promise<Response>,
 ) => {
   return async ({
     command,
