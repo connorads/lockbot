@@ -1,9 +1,17 @@
 import auth from "basic-auth";
-import express, { Request, Response, NextFunction } from "express";
+import express, {
+  type NextFunction,
+  type Request,
+  type Response,
+} from "express";
 import { isLeft } from "fp-ts/lib/Either";
 import * as D from "io-ts/lib/Decoder";
 import { tokenAuthorizer } from "./infra";
-import { ExpressError, lock, nonEmptyWhitespaceFreeString } from "./types";
+import {
+  type ExpressError,
+  lock,
+  nonEmptyWhitespaceFreeString,
+} from "./types";
 
 export const parseAllContentAsJson = express.json({
   type: "*/*",
@@ -11,10 +19,10 @@ export const parseAllContentAsJson = express.json({
 
 export const handleErrors = (
   err: ExpressError,
-  req: Request,
+  _req: Request,
   res: Response,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  next: NextFunction
+  // Express identifies error middleware by arity; the parameter must exist
+  _next: NextFunction
 ) => {
   const { statusCode, message, stack } = err;
   if (statusCode && statusCode >= 400 && statusCode < 500) {

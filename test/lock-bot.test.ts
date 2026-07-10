@@ -1,4 +1,4 @@
-import LockBot, { Response } from "../src/lock-bot";
+import LockBot, { type Response } from "../src/lock-bot";
 import InMemoryLockRepo from "../src/storage/in-memory-lock-repo";
 import DynamoDBLockRepo from "../src/storage/dynamodb-lock-repo";
 import TokenAuthorizer from "../src/token-authorizer";

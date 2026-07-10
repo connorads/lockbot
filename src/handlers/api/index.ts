@@ -9,7 +9,7 @@ import {
   paramsValidator,
   parseAllContentAsJson,
 } from "./middleware";
-import { Lock } from "./types";
+import type { Lock } from "./types";
 import { lockRepo } from "./infra";
 
 // Express 5 types params as string | string[] to cover repeatable segments;
