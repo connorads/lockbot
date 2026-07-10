@@ -51,12 +51,12 @@ const runAllTests = () => {
   };
 
   beforeAll(() => {
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date("2020-11-23T17:37:14.135Z").getTime());
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2020-11-23T17:37:14.135Z").getTime());
   });
 
   afterAll(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   test("can lock resource", async () => {
