@@ -96,5 +96,5 @@ const stage = env.get("SERVERLESS_STAGE").required().asString();
 export const prefix = stage === "dev" ? "dev" : "";
 
 export const url = env.get("IS_OFFLINE").asBool()
-  ? `http://localhost/3000/${stage}`
+  ? `http://localhost:3000/${stage}`
   : env.get("API_GATEWAY_URL").required().asString();
