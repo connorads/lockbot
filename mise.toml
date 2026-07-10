@@ -1,6 +1,6 @@
-# Node 16 is the newest pre-18 runtime with darwin-arm64 builds; the deployed
-# Lambda runtime is still nodejs14.x. Both move to 22 with the osls/esbuild flip.
+# Node matches the deployed Lambda runtime (nodejs22.x).
+# Java runs DynamoDB Local for the test suite.
 [tools]
-node = "16"
+node = "22"
 pnpm = "11"
 java = "temurin-21"

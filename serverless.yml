@@ -1,16 +1,17 @@
 service: lockbot
 
+frameworkVersion: "4"
+
 useDotenv: true
 
 plugins:
-  - serverless-webpack
-  - serverless-dynamodb-local
+  - serverless-esbuild
+  - serverless-dynamodb
   - serverless-offline
   - serverless-api-gateway-throttling
 provider:
   name: aws
-  runtime: nodejs14.x
-  lambdaHashingVersion: 20201221
+  runtime: nodejs22.x
   environment:
     SLACK_SIGNING_SECRET: ${env:SLACK_SIGNING_SECRET}
     SLACK_CLIENT_ID: ${env:SLACK_CLIENT_ID}
@@ -26,19 +27,21 @@ provider:
         - - "https://"
           - Ref: "ApiGatewayRestApi"
           - ".execute-api.${self:custom.region}.amazonaws.com/${self:custom.stage}"
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - dynamodb:Query
-        - dynamodb:Scan
-        - dynamodb:GetItem
-        - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
-      Resource:
-        - "Fn::GetAtt": [resourcesTable, Arn]
-        - "Fn::GetAtt": [installationsTable, Arn]
-        - "Fn::GetAtt": [accessTokensTable, Arn]
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource:
+            - "Fn::GetAtt": [resourcesTable, Arn]
+            - "Fn::GetAtt": [installationsTable, Arn]
+            - "Fn::GetAtt": [accessTokensTable, Arn]
 
 functions:
   slack-handler:
@@ -129,6 +132,16 @@ resources:
 
 custom:
   stage: ${sls:stage}
+  esbuild:
+    bundle: true
+    minify: false
+    sourcemap: true
+    target: node22
+    # aws-sdk v2 is not provided by the nodejs22.x runtime; keep it bundled
+    # (serverless-esbuild excludes it by default)
+    exclude: []
+    loader:
+      ".html": text
   region: ${opt:region, self:provider.region, "eu-west-1"}
   resourcesTableName: ${self:custom.stage}-lockbot-resources
   installationsTableName: ${self:custom.stage}-lockbot-installations
