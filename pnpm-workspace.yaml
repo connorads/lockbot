@@ -1,13 +1,9 @@
-# Jest <28 and the Serverless v2/webpack toolchain mis-resolve modules under
-# pnpm's default isolated (symlinked) layout, duplicating module instances
-# (e.g. @jest/fake-timers instanceof checks fail). Hoisted reproduces the
-# npm/yarn layout. Revisit once the toolchain is on Vitest + osls.
-nodeLinker: hoisted
-
-# esbuild downloads its platform binary in a postinstall script; everything
-# else keeps pnpm's default no-build-scripts policy. ignoreScripts: false
-# restores that default where a global config hard-disables all scripts,
-# so the narrow allowBuilds approval below can take effect.
+# Supply-chain posture (matches CI and dev machines):
+# - 4-day release quarantine on new versions (minutes)
+# - build scripts blocked except the narrow allowBuilds list below.
+#   ignoreScripts: false restores pnpm's default gated behaviour where a
+#   global config hard-disables all scripts, so allowBuilds can take effect.
+minimumReleaseAge: 5760
 ignoreScripts: false
 allowBuilds:
   # optional watcher for serverless-esbuild watch mode; chokidar fallback works
@@ -15,4 +11,5 @@ allowBuilds:
   # postinstall only prints funding messages
   core-js: false
   es5-ext: false
+  # downloads its platform binary in a postinstall script
   esbuild: true
