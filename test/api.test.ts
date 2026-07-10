@@ -147,9 +147,10 @@ describe("dynamodb token repo", () => {
       .send("/");
 
     expect(res.status).toBe(400);
-    expect(res.text).toBe(
-      JSON.stringify({ message: "Unexpected token / in JSON at position 0" })
-    );
+    // Exact wording of the JSON parse error varies across V8 versions
+    expect(JSON.parse(res.text)).toEqual({
+      message: expect.stringContaining("Unexpected token"),
+    });
   });
 
   test.each([
