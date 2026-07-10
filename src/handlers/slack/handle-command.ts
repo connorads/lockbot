@@ -1,10 +1,10 @@
-import {
+import type {
   Logger,
   RespondFn,
   SlackCommandMiddlewareArgs,
   SlashCommand,
 } from "@slack/bolt";
-import { Destination, Response } from "../../lock-bot";
+import type { Destination, Response } from "../../lock-bot";
 
 const getResponseType = (destination: Destination) => {
   let responseType: "in_channel" | "ephemeral";

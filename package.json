@@ -15,7 +15,6 @@
   "scripts": {
     "lint": "npm-run-all -p -c lint:*",
     "lint:tsc": "tsc --noEmit",
-    "lint:eslint": "eslint \"**/*.{js,ts}\"",
     "lint:openapi": "redocly lint src/handlers/swagger/openapi.json",
     "db:install": "serverless dynamodb install",
     "db:start": "serverless dynamodb start",
@@ -53,7 +52,7 @@
     "serverless-esbuild": "^1.57.2",
     "serverless-offline": "^14.7.4",
     "supertest": "^6.1.3",
-    "typescript": "^4.9.5",
+    "typescript": "^6.0.3",
     "vitest": "^4.1.10",
     "wait-on": "^5.2.0"
   },

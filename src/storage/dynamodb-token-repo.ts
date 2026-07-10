@@ -3,7 +3,7 @@ import {
   GetCommand,
   PutCommand,
 } from "@aws-sdk/lib-dynamodb";
-import { AccessTokenRepo } from "../token-authorizer";
+import type { AccessTokenRepo } from "../token-authorizer";
 
 class DynamoDBAccessTokenRepo implements AccessTokenRepo {
   constructor(

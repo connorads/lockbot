@@ -1,4 +1,4 @@
-import { AccessTokenRepo } from "../token-authorizer";
+import type { AccessTokenRepo } from "../token-authorizer";
 
 class InMemoryAccessTokenRepo implements AccessTokenRepo {
   private readonly tokenMap: Map<string, string> = new Map();

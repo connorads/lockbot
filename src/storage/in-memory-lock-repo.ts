@@ -1,4 +1,4 @@
-import { LockRepo } from "../lock-bot";
+import type { LockRepo } from "../lock-bot";
 
 export default class InMemoryLockRepo implements LockRepo {
   private readonly lockMap: Map<string, { owner: string; created: Date }> =
@@ -11,10 +11,9 @@ export default class InMemoryLockRepo implements LockRepo {
   };
 
   private static fromKey = (key: string) => {
-    const strings = key.split(InMemoryLockRepo.separator);
-    const channel = strings[0];
-    const resource = strings[1];
-    const team = strings[2];
+    const [channel = "", resource = "", team = ""] = key.split(
+      InMemoryLockRepo.separator
+    );
     return { resource, channel, team };
   };
 

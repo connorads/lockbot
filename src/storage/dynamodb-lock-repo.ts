@@ -5,7 +5,7 @@ import {
   PutCommand,
   QueryCommand,
 } from "@aws-sdk/lib-dynamodb";
-import { LockRepo } from "../lock-bot";
+import type { LockRepo } from "../lock-bot";
 
 export default class DynamoDBLockRepo implements LockRepo {
   constructor(
