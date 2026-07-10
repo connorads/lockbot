@@ -12,8 +12,8 @@ export const nonEmptyWhitespaceFreeString: D.Decoder<
   D.string,
   D.refine(
     (s): s is NonEmptyWhitespaceFreeString => s.length > 0 && !/\s/.test(s),
-    "NonEmptyWhitespaceFreeString"
-  )
+    "NonEmptyWhitespaceFreeString",
+  ),
 );
 
 export const lock = D.struct({

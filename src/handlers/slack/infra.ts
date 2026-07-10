@@ -1,15 +1,15 @@
-import { App, ExpressReceiver } from "@slack/bolt";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
   DynamoDBDocumentClient,
   GetCommand,
   PutCommand,
 } from "@aws-sdk/lib-dynamodb";
+import { App, ExpressReceiver } from "@slack/bolt";
 import * as env from "env-var";
 import LockBot from "../../lock-bot";
 import DynamoDBLockRepo from "../../storage/dynamodb-lock-repo";
-import TokenAuthorizer from "../../token-authorizer";
 import DynamoDBAccessTokenRepo from "../../storage/dynamodb-token-repo";
+import TokenAuthorizer from "../../token-authorizer";
 
 const documentClient = DynamoDBDocumentClient.from(new DynamoDBClient({}), {
   // aws-sdk v2 silently dropped undefined values (e.g. optional lock Metadata,
@@ -42,7 +42,7 @@ export const expressReceiver = new ExpressReceiver({
               Team: installation.team.id,
               Installation: installation,
             },
-          })
+          }),
         );
         const { team, user, bot } = installation;
         logger?.info("Installation stored.", {
@@ -66,7 +66,7 @@ export const expressReceiver = new ExpressReceiver({
           new GetCommand({
             TableName: installationsTableName,
             Key: { Team: installQuery.teamId },
-          })
+          }),
         );
         const installation = result.Item?.Installation;
         const { team, user, bot } = installation;
@@ -90,14 +90,14 @@ export const app = new App({
 export const lockBot = new LockBot(
   new DynamoDBLockRepo(
     documentClient,
-    env.get("RESOURCES_TABLE_NAME").required().asString()
+    env.get("RESOURCES_TABLE_NAME").required().asString(),
   ),
   new TokenAuthorizer(
     new DynamoDBAccessTokenRepo(
       documentClient,
-      env.get("ACCESS_TOKENS_TABLE_NAME").required().asString()
-    )
-  )
+      env.get("ACCESS_TOKENS_TABLE_NAME").required().asString(),
+    ),
+  ),
 );
 
 const stage = env.get("SERVERLESS_STAGE").required().asString();

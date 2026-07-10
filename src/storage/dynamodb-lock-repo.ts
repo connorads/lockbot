@@ -1,6 +1,6 @@
 import {
   DeleteCommand,
-  DynamoDBDocumentClient,
+  type DynamoDBDocumentClient,
   GetCommand,
   PutCommand,
   QueryCommand,
@@ -10,7 +10,7 @@ import type { LockRepo } from "../lock-bot";
 export default class DynamoDBLockRepo implements LockRepo {
   constructor(
     private readonly documentClient: DynamoDBDocumentClient,
-    private readonly resourcesTableName: string
+    private readonly resourcesTableName: string,
   ) {}
 
   async delete(resource: string, channel: string, team: string): Promise<void> {
@@ -18,13 +18,13 @@ export default class DynamoDBLockRepo implements LockRepo {
       new DeleteCommand({
         TableName: this.resourcesTableName,
         Key: { Resource: resource, Group: `${team}#${channel}` },
-      })
+      }),
     );
   }
 
   async getAll(
     channel: string,
-    team: string
+    team: string,
   ): Promise<Map<string, { owner: string; created: Date }>> {
     const result = await this.documentClient.send(
       new QueryCommand({
@@ -32,7 +32,7 @@ export default class DynamoDBLockRepo implements LockRepo {
         KeyConditionExpression: "#group = :g",
         ExpressionAttributeValues: { ":g": `${team}#${channel}` },
         ExpressionAttributeNames: { "#group": "Group" },
-      })
+      }),
     );
     const map = new Map<string, { owner: string; created: Date }>();
     if (result.Items) {
@@ -46,13 +46,13 @@ export default class DynamoDBLockRepo implements LockRepo {
   async getOwner(
     resource: string,
     channel: string,
-    team: string
+    team: string,
   ): Promise<string | undefined> {
     const result = await this.documentClient.send(
       new GetCommand({
         TableName: this.resourcesTableName,
         Key: { Resource: resource, Group: `${team}#${channel}` },
-      })
+      }),
     );
     return result.Item?.Owner;
   }
@@ -62,7 +62,7 @@ export default class DynamoDBLockRepo implements LockRepo {
     owner: string,
     channel: string,
     team: string,
-    metadata?: Record<string, string>
+    metadata?: Record<string, string>,
   ): Promise<void> {
     await this.documentClient.send(
       new PutCommand({
@@ -74,7 +74,7 @@ export default class DynamoDBLockRepo implements LockRepo {
           Created: new Date().toISOString(),
           Metadata: metadata,
         },
-      })
+      }),
     );
   }
 }

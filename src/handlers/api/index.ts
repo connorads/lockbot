@@ -1,7 +1,7 @@
-import express from "express";
 import serverlessExpress from "@codegenie/serverless-express";
-
 import auth from "basic-auth";
+import express from "express";
+import { lockRepo } from "./infra";
 import {
   authorizer,
   bodyValidator,
@@ -10,7 +10,6 @@ import {
   parseAllContentAsJson,
 } from "./middleware";
 import type { Lock } from "./types";
-import { lockRepo } from "./infra";
 
 // Express 5 types params as string | string[] to cover repeatable segments;
 // these routes only use single :param segments
@@ -34,7 +33,7 @@ app.get<ChannelParams>(
     });
     console.log("Retrieved locks", { locks });
     res.status(200).json(locks);
-  }
+  },
 );
 
 app.get<LockParams>(
@@ -51,7 +50,7 @@ app.get<LockParams>(
       console.log("Lock not found", { lockName });
       res.status(404).json({ message: `${lockName} not found` });
     }
-  }
+  },
 );
 
 app.post<ChannelParams>(
@@ -82,7 +81,7 @@ app.post<ChannelParams>(
         res.status(403).json({ message: error });
       }
     }
-  }
+  },
 );
 
 app.delete<LockParams>(
@@ -106,7 +105,7 @@ app.delete<LockParams>(
       console.log("Cannot unlock", { lock, error });
       res.status(403).json({ message: error });
     }
-  }
+  },
 );
 
 exports.handler = serverlessExpress({ app });

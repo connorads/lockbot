@@ -1,24 +1,24 @@
+import {
+  getFirstParam,
+  parseUnlock,
+} from "../src/handlers/slack/command-parsers";
 import LockBot, { type Response } from "../src/lock-bot";
-import InMemoryLockRepo from "../src/storage/in-memory-lock-repo";
 import DynamoDBLockRepo from "../src/storage/dynamodb-lock-repo";
-import TokenAuthorizer from "../src/token-authorizer";
-import InMemoryAccessTokenRepo from "../src/storage/in-memory-token-repo";
 import DynamoDBAccessTokenRepo from "../src/storage/dynamodb-token-repo";
+import InMemoryLockRepo from "../src/storage/in-memory-lock-repo";
+import InMemoryAccessTokenRepo from "../src/storage/in-memory-token-repo";
+import TokenAuthorizer from "../src/token-authorizer";
 import {
   createDocumentClient,
-  recreateResourcesTable,
   recreateAccessTokenTable,
+  recreateResourcesTable,
 } from "./utils";
-import {
-  parseUnlock,
-  getFirstParam,
-} from "../src/handlers/slack/command-parsers";
 
 let lockBot: LockBot;
 const runAllTests = () => {
   const execute = async (
     input: string,
-    params?: { user?: string; channel?: string; team?: string }
+    params?: { user?: string; channel?: string; team?: string },
   ): Promise<Response> => {
     const tokens = input.split(" ");
     const command = tokens[0];
@@ -44,7 +44,7 @@ const runAllTests = () => {
         user,
         channel,
         team,
-        "https://lockbot.app"
+        "https://lockbot.app",
       );
     }
     throw Error("Unhandled command");
@@ -290,19 +290,19 @@ const runAllTests = () => {
     expect(message).toContain("Here is your new access token");
     expect(message).toContain("> Fetch all locks 📜\n");
     expect(message).toContain(
-      "curl --request GET 'https://lockbot.app/api/teams/our-team/channels/general/locks'"
+      "curl --request GET 'https://lockbot.app/api/teams/our-team/channels/general/locks'",
     );
     expect(message).toContain("> Fetch lock `dev` 👀\n");
     expect(message).toContain(
-      "curl --request GET 'https://lockbot.app/api/teams/our-team/channels/general/locks/dev'"
+      "curl --request GET 'https://lockbot.app/api/teams/our-team/channels/general/locks/dev'",
     );
     expect(message).toContain("> Create lock `dev` 🔒\n");
     expect(message).toContain(
-      "curl --request POST 'https://lockbot.app/api/teams/our-team/channels/general/locks'"
+      "curl --request POST 'https://lockbot.app/api/teams/our-team/channels/general/locks'",
     );
     expect(message).toContain("> Delete lock `dev` 🔓\n");
     expect(message).toContain(
-      "curl --request DELETE 'https://lockbot.app/api/teams/our-team/channels/general/locks/dev'"
+      "curl --request DELETE 'https://lockbot.app/api/teams/our-team/channels/general/locks/dev'",
     );
   });
 };
@@ -311,7 +311,7 @@ describe("in memory lock repo", () => {
   beforeEach(() => {
     lockBot = new LockBot(
       new InMemoryLockRepo(),
-      new TokenAuthorizer(new InMemoryAccessTokenRepo())
+      new TokenAuthorizer(new InMemoryAccessTokenRepo()),
     );
   });
   runAllTests();
@@ -327,8 +327,8 @@ describe("dynamodb lock repo", () => {
     lockBot = new LockBot(
       new DynamoDBLockRepo(documentClient, resourcesTableName),
       new TokenAuthorizer(
-        new DynamoDBAccessTokenRepo(documentClient, accessTokenTableName)
-      )
+        new DynamoDBAccessTokenRepo(documentClient, accessTokenTableName),
+      ),
     );
   });
   runAllTests();

@@ -1,6 +1,6 @@
-import TokenAuthorizer from "../src/token-authorizer";
-import InMemoryAccessTokenRepo from "../src/storage/in-memory-token-repo";
 import DynamoDBAccessTokenRepo from "../src/storage/dynamodb-token-repo";
+import InMemoryAccessTokenRepo from "../src/storage/in-memory-token-repo";
+import TokenAuthorizer from "../src/token-authorizer";
 import { createDocumentClient, recreateAccessTokenTable } from "./utils";
 
 let ta: TokenAuthorizer;
@@ -8,7 +8,7 @@ const runAllTests = () => {
   test("Valid new token", async () => {
     const token = await ta.createAccessToken("Connor", "general", "our-team");
     expect(await ta.isAuthorized(token, "Connor", "general", "our-team")).toBe(
-      true
+      true,
     );
   });
 
@@ -16,20 +16,20 @@ const runAllTests = () => {
     await ta.createAccessToken("Connor", "general", "our-team");
     const token = await ta.createAccessToken("Connor", "general", "our-team");
     expect(await ta.isAuthorized(token, "Connor", "general", "our-team")).toBe(
-      true
+      true,
     );
   });
 
   test("Invalid when token not created", async () => {
     expect(
-      await ta.isAuthorized("random-token", "Connor", "general", "our-team")
+      await ta.isAuthorized("random-token", "Connor", "general", "our-team"),
     ).toBe(false);
   });
 
   test("Invalid when token incorrect", async () => {
     await ta.createAccessToken("Connor", "general", "our-team");
     expect(
-      await ta.isAuthorized("incorrect-token", "Connor", "general", "our-team")
+      await ta.isAuthorized("incorrect-token", "Connor", "general", "our-team"),
     ).toBe(false);
   });
 
@@ -37,11 +37,11 @@ const runAllTests = () => {
     const oldToken = await ta.createAccessToken(
       "Connor",
       "general",
-      "our-team"
+      "our-team",
     );
     await ta.createAccessToken("Connor", "general", "our-team");
     expect(
-      await ta.isAuthorized(oldToken, "Connor", "general", "our-team")
+      await ta.isAuthorized(oldToken, "Connor", "general", "our-team"),
     ).toBe(false);
   });
 };
@@ -58,7 +58,7 @@ describe("dynamodb token repo", () => {
   beforeEach(async () => {
     await recreateAccessTokenTable(accessTokenTableName);
     ta = new TokenAuthorizer(
-      new DynamoDBAccessTokenRepo(createDocumentClient(), accessTokenTableName)
+      new DynamoDBAccessTokenRepo(createDocumentClient(), accessTokenTableName),
     );
   });
   runAllTests();

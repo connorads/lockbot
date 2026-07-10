@@ -1,6 +1,6 @@
 import request from "supertest";
-import TokenAuthorizer from "../src/token-authorizer";
 import DynamoDBAccessTokenRepo from "../src/storage/dynamodb-token-repo";
+import TokenAuthorizer from "../src/token-authorizer";
 import {
   createDocumentClient,
   recreateAccessTokenTable,
@@ -16,7 +16,7 @@ describe("dynamodb token repo", () => {
     await recreateAccessTokenTable(accessTokenTableName);
     await recreateResourcesTable(resourcesTableName);
     const tokenAuthorizer = new TokenAuthorizer(
-      new DynamoDBAccessTokenRepo(createDocumentClient(), accessTokenTableName)
+      new DynamoDBAccessTokenRepo(createDocumentClient(), accessTokenTableName),
     );
     const createToken = (user: string) =>
       tokenAuthorizer.createAccessToken(user, "C012345ABCD", "T012345WXYZ");
@@ -51,7 +51,7 @@ describe("dynamodb token repo", () => {
 
     const res = await apiCall.set(
       "Authorization",
-      `Basic ${invalidCredentials}`
+      `Basic ${invalidCredentials}`,
     );
 
     expect(res.status).toBe(401);
@@ -95,7 +95,7 @@ describe("dynamodb token repo", () => {
 
     expect(res.status).toBe(201);
     expect(res.text).toBe(
-      JSON.stringify({ name: "dev", owner: "U012345MNOP" })
+      JSON.stringify({ name: "dev", owner: "U012345MNOP" }),
     );
   });
 
@@ -111,7 +111,7 @@ describe("dynamodb token repo", () => {
 
     expect(res.status).toBe(200);
     expect(res.text).toBe(
-      JSON.stringify({ name: "dev", owner: "U012345MNOP" })
+      JSON.stringify({ name: "dev", owner: "U012345MNOP" }),
     );
   });
 
@@ -133,7 +133,7 @@ describe("dynamodb token repo", () => {
       JSON.stringify([
         { name: "dev", owner: "U012345MNOP" },
         { name: "test", owner: "U012345MNOP" },
-      ])
+      ]),
     );
   });
 
@@ -225,18 +225,15 @@ describe("dynamodb token repo", () => {
           "└─ cannot decode undefined, should be string",
       },
     ],
-  ])(
-    "Cannot create lock with bad json payload %p",
-    async (payload, expectedResponseBody) => {
-      const res = await server
-        .post("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
-        .set("Authorization", `Basic ${credentials1}`)
-        .send(payload);
+  ])("Cannot create lock with bad json payload %p", async (payload, expectedResponseBody) => {
+    const res = await server
+      .post("/dev/api/teams/T012345WXYZ/channels/C012345ABCD/locks")
+      .set("Authorization", `Basic ${credentials1}`)
+      .send(payload);
 
-      expect(res.status).toBe(400);
-      expect(res.text).toBe(JSON.stringify(expectedResponseBody));
-    }
-  );
+    expect(res.status).toBe(400);
+    expect(res.text).toBe(JSON.stringify(expectedResponseBody));
+  });
 
   test("Cannot create lock for someone else", async () => {
     const res = await server
@@ -248,7 +245,7 @@ describe("dynamodb token repo", () => {
     expect(res.text).toBe(
       JSON.stringify({
         message: "U012345MNOP cannot lock for another user U012345QRST",
-      })
+      }),
     );
   });
 
@@ -264,7 +261,7 @@ describe("dynamodb token repo", () => {
 
     expect(res.status).toBe(200);
     expect(res.text).toBe(
-      JSON.stringify({ name: "dev", owner: "U012345MNOP" })
+      JSON.stringify({ name: "dev", owner: "U012345MNOP" }),
     );
   });
 
@@ -280,7 +277,7 @@ describe("dynamodb token repo", () => {
 
     expect(res.status).toBe(403);
     expect(res.text).toBe(
-      JSON.stringify({ message: "dev is already locked by U012345QRST" })
+      JSON.stringify({ message: "dev is already locked by U012345QRST" }),
     );
   });
 
@@ -313,7 +310,7 @@ describe("dynamodb token repo", () => {
         message:
           'required property "lock"\n' +
           '└─ cannot decode "dev 1", should be NonEmptyWhitespaceFreeString',
-      })
+      }),
     );
   });
 
@@ -337,7 +334,7 @@ describe("dynamodb token repo", () => {
 
     expect(res.status).toBe(403);
     expect(res.text).toBe(
-      JSON.stringify({ message: "Cannot unlock dev, locked by U012345QRST" })
+      JSON.stringify({ message: "Cannot unlock dev, locked by U012345QRST" }),
     );
   });
 });

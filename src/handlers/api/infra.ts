@@ -24,11 +24,11 @@ const documentClient = DynamoDBDocumentClient.from(dynamoDBClient, {
 export const tokenAuthorizer = new TokenAuthorizer(
   new DynamoDBAccessTokenRepo(
     documentClient,
-    env.get("ACCESS_TOKENS_TABLE_NAME").required().asString()
-  )
+    env.get("ACCESS_TOKENS_TABLE_NAME").required().asString(),
+  ),
 );
 
 export const lockRepo = new DynamoDBLockRepo(
   documentClient,
-  env.get("RESOURCES_TABLE_NAME").required().asString()
+  env.get("RESOURCES_TABLE_NAME").required().asString(),
 );
