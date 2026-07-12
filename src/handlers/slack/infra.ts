@@ -69,6 +69,9 @@ export const expressReceiver = new ExpressReceiver({
           }),
         );
         const installation = result.Item?.Installation;
+        if (!installation) {
+          throw new Error("Failed to fetch installation");
+        }
         const { team, user, bot } = installation;
         logger?.info("Installation fetched.", {
           team,
