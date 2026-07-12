@@ -13,6 +13,9 @@ provider:
   name: aws
   runtime: nodejs22.x
   environment:
+    # esbuild emits source maps (custom.esbuild.sourcemap); Node only reads
+    # them with this flag, giving TypeScript locations in Lambda stack traces
+    NODE_OPTIONS: "--enable-source-maps"
     SLACK_SIGNING_SECRET: ${env:SLACK_SIGNING_SECRET}
     SLACK_CLIENT_ID: ${env:SLACK_CLIENT_ID}
     SLACK_CLIENT_SECRET: ${env:SLACK_CLIENT_SECRET}
