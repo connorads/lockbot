@@ -53,35 +53,34 @@ export const authorizer = async (
   }
 };
 
-export const bodyValidator = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  const decoded = lock.decode(req.body);
-  if (isLeft(decoded)) {
-    const error = D.draw(decoded.left);
-    console.log("Invalid request body", { body: req.body, error });
-    res.status(400).json({ message: error });
-  } else {
-    next();
-  }
-};
+const lockParams = D.type({
+  lock: nonEmptyWhitespaceFreeString,
+});
 
-export const paramsValidator = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  const Params = D.type({
-    lock: nonEmptyWhitespaceFreeString,
-  });
-  const decoded = Params.decode(req.params);
-  if (isLeft(decoded)) {
-    const error = D.draw(decoded.left);
-    console.log("Invalid request params", { params: req.params, error });
-    res.status(400).json({ message: error });
-  } else {
-    next();
-  }
-};
+const validate =
+  <A>(
+    decoder: D.Decoder<unknown, A>,
+    select: (req: Request) => unknown,
+    logKey: "body" | "params",
+  ) =>
+  async (req: Request, res: Response, next: NextFunction) => {
+    const decoded = decoder.decode(select(req));
+    if (isLeft(decoded)) {
+      const error = D.draw(decoded.left);
+      console.log(`Invalid request ${logKey}`, {
+        [logKey]: select(req),
+        error,
+      });
+      res.status(400).json({ message: error });
+    } else {
+      next();
+    }
+  };
+
+export const bodyValidator = validate(lock, (req) => req.body, "body");
+
+export const paramsValidator = validate(
+  lockParams,
+  (req) => req.params,
+  "params",
+);
