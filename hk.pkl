@@ -1,4 +1,4 @@
-// Pre-commit checks mirroring the CI lint gate: biome, eslint, tsc.
+// Pre-commit checks mirroring the CI lint gate (pnpm lint): biome, eslint, tsc, openapi.
 // Install the hooks with `hk install`; run manually with `hk run pre-commit`.
 amends "package://github.com/jdx/hk/releases/download/v1.48.0/hk@1.48.0#/Config.pkl"
 
@@ -13,17 +13,17 @@ local lint_steps = new Mapping<String, Step> {
     // Type-aware rules need the whole project, not just staged files
     ["eslint"] {
         glob = List("*.ts", "*.mjs")
-        check = "pnpm exec eslint ."
+        check = "pnpm run lint:eslint"
     }
 
     ["tsc"] {
         glob = List("*.ts", "tsconfig.json")
-        check = "pnpm exec tsc --noEmit"
+        check = "pnpm run lint:tsc"
     }
 
     ["openapi"] {
         glob = List("src/handlers/swagger/openapi.json", "redocly.yaml")
-        check = "pnpm exec redocly lint src/handlers/swagger/openapi.json"
+        check = "pnpm run lint:openapi"
     }
 }
 

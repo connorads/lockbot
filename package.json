@@ -12,7 +12,10 @@
   "scripts": {
     "lint": "npm-run-all -p -c lint:*",
     "lint:tsc": "tsc --noEmit",
+    "lint:biome": "biome check .",
+    "lint:eslint": "eslint .",
     "lint:openapi": "redocly lint src/handlers/swagger/openapi.json",
+    "format": "biome check --write .",
     "db:install": "serverless dynamodb install",
     "db:start": "serverless dynamodb start",
     "dev": "SLACK_SIGNING_SECRET=${SLACK_SIGNING_SECRET:-dummy} SLACK_CLIENT_ID=${SLACK_CLIENT_ID:-dummy} SLACK_CLIENT_SECRET=${SLACK_CLIENT_SECRET:-dummy} STATE_SECRET=${STATE_SECRET:-dummydummydummydummydummydummydu} serverless offline",
