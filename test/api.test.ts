@@ -144,9 +144,10 @@ describe("dynamodb token repo", () => {
       .send("/");
 
     expect(res.status).toBe(400);
-    // Exact wording of the JSON parse error varies across V8 versions
+    // The token/quote part of the JSON parse error varies across V8
+    // versions; the "is not valid JSON" suffix is stable on Node 20+
     expect(JSON.parse(res.text)).toEqual({
-      message: expect.stringContaining("Unexpected token"),
+      message: expect.stringContaining("is not valid JSON"),
     });
   });
 
