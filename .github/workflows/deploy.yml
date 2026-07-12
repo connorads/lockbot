@@ -8,46 +8,16 @@ on:
 
 jobs:
   deploy-dev:
-    name: Deploy to dev
     if: github.event_name == 'pull_request'
-    runs-on: ubuntu-24.04
-    environment: dev
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - name: Serverless Deploy
-        run: pnpm run deploy --region eu-west-1 --stage dev
-        env:
-          SLACK_SIGNING_SECRET: ${{ secrets.SLACK_SIGNING_SECRET }}
-          SLACK_CLIENT_ID: ${{ secrets.SLACK_CLIENT_ID }}
-          SLACK_CLIENT_SECRET: ${{ secrets.SLACK_CLIENT_SECRET }}
-          STATE_SECRET: ${{ secrets.STATE_SECRET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    uses: ./.github/workflows/deploy-reusable.yml
+    with:
+      stage: dev
+      environment: dev
+    secrets: inherit
   deploy-prod:
-    name: Deploy to prod
     if: github.event_name == 'push'
-    runs-on: ubuntu-24.04
-    environment: prod
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - name: Serverless Deploy
-        run: pnpm run deploy --region eu-west-1 --stage prod
-        env:
-          SLACK_SIGNING_SECRET: ${{ secrets.SLACK_SIGNING_SECRET }}
-          SLACK_CLIENT_ID: ${{ secrets.SLACK_CLIENT_ID }}
-          SLACK_CLIENT_SECRET: ${{ secrets.SLACK_CLIENT_SECRET }}
-          STATE_SECRET: ${{ secrets.STATE_SECRET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    uses: ./.github/workflows/deploy-reusable.yml
+    with:
+      stage: prod
+      environment: prod
+    secrets: inherit
