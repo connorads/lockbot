@@ -1,21 +1,14 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import {
-  DynamoDBDocumentClient,
-  GetCommand,
-  PutCommand,
-} from "@aws-sdk/lib-dynamodb";
+import { GetCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
 import { App, ExpressReceiver } from "@slack/bolt";
 import * as env from "env-var";
 import LockBot from "../../lock-bot";
+import { documentClientFrom } from "../../storage/document-client";
 import DynamoDBLockRepo from "../../storage/dynamodb-lock-repo";
 import DynamoDBAccessTokenRepo from "../../storage/dynamodb-token-repo";
 import TokenAuthorizer from "../../token-authorizer";
 
-const documentClient = DynamoDBDocumentClient.from(new DynamoDBClient({}), {
-  // aws-sdk v2 silently dropped undefined values (e.g. optional lock Metadata,
-  // optional fields inside the Slack Installation); v3 throws without this
-  marshallOptions: { removeUndefinedValues: true },
-});
+const documentClient = documentClientFrom(new DynamoDBClient({}));
 
 const installationsTableName = env
   .get("INSTALLATIONS_TABLE_NAME")

@@ -3,21 +3,15 @@ import {
   DeleteTableCommand,
   DynamoDBClient,
 } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import {
+  documentClientFrom,
+  localDynamoDBClientConfig,
+} from "../src/storage/document-client";
 
-const options = {
-  region: "localhost",
-  endpoint: "http://localhost:8000",
-  // DynamoDB Local accepts any credentials but the v3 credential chain
-  // throws if none are configured
-  credentials: { accessKeyId: "dummy", secretAccessKey: "dummy" },
-};
+const options = localDynamoDBClientConfig;
 
 export const createDocumentClient = () =>
-  DynamoDBDocumentClient.from(new DynamoDBClient(options), {
-    // match production config: aws-sdk v2 silently dropped undefined values
-    marshallOptions: { removeUndefinedValues: true },
-  });
+  documentClientFrom(new DynamoDBClient(options));
 
 export const recreateResourcesTable = async (resourcesTableName: string) => {
   const db = new DynamoDBClient(options);
