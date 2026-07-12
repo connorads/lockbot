@@ -14,7 +14,7 @@ Lockbot is a Slack mutex bot (live at [lockbot.app](https://lockbot.app)):
   asserted verbatim in tests; do not swap the validation library casually
 - Vitest; Biome 2 (format + main lint); ESLint runs only type-aware rules
   (`switch-exhaustiveness-check`, `no-floating-promises`)
-- pnpm 11 (`nodeLinker: hoisted`, build scripts blocked except esbuild)
+- pnpm 11 (default isolated node linker; build scripts blocked except esbuild)
 
 ## Architecture
 
