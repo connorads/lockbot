@@ -10,6 +10,11 @@ export const localDynamoDBClientConfig: DynamoDBClientConfig = {
   // DynamoDB Local accepts any credentials but the v3 credential chain
   // throws if none are configured
   credentials: { accessKeyId: "dummy", secretAccessKey: "dummy" },
+  // Disable retries: against DynamoDB Local the v3 default retry strategy can
+  // hang a request indefinitely (no request timeout bounds a stalled retry),
+  // making the test suite's beforeEach hooks time out. Retries add no value
+  // against local infrastructure - fail fast instead.
+  maxAttempts: 1,
 };
 
 export const documentClientFrom = (client: DynamoDBClient) =>
