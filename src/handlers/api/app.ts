@@ -16,6 +16,7 @@ type ChannelParams = { team: string; channel: string };
 type LockParams = ChannelParams & { lock: string };
 
 export const app = express();
+app.disable("x-powered-by");
 
 app.use(parseAllContentAsJson);
 

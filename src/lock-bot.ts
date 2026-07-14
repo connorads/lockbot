@@ -137,7 +137,7 @@ export default class LockBot {
           lockDate.valueOf() / 1000,
         )}^{date_pretty} {time}|${lockDate.toUTCString()}>_\n`;
     });
-    return { message: locksMessage.trimRight(), destination: "user" };
+    return { message: locksMessage.trimEnd(), destination: "user" };
   };
 
   lbtoken = async (

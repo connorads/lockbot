@@ -71,7 +71,7 @@ export const expressReceiver = new ExpressReceiver({
           userId: user.id,
           botScopes: bot?.scopes,
         });
-        return Promise.resolve(installation);
+        return installation;
       } else {
         throw new Error("Failed to fetch installation");
       }
