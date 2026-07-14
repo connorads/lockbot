@@ -6,11 +6,15 @@ export default class InMemoryLockRepo implements LockRepo {
 
   private static readonly separator = "🎱🈂️💟🍐🍚🕕😽🎉⛎4️⃣";
 
-  private static toKey = (resource: string, channel: string, team: string) => {
+  private static readonly toKey = (
+    resource: string,
+    channel: string,
+    team: string,
+  ) => {
     return `${channel}${InMemoryLockRepo.separator}${resource}${InMemoryLockRepo.separator}${team}`;
   };
 
-  private static fromKey = (key: string) => {
+  private static readonly fromKey = (key: string) => {
     const [channel = "", resource = "", team = ""] = key.split(
       InMemoryLockRepo.separator,
     );

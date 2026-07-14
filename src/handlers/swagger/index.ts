@@ -9,6 +9,7 @@ const stage = env.get("SERVERLESS_STAGE").required().asString();
 openApiJson.servers = [{ url: `/${stage}` }];
 
 const app = express();
+app.disable("x-powered-by");
 
 app.get("/api-docs", async (_req, res) => {
   res.set("Content-Type", "text/html; charset=utf-8");

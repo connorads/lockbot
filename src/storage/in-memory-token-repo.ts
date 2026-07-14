@@ -5,7 +5,11 @@ class InMemoryAccessTokenRepo implements AccessTokenRepo {
 
   private static readonly separator = "😣👑🏥👂🚜📪🈺😻🐥🚟";
 
-  private static toKey = (user: string, channel: string, team: string) => {
+  private static readonly toKey = (
+    user: string,
+    channel: string,
+    team: string,
+  ) => {
     return `${channel}${InMemoryAccessTokenRepo.separator}${user}${InMemoryAccessTokenRepo.separator}${team}`;
   };
 
