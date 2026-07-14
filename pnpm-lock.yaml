@@ -75,9 +75,6 @@ importers:
       serverless:
         specifier: npm:osls@^4.0.0
         version: osls@4.0.0(@types/json-schema@7.0.15)
-      serverless-api-gateway-throttling:
-        specifier: ^1.2.2
-        version: 1.2.2
       serverless-dynamodb:
         specifier: ^0.2.58
         version: 0.2.58
@@ -2472,18 +2469,11 @@ packages:
   lodash.flatten@4.4.0:
     resolution: {integrity: sha512-C5N2Z3DgnnKr0LOpv/hKCgKdb7ZZwafIrsesve6lmzvZIRZRGaZ/l6Q8+2W7NaT+ZwO3fFlSCzCzrDCFdJfZ4g==}
 
-  lodash.get@4.4.2:
-    resolution: {integrity: sha512-z+Uw/vLuy6gQe8cfaFWD7p0wVv8fJl3mbzXh33RS+0oW2wvUqiRXiQ69gLWSLpgB5/6sU+r6BlQR0MBILadqTQ==}
-    deprecated: This package is deprecated. Use the optional chaining (?.) operator instead.
-
   lodash.includes@4.3.0:
     resolution: {integrity: sha512-W3Bx6mdkRTGtlJISOvVD/lbqjTlPPUDTMnlXZFnVwi9NKJ6tiAk6LVdlhZMm17VZisqhKcgzpO5Wz91PCt5b0w==}
 
   lodash.isboolean@3.0.3:
     resolution: {integrity: sha512-Bz5mupy2SVbPHURB98VAcw+aHh4vRV5IPNhILUCsOzRmsTmSQ17jIuqopAentWoehktxGd9e/hbIXq980/1QJg==}
-
-  lodash.isempty@4.4.0:
-    resolution: {integrity: sha512-oKMuF3xEeqDltrGMfDxAPGIVMSSRv8tbRSODbrs4KGsRRLEhrW8N8Rd4DRgB2+621hY8A8XwwrTVhXWpxFvMzg==}
 
   lodash.isinteger@4.0.4:
     resolution: {integrity: sha512-DBwtEWN2caHQ9/imiNeEA5ys1JoRtRfY3d7V9wkqtbycnAmTvRRmbHKDV4a0EYc678/dia0jrte4tjYwVBaZUA==}
@@ -3016,9 +3006,6 @@ packages:
   serve-static@2.2.1:
     resolution: {integrity: sha512-xRXBn0pPqQTVQiC8wyQrKs2MOlX24zQ0POGaj0kultvoOCstBQM5yvOhAVSUwOMjQtTvsPWoNCHfPGwaaQJhTw==}
     engines: {node: '>= 18'}
-
-  serverless-api-gateway-throttling@1.2.2:
-    resolution: {integrity: sha512-ZfQaWOOn3l7M2tyWfU/NqQ+jNSV1rhRGnPTerrRMOpgG4XJZlc7YHDj2156eaaLIxPKr8Sf96HsKgIBOQA6M4g==}
 
   serverless-dynamodb@0.2.58:
     resolution: {integrity: sha512-HGNmaHu2RnjAjyDHh3v9q9aFs2Ypu6A67mlJdAcROHaRXkfIpRwir8dnOu6mwRKMHzPpHQZ5pRWa++mFkOAsZg==}
@@ -6262,13 +6249,9 @@ snapshots:
 
   lodash.flatten@4.4.0: {}
 
-  lodash.get@4.4.2: {}
-
   lodash.includes@4.3.0: {}
 
   lodash.isboolean@3.0.3: {}
-
-  lodash.isempty@4.4.0: {}
 
   lodash.isinteger@4.0.4: {}
 
@@ -6836,11 +6819,6 @@ snapshots:
       send: 1.2.1
     transitivePeerDependencies:
       - supports-color
-
-  serverless-api-gateway-throttling@1.2.2:
-    dependencies:
-      lodash.get: 4.4.2
-      lodash.isempty: 4.4.0
 
   serverless-dynamodb@0.2.58:
     dependencies:
