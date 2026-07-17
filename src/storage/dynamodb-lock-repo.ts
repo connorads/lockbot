@@ -35,6 +35,9 @@ export default class DynamoDBLockRepo implements LockRepo {
       }),
     );
     const map = new Map<string, { owner: string; created: Date }>();
+    // DynamoDB Local always returns Items; the guard exists only for the
+    // SDK's optional typing
+    /* v8 ignore else */
     if (result.Items) {
       result.Items.forEach((i) => {
         map.set(i.Resource, { owner: i.Owner, created: new Date(i.Created) });

@@ -5,5 +5,7 @@ export const parseUnlock = (
   return { resource, force: options === "force" };
 };
 
-export const getFirstParam = (commandText: string | undefined) =>
-  (commandText ?? "").split(" ")[0] ?? "";
+export const getFirstParam = (commandText: string | undefined) => {
+  const [firstParam = ""] = (commandText ?? "").split(" ");
+  return firstParam;
+};
