@@ -10,7 +10,9 @@ import TokenAuthorizer from "../../token-authorizer";
 
 const dynamoDBClient = env.get("IS_OFFLINE").asBool()
   ? new DynamoDBClient(localDynamoDBClientConfig)
-  : new DynamoDBClient({});
+  : // the prod arm needs real AWS; only the offline arm can run under tests
+    /* v8 ignore next */
+    new DynamoDBClient({});
 
 const documentClient = documentClientFrom(dynamoDBClient);
 
